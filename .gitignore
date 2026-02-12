@@ -1,0 +1,49 @@
+# Python caches / local env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+*.o
+*.so
+*.a
+*.dylib
+*.exe
+
+# Logs and runtime outputs
+*.log
+*.tmp
+*.out
+
+# Analysis data/artifacts (non-source)
+*.root
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.parquet
+*.feather
+*.tsv
+*.csv
+
+# Plots and exported figures
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.eps
+
+# Project-specific generated folders
+DataProcessing/bin/
+DataProcessing/temp/
+DataProcessing/plotting/plots/
