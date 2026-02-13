@@ -105,7 +105,7 @@ def myText(x, y, text, color=ROOT.kBlack, align=12, size=0.03):
     l.DrawLatex(x, y, text)
 
 
-def apply_style(hist, color, marker, line_style, is_data):
+def apply_style(hist, color, marker, line_style, is_data=True):
     hist.SetStats(0)
     hist.SetLineColor(color)
     hist.SetMarkerColor(color)

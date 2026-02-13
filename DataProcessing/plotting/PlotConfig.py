@@ -185,7 +185,7 @@ plotConfig["sprime"] = {
     "legloc" : [0.2, 0.72, 0.45, 0.92]
 }
 plotConfig["logtau"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dlog(#tau)",
+    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", "YTitleDifferential": "1/#sigma d#sigma/dlog(#tau)",
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
     "legloc" : [0.2, 0.75, 0.4, 0.9]
 }
@@ -215,7 +215,7 @@ plotConfig["sphericity"] = {
     "legloc" : [0.55, 0.7, 0.75, 0.9]
 }
 plotConfig["thrust"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dT", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", "YTitleDifferential": "1/#sigma d#sigma/dT", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 5,
     "legloc" : [0.23, 0.7, 0.48, 0.9]
 }

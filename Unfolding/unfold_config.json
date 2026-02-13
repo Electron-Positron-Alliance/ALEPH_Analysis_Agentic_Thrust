@@ -12,11 +12,12 @@
   "gen_branch": "Thrust",
   "id_branch": "uniqueID",
 
-  "bins": 25,
+  "bins": 50,
   "xmin": 0.5,
   "xmax": 1.0,
-  "iterations": 6,
+  "iterations": 5,
   "calculate_covariance": false,
+  "closure_check": false,
 
   "out_root": "unfolded_thrust.root"
 }
