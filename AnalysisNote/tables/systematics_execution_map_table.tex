@@ -1,0 +1,18 @@
+\begin{table}[t!]
+\centering
+\scriptsize
+\begin{tabular}{p{0.18\textwidth}p{0.18\textwidth}p{0.24\textwidth}p{0.16\textwidth}p{0.16\textwidth}}
+\hline
+Category & Variation(s) & Source type & Combination rule & Output branch \\
+\hline
+Unfolding regularization & \texttt{iter4}, \texttt{iter6} & rerun with alternate \texttt{iterations} & envelope in each bin & \texttt{iteration/*} \\
+Track/event selection & \texttt{ntpc7}, \texttt{pt04}, \texttt{ech10}, \texttt{with\_met} & alternate data/MC derivation files & quadrature of absolute shifts & \texttt{experimental/*} \\
+Neutral response & \texttt{nes\_up}, \texttt{nes\_down}, \texttt{ner} & alternate MC response derivation files & NES envelope with NER in quadrature & \texttt{experimental/*} \\
+Theory modeling & \texttt{pythia8}, \texttt{herwig}, \texttt{sherpa} & event-level reweight arrays mapped to selected gen events & envelope across generators & \texttt{theory/*} \\
+Cross-check only & \texttt{no\_neutrals} & alternate selection configuration & reported, not combined in total & \texttt{experimental/*} \\
+\hline
+\end{tabular}
+\normalsize
+\caption{Systematics execution map and nominal combination policy used in this internal note.}
+\label{tab:systematics_execution_map}
+\end{table}

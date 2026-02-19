@@ -70,6 +70,8 @@ struct EventResult {
   float Thrust = 0.0f;
   float RivetThrust = 0.0f;
   float ChargedThrust = 0.0f;
+  float CParameter = 0.0f;
+  float HeavyJetMass = 0.0f;
   float TotalTrkEnergy = 0.0f;
   float STheta = 0.0f;
   float Sphericity = 0.0f;
@@ -85,6 +87,11 @@ struct EventResult {
   std::vector<float> px;
   std::vector<float> py;
   std::vector<float> pz;
+  std::vector<float> mass;
+  std::vector<float> energy;
+  std::vector<float> d0;
+  std::vector<float> z0;
+  std::vector<Short_t> ntpc;
   std::vector<Short_t> pwflag;
   std::vector<float> conversionElectronTheta;
   std::vector<float> conversionElectronPhi;

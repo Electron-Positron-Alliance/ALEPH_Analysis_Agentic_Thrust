@@ -1,0 +1,61 @@
+\section{AI-agent usage in this analysis program}
+\label{sec:ai_agent}
+
+This internal note includes an explicit evaluation of AI-agent support for an experimental QCD analysis workflow. The central question is not only whether an agent can generate text or isolated scripts, but whether it can execute a full analysis loop under physicist supervision: data/MC processing, unfolding orchestration, systematic propagation, figure production, and note maintenance with traceable links to code and outputs.
+
+\subsection{Scope and operating model}
+
+The current operating model is human-in-the-loop. Physics decisions remain analyst-owned, while the agent is used for implementation speed, consistency checks, and documentation rigor. In practical terms, the agent is used to:
+\begin{itemize}
+\item execute and monitor multi-step workflows;
+\item enforce consistent plotting and note formatting conventions;
+\item connect analysis statements in the note to concrete script paths, configuration keys, and produced artifacts;
+\item iterate quickly on uncertainty-view and validation presentation.
+\end{itemize}
+
+This model is intentionally conservative: the agent is treated as an accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker.
+
+\subsection{Boundaries and controls}
+
+To keep scientific accountability explicit, each high-impact step has a control point where analyst signoff is required before results are treated as baseline:
+\begin{itemize}
+\item event/object selection definition;
+\item nominal unfolding regularization choice ($N_{\mathrm{iter}}=5$ in this pass);
+\item systematic-combination policy;
+\item final figure and uncertainty-presentation choices;
+\item interpretation language in the note.
+\end{itemize}
+
+All result-level claims are expected to be reproducible from concrete workflow artifacts in
+\texttt{Studies/PreliminaryResult/2026-02-17\_thrust\_iter5/} and script entrypoints documented in Sec.~\ref{sec:method}.
+
+\subsection{Why this matters for the broader physics program}
+
+A major objective is to extend AI use in fundamental physics beyond purely theoretical calculations. The experimental side of the loop must produce reliable, uncertainty-aware observables and covariance products that can be consumed by precision QCD fits. Recent AI+scientist and HEP-theory case studies support this direction while also highlighting verification, reproducibility, and expert oversight as first-class constraints~\cite{Woodruff:2026practicalsi,Bubeck:2025coscientist,OpenAITheory:2026singleminus,Schwartz:2026cparameterllm}. In this note, that bridge is represented by release-grade covariance and correlation outputs for thrust, with the next step being expansion to C-parameter and heavy-jet mass and eventual multidimensional constraints.
+
+This section therefore serves as both a method statement and a record of feasibility: the agent can assist with end-to-end experimental workflow execution when constrained by explicit controls, validation checks, and human review.
+
+\subsection{Quantitative scorecard for this cycle}
+
+Table~\ref{tab:ai_agent_scorecard} summarizes measured outcomes for this internal-note cycle using concrete workflow artifacts.
+
+\begin{table}[t!]
+\centering
+\scriptsize
+\begin{tabularx}{0.98\textwidth}{p{0.34\textwidth}c c c X}
+\hline
+Task category & Attempted & Passed & Required human corrections & Evidence source \\
+\hline
+Workflow branch executions (nominal + systematics) & 14 & 14 & 0 & Workflow summary metadata \\
+Summary output integrity checks & 1 & 1 & 0 & Prelim summary checker output \\
+Critical-review findings closure in same pass & 6 & 0 & 6 & Critical review findings log \\
+\hline
+\end{tabularx}
+\normalsize
+\caption{AI-agent scorecard for the current thrust internal-note cycle. “Required human corrections” counts categories where analyst intervention is still needed before closure.}
+\label{tab:ai_agent_scorecard}
+\end{table}
+
+Residual risk remains dominated by reproducibility portability and documentation completeness rather than raw workflow execution. In other words, the agent currently performs routine orchestration reliably, while high-stakes release hardening still requires explicit analyst direction and signoff.
+
+The operational details of this collaboration model, including interaction protocol and persistent bottlenecks observed from the agent side, are documented in Sec.~\ref{sec:challenges}.

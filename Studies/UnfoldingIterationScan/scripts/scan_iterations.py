@@ -210,7 +210,7 @@ def main():
     h_data = unfold_mod.make_h1("data_reco", "Data;Thrust;Events", bins, xmin, xmax)
     unfold_mod.fill_hist_from_tree(tree_data, data_branch, h_data, xmin, xmax, selection_branch=selection_branch)
 
-    response, h_reco, h_gen, _, _ = unfold_mod.build_response(
+    response, h_reco, h_gen, _, _, _ = unfold_mod.build_response(
         tree_reco=tree_reco,
         tree_gen=tree_gen,
         id_branch=id_branch,

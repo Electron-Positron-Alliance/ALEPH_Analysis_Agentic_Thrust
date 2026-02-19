@@ -1,0 +1,38 @@
+{
+  "observable": "thrust",
+
+  "data_file": "../DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+  "reco_mc_file": "../DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
+  "gen_mc_file": "../DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgen.root",
+  "genbefore_mc_file": "../DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgenBefore.root",
+
+  "data_tree": "t",
+  "reco_tree": "t",
+  "gen_tree": "tgen",
+  "genbefore_tree": "tgenBefore",
+
+  "data_branch": "Thrust",
+  "reco_branch": "Thrust",
+  "gen_branch": "Thrust",
+  "selection_branch": "passEventSelection",
+  "id_branch": "uniqueID",
+
+  "bins": 50,
+  "xmin": 0.5,
+  "xmax": 1.0,
+  "iterations": 5,
+
+  "mode": "nominal",
+  "calculate_covariance": false,
+  "closure_check": false,
+  "apply_hadronic_event_correction": true,
+  "apply_theory_event_weights": false,
+  "theory_variation_weights_path": "",
+  "theory_weight_tree": "tgenBefore",
+  "theory_weight_id_branch": "uniqueID",
+  "strict_theory_weight_length": true,
+  "normalize_weights_mean1": true,
+  "weight_clipping_max": null,
+
+  "out_root": "unfolded_thrust.root"
+}

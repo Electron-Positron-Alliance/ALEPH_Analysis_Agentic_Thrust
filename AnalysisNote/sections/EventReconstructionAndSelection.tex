@@ -1,0 +1,155 @@
+\section{Event reconstruction and selection}
+\label{sec:event_selection}
+
+This section documents how particles are selected, how hadronic-event candidates are defined, and how data/MC agreement is validated at the particle-category level before unfolding. This validation is essential because the selected particles are the direct inputs to the thrust algorithm.
+
+\subsection{Particle categories and \texttt{pwflag} mapping}
+
+ALEPH reconstructed particles are categorized with an integer label \texttt{pwflag}. Table~\ref{tab:pwflag_definition} summarizes the categories used in this analysis.
+
+\begin{table}[t!]
+\centering
+\begin{tabular}{c l}
+\hline
+\texttt{pwflag} & Category \\
+\hline
+0 & charged tracks \\
+1 & charged leptons (tracker + ECAL category) \\
+2 & charged leptons (tracker + muon category) \\
+3 & $V^{0}$ candidates \\
+4 & photons \\
+5 & neutral hadrons \\
+\hline
+\end{tabular}
+\caption{Particle-category labels used in archived ALEPH reconstructed events.}
+\label{tab:pwflag_definition}
+\end{table}
+
+The archived reconstruction stores these objects as energy-flow candidates built from combined
+tracking and calorimetric information. Charged categories are anchored by high-quality tracking
+measurements, while neutral categories are anchored by calorimeter response. This object
+representation is the direct input to thrust, so any category-dependent detector mismatch appears
+as a potential migration effect in the unfolding response.
+
+All selected charged and neutral categories contribute to the thrust numerator and denominator through their momentum vectors. Therefore, mismodeling in any category can bias the detector-level event-shape response and the unfolded result.
+
+\subsection{Object-level and event-level selections}
+
+Table~\ref{tab:particle_selection_summary} lists the object-level nominal selection with one requirement per row. These criteria define which reconstructed particles are propagated into thrust and therefore which detector effects enter the response model.
+
+\begin{table}[t!]
+\centering
+\begin{tabular}{@{}p{0.37\textwidth}p{0.57\textwidth}@{}}
+\hline
+Selection item & Requirement \\
+\hline
+Charged category & \texttt{pwflag}\,$\in[0,2]$ \\
+Charged acceptance & $|\cos\theta|\le 0.94$ \\
+Charged transverse momentum & $p_{\mathrm{T}}\ge 0.2$ GeV \\
+Charged impact parameter & $|d_0|\le 2$ cm \\
+Charged longitudinal impact & $|z_0|\le 10$ cm \\
+Charged hit quality & $N_{\mathrm{TPC}}\ge 4$ \\
+Neutral category & \texttt{pwflag}\,$\in[3,5]$ \\
+Neutral energy & $E\ge 0.4$ GeV \\
+Neutral acceptance & $|\cos\theta|\le 0.98$ \\
+Neutral hadron cleaning & reject \texttt{pwflag}=5 for $-0.19\le\cos\theta<-0.18$ \\
+Use charged objects & \texttt{keepChargedTracks} = \texttt{True} (nominal) \\
+Use neutral objects & \texttt{keepNeutralTracks} = \texttt{True} (nominal) \\
+\hline
+\end{tabular}
+\caption{Object-level selections used to build the nominal thrust input particle set, with one line per requirement.}
+\label{tab:particle_selection_summary}
+\end{table}
+
+The nominal hadronic event selection is summarized in Table~\ref{tab:event_selection_summary}, also with one line per requirement.
+
+\begin{table}[t!]
+\centering
+\begin{tabular}{@{}p{0.37\textwidth}p{0.57\textwidth}@{}}
+\hline
+Selection item & Requirement \\
+\hline
+Ntuple preselection & \texttt{passesNTupleAfterCut} = 1 \\
+Total charged energy & $E_{\mathrm{trk}}^{\mathrm{tot}}\ge 15$ GeV \\
+Sphericity-axis acceptance & $|\cos\theta_{\mathrm{Sph}}|\le 0.82$ \\
+Charged multiplicity & $N_{\mathrm{trk}}\ge 5$ \\
+Total multiplicity & $N_{\mathrm{trk}}+N_{\mathrm{neu}}\ge 13$ \\
+Visible energy guard & $E_{\mathrm{vis}}\ge 0$ GeV (nominally inactive) \\
+Missing-momentum guard & $|\vec{p}_{\mathrm{miss}}|<9999$ GeV (nominally inactive) \\
+\hline
+\end{tabular}
+\caption{Nominal event-level hadronic selection requirements, including guards present in code but inactive in the nominal configuration.}
+\label{tab:event_selection_summary}
+\end{table}
+
+In practice, these selections enforce a phase space with high tracking quality, controlled forward
+acceptance, and stable visible-energy topology before entering event-shape reconstruction. They are
+chosen to follow ALEPH-standard hadronic selections while retaining explicit control over the
+regions that dominate event-shape sensitivity.
+
+\subsection{Particle-category kinematic validation}
+
+Before constructing thrust-family observables, we validate the reconstructed particle-level
+ingredients that enter the event-shape sums and axis determination. Any mismodeling in particle
+acceptance, momentum scale, or category composition can propagate into migration in the detector
+response matrix and into unfolded distributions. To assess detector modeling of these inputs, we
+compare data and MC reco distributions for each \texttt{pwflag} category using Data/MC ratio
+panels, with generator-level references from \texttt{tgen} and \texttt{tgenBefore}. These
+validation plots are taken from the dedicated validation snapshot with the same nominal selection
+configuration used for the current thrust workflow.
+
+\input{sections/PWFlagFullDistributions}
+
+Figure~\ref{fig:pwflag0_full} is the dominant detector-modeling anchor for this analysis because
+\texttt{pwflag}=0 tracks provide most of the selected-particle multiplicity and momentum flow. In
+this figure, the $\cos\theta$ panel tests geometric acceptance transfer, the impact-parameter
+panels test the track-origin and quality region enforced by nominal selections, and the
+$N_{\mathrm{TPC}}$ distribution tests detailed tracking response. The $p_T$ and energy spectra are
+particularly relevant for thrust because hard tracks can move events across bins near the two-jet
+endpoint.
+
+Figures~\ref{fig:pwflag1_full} and~\ref{fig:pwflag2_full} probe the two charged-lepton categories.
+Although lower-rate than charged tracks, these objects are important in events with isolated hard
+leptons where axis orientation can be sensitive to a small number of particles. Agreement in these
+panels demonstrates that category-dependent reconstruction and acceptance do not induce a hidden
+bias in thrust inputs.
+
+Figures~\ref{fig:pwflag3_full}--\ref{fig:pwflag5_full} cover $V^0$ candidates, photons, and
+neutral hadrons. These categories are essential for total visible energy and hemisphere-sensitive
+structure, especially away from the central thrust region. In neutral categories, the angular and
+energy spectra are the most important observables because neutral-response mismodeling can directly
+alter event-shape normalization and produce larger migration in high-thrust bins. Residual
+differences seen in low-statistics tails are propagated via explicit neutral-response systematics
+rather than absorbed by additional ad hoc phase-space cuts.
+
+\subsection{Event-level selection observables}
+
+Event-level variables used for hadronic selection are also validated with data/MC comparisons, as shown in Fig.~\ref{fig:event_selection_observables}. These observables summarize the selected particle content and accepted topology that define the phase space used to build detector response and unfolded event-shape spectra.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.495\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/pwflag_kinematics/ntrk.pdf}
+\includegraphics[width=0.495\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/pwflag_kinematics/ntrkPlusNeu.pdf}
+\includegraphics[width=0.495\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/pwflag_kinematics/eCh.pdf}
+\includegraphics[width=0.495\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/pwflag_kinematics/cosThetaSph.pdf}
+\caption{Event-level observables used in the nominal hadronic selection; legends include detector-level data/MC and generator-level references.}
+\label{fig:event_selection_observables}
+\end{figure}
+
+The event-level panels close the logic between object-level selections and the final sample
+entering event-shape reconstruction. $N_{\mathrm{trk}}$ and
+$N_{\mathrm{trk}}+N_{\mathrm{neu}}$ test whether multiplicity thresholds sculpt data and MC in a
+consistent way; this is critical because those same multiplicities enter hadronic-event
+preselection and determine which events contribute to response filling. $E_{\mathrm{Ch}}$ checks
+charged-energy modeling near the hadronic-selection boundary at 15 GeV, and
+$\cos\theta_{\mathrm{Sph}}$ tests whether accepted event topology is similarly contained in
+detector acceptance for data and MC.
+
+Overall agreement in the high-statistics regions supports the response-model baseline used for IBU.
+The visible differences are concentrated in lower-populated tails and near selection boundaries,
+where statistical fluctuations and detector-response limitations are expected to be larger. These
+regions are not ignored: their impact is propagated through the experimental systematic program and
+is reflected in the final uncertainty decomposition.
+
+\FloatBarrier
+\clearpage

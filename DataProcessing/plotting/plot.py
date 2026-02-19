@@ -6,7 +6,7 @@ import ROOT
 from PlotConfig import plotConfig, pwflags
 from makeHists import make_histograms
 from style import SetALEPHStyle
-from styles.ht import draw_histogram_canvas
+from styles.canvas_utils import draw_histogram_canvas
 
 
 def rvec_expr_for_pwflag(quantity, pwflag_val):
@@ -18,6 +18,16 @@ def rvec_expr_for_pwflag(quantity, pwflag_val):
         base = "atan2(py, px)"
     elif quantity == "cosTheta":
         base = "pz / sqrt(px*px + py*py + pz*pz)"
+    elif quantity == "d0":
+        base = "d0"
+    elif quantity == "z0":
+        base = "z0"
+    elif quantity == "ntpc":
+        base = "ntpc"
+    elif quantity == "energy":
+        base = "energy"
+    elif quantity == "mass":
+        base = "mass"
     else:
         return None
     return f"({base})[pwflag == {pwflag_val}]"
@@ -43,7 +53,7 @@ def get_event_vars():
 def get_pwflag_vars():
     vars_out = []
     for pw in range(0, 6):
-        for qty in ["cosTheta", "phi", "pt", "pmag"]:
+        for qty in ["cosTheta", "phi", "pt", "pmag", "d0", "z0", "ntpc", "energy", "mass"]:
             vars_out.append((f"pwflag{pw}_{qty}", pw, qty))
     return vars_out
 
@@ -83,6 +93,11 @@ PWFLAG_BINNING = {
     "phi": (800, -4.0, 4.0),
     "pt": (100, 0.0, 100.0),
     "pmag": (100, 0.0, 100.0),
+    "d0": (200, -5.0, 5.0),
+    "z0": (200, -20.0, 20.0),
+    "ntpc": (81, -0.5, 80.5),
+    "energy": (120, 0.0, 120.0),
+    "mass": (120, 0.0, 6.0),
 }
 
 X_TITLES = {
@@ -102,6 +117,24 @@ X_TITLES = {
     "phi": "#phi",
     "pt": "p_{T} [GeV]",
     "pmag": "|#vec{p}| [GeV]",
+    "d0": "d_{0} [cm]",
+    "z0": "z_{0} [cm]",
+    "ntpc": "N_{TPC}",
+    "energy": "E [GeV]",
+    "mass": "m [GeV]",
+}
+
+
+PWFLAG_REQUIRED_COLUMNS = {
+    "cosTheta": ["px", "py", "pz", "pwflag"],
+    "phi": ["px", "py", "pz", "pwflag"],
+    "pt": ["px", "py", "pz", "pwflag"],
+    "pmag": ["px", "py", "pz", "pwflag"],
+    "d0": ["d0", "pwflag"],
+    "z0": ["z0", "pwflag"],
+    "ntpc": ["ntpc", "pwflag"],
+    "energy": ["energy", "pwflag"],
+    "mass": ["mass", "pwflag"],
 }
 
 
@@ -256,10 +289,9 @@ def main():
                 xmin=xmin,
                 xmax=xmax,
                 xtitle=X_TITLES.get(qty, ""),
-                required_columns=["px", "py", "pz", "pwflag"],
+                required_columns=PWFLAG_REQUIRED_COLUMNS.get(qty, ["pwflag"]),
                 no_selection=args.no_selection,
                 no_normalize=args.no_normalize,
-                allowed_trees={"t"},
             )
             if not hists:
                 print(f"[warn] No valid samples for '{var_name}'. Skipping plot.")

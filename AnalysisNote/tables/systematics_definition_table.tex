@@ -1,0 +1,19 @@
+\begin{table}[t!]
+\centering
+\scriptsize
+\begin{tabularx}{0.98\textwidth}{p{0.23\textwidth}p{0.34\textwidth}X}
+\hline
+Group & Source & Combination in total uncertainty \\
+\hline
+Unfolding regularization & \texttt{iter4}, \texttt{iter6} & envelope: $\max(|\delta_{4}|,|\delta_{6}|)$ \\
+Track/event selection & \texttt{ntpc7}, \texttt{pt04}, \texttt{ech10}, \texttt{with\_met} & quadrature of absolute shifts \\
+Neutral response & \texttt{nes\_up}, \texttt{nes\_down}, \texttt{ner} & $\max(|\delta_{\mathrm{nes\_up}}|,|\delta_{\mathrm{nes\_down}}|)$ with \texttt{ner} in quadrature \\
+Theory modeling & \texttt{pythia8}, \texttt{herwig}, \texttt{sherpa} reweighting & envelope across generator-weight variations \\
+Hadronic correction & \texttt{tgenBefore/tgen} correction uncertainty & up/down envelope propagated after correction \\
+Stress-test (reported only) & \texttt{no\_neutrals} & diagnostic only (not combined) \\
+\hline
+\end{tabularx}
+\normalsize
+\caption{Systematic-source definitions and the nominal combination policy used for the thrust result.}
+\label{tab:systematics_definition}
+\end{table}

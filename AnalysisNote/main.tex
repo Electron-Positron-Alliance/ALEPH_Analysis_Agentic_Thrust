@@ -1,0 +1,55 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{jheppub}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{xspace}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tabularx}
+\usepackage{defs}
+\usetikzlibrary{arrows.meta,positioning}
+\setcounter{topnumber}{1}
+\setcounter{bottomnumber}{1}
+\setcounter{totalnumber}{2}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.45}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.85}
+
+\title{Analysis Note: Proof-of-Concept AI Agentic Measurement of Event-Shape Observables in $\boldsymbol{e^{+}e^{-}}$ Collisions at $\boldsymbol{\sqrt{s}=91.2\,\mathrm{GeV}}$ with ALEPH Archived Data}
+
+\author[a]{ALEPH Reanalysis Team}
+\affiliation[a]{Institution list to be finalized}
+\emailAdd{to-be-finalized@cern.ch}
+
+\abstract{
+High-precision Standard Model studies require QCD predictions with uncertainty control at the level demanded by modern collider measurements, where percent-scale experimental precision shifts the limiting uncertainty toward theory modeling. Archived LEP1 $e^{+}e^{-}$ data provide a uniquely clean open-data environment for this task, with substantially tighter control of initial-state and event-complexity effects than typical hadron- or nuclear-collision open-data analyses. This note presents a thrust reanalysis using archived ALEPH data with detector corrections based on Iterative Bayesian Unfolding implemented in RooUnfold, validated through closure, refolding, iteration-regularization scans, and systematic stability tests. In addition to unfolded spectra, covariance and correlation matrices are produced for downstream phenomenology use, and the workflow is framed as an experimental anchor for AI-enabled precision theory--experiment loops in which new calculations and models are confronted directly with high-precision data.
+}
+
+\keywords{QCD, event shapes, electron-positron collisions, unfolding}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\input{sections/Introduction}
+\input{sections/AIAgentUsage}
+\input{sections/ALEPHDetector}
+\input{sections/Datasets}
+\input{sections/EventReconstructionAndSelection}
+\input{sections/AnalysisMethod}
+\input{sections/SystematicUncertainties}
+\input{sections/Results}
+\input{sections/Conclusion}
+\input{sections/ChallengesAndLimitations}
+
+\bibliographystyle{JHEP}
+\bibliography{biblio}
+
+\appendix
+\input{appendix/App_ValidationAndCrossChecks}
+\input{appendix/App_CommunicationSummary}
+
+\end{document}

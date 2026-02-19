@@ -16,6 +16,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <vector>
 
 EventResult ComputeEventResult(unsigned int slot,
@@ -32,6 +33,10 @@ EventResult ComputeEventResult(unsigned int slot,
   int selectedParts = 0;
   std::vector<float> selectedPx, selectedPy, selectedPz;
   std::vector<float> selectedE;
+  std::vector<float> selectedMass;
+  std::vector<float> selectedD0;
+  std::vector<float> selectedZ0;
+  std::vector<Short_t> selectedNTPC;
   std::vector<Short_t> selectedPwflag;
 
   // vectors for selected objects -> charged particle only
@@ -91,6 +96,11 @@ EventResult ComputeEventResult(unsigned int slot,
           selectedPx.pop_back();
           selectedPy.pop_back();
           selectedPz.pop_back();
+          selectedE.pop_back();
+          selectedMass.pop_back();
+          selectedD0.pop_back();
+          selectedZ0.pop_back();
+          selectedNTPC.pop_back();
           selectedPwflag.pop_back();
         }
         // conversion electrons
@@ -146,6 +156,18 @@ EventResult ComputeEventResult(unsigned int slot,
       }
     }
 
+    if (genTree && saveParticle) {
+      // Build gen-level event observables using the same category logic.
+      if (ev.pwflag[iP] >= 0 && ev.pwflag[iP] <= 2) {
+        TotalTrkEnergy += energy;
+        EVis += energy;
+        NTrk += 1;
+      } else if (ev.pwflag[iP] >= 3 && ev.pwflag[iP] <= 5) {
+        EVis += energy;
+        Neu += 1;
+      }
+    }
+
     // save the particle
     if (saveParticle) {
       // save for event shape variables
@@ -154,6 +176,10 @@ EventResult ComputeEventResult(unsigned int slot,
       selectedPx.push_back(pxVal);
       selectedPy.push_back(pyVal);
       selectedPz.push_back(pzVal);
+      selectedMass.push_back(ev.mass[iP]);
+      selectedD0.push_back(ev.d0[iP]);
+      selectedZ0.push_back(ev.z0[iP]);
+      selectedNTPC.push_back(ev.ntpc[iP]);
       selectedPwflag.push_back(ev.pwflag[iP]);
 
       // save charged particles only (pwflag == 0)
@@ -193,9 +219,14 @@ EventResult ComputeEventResult(unsigned int slot,
   // include missing momentum vector in thrust calculation
   if (sel.doMET) {
     selectedParts += 1;
+    selectedE.push_back(met.Mag());
     selectedPx.push_back(met.X());
     selectedPy.push_back(met.Y());
     selectedPz.push_back(met.Z());
+    selectedMass.push_back(0.0f);
+    selectedD0.push_back(0.0f);
+    selectedZ0.push_back(0.0f);
+    selectedNTPC.push_back(-1);
     selectedPwflag.push_back(-1);
   }
 
@@ -217,8 +248,61 @@ EventResult ComputeEventResult(unsigned int slot,
   }
   TVector3 axis(0, 0, 0);
   double val = 0;
-  _calcT(fsmomenta, val, axis);
-  out.RivetThrust = val / momentumSum;
+  if (selectedParts >= 3 && momentumSum > 0.0) {
+    _calcT(fsmomenta, val, axis);
+    out.RivetThrust = val / momentumSum;
+  } else {
+    // Mirror thrust fallback for low-multiplicity edge cases where Rivet's
+    // iterative algorithm is undefined.
+    out.RivetThrust = out.Thrust;
+  }
+
+  // C-parameter and heavy-jet mass from the same selected objects used for thrust.
+  if (selectedParts >= 2) {
+    auto spher_evt = Sphericity(
+        selectedParts, selectedPx.data(), selectedPy.data(), selectedPz.data(), selectedPwflag.data(), false);
+    out.CParameter = spher_evt.linC();
+  } else {
+    out.CParameter = 0.0f;
+  }
+
+  if (selectedParts >= 2 && thrust.Mag() > 0.0f) {
+    const TVector3 thrust_axis = thrust.Unit();
+    TLorentzVector hemiPos(0, 0, 0, 0);
+    TLorentzVector hemiNeg(0, 0, 0, 0);
+    TLorentzVector eventP4(0, 0, 0, 0);
+
+    for (int t = 0; t < selectedParts; ++t) {
+      const float px = selectedPx.at(t);
+      const float py = selectedPy.at(t);
+      const float pz = selectedPz.at(t);
+      const float e = (t < static_cast<int>(selectedE.size()))
+                          ? selectedE.at(t)
+                          : TMath::Sqrt(px * px + py * py + pz * pz);
+
+      TLorentzVector p4;
+      p4.SetPxPyPzE(px, py, pz, e);
+      eventP4 += p4;
+
+      const TVector3 pvec(px, py, pz);
+      if (pvec.Dot(thrust_axis) >= 0.0) {
+        hemiPos += p4;
+      } else {
+        hemiNeg += p4;
+      }
+    }
+
+    const double eventM2 = eventP4.M2();
+    if (eventM2 > 0.0) {
+      const double m2Pos = std::max(0.0, static_cast<double>(hemiPos.M2()));
+      const double m2Neg = std::max(0.0, static_cast<double>(hemiNeg.M2()));
+      out.HeavyJetMass = static_cast<float>(std::max(m2Pos, m2Neg) / eventM2);
+    } else {
+      out.HeavyJetMass = 0.0f;
+    }
+  } else {
+    out.HeavyJetMass = 0.0f;
+  }
 
   // compute event selection passes
   bool eventSelection =
@@ -240,6 +324,11 @@ EventResult ComputeEventResult(unsigned int slot,
   out.px = std::move(selectedPx);
   out.py = std::move(selectedPy);
   out.pz = std::move(selectedPz);
+  out.mass = std::move(selectedMass);
+  out.energy = std::move(selectedE);
+  out.d0 = std::move(selectedD0);
+  out.z0 = std::move(selectedZ0);
+  out.ntpc = std::move(selectedNTPC);
   out.pwflag = std::move(selectedPwflag);
   return out;
 }

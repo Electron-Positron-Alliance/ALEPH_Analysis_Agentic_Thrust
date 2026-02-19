@@ -115,107 +115,107 @@ ALEPHTagLowerLeft = 0.3
 plotConfig = {}
 # what we are plotting reduces to the ytitle in terms of sigma: 1/N dN/dX = 1/(sigma * L) d(sigma*L)/dX = 1/sigma d(sigma)/dX
 plotConfig["cosTheta"] = {
-    "SetLogy" : False, "rebin" : 5, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/dcos#theta", 
+    "SetLogy" : False, "rebin" : 5, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dcos#theta", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 1.5,
-    "legloc" : [0.55, 0.75, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["d0"] = {
-    "SetLogy" : True, "rebin" : 2, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/dd_{0}", 
+    "SetLogy" : True, "rebin" : 2, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dd_{0}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 10,
-    "legloc" : [0.59, 0.7, 0.79, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["z0"] = {
-    "SetLogy" : True, "rebin" : 20, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/dz_{0}", 
+    "SetLogy" : True, "rebin" : 20, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dz_{0}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 10,
-    "legloc" : [0.59, 0.7, 0.79, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["energy"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/dE", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dE", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.55, 0.75, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["mass"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/dm", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dm", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.55, 0.75, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["ntpc"] = {
-    "SetLogy" : False, "rebin" : 1, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/dN_{TPC}", 
+    "SetLogy" : False, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dN_{TPC}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 1.5,
-    "legloc" : [0.2, 0.75, 0.5, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["phi"] = {
-    "SetLogy" : False, "rebin" : 10, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/d#phi", 
+    "SetLogy" : False, "rebin" : 10, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/d#phi", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 1.5,
-    "legloc" : [0.55, 0.75, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["pmag"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/d|#vec{p}|", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/d|#vec{p}|", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.55, 0.75, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["pt"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of entries", # "1/#sigma d#sigma/dp_{T}", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dp_{T}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.55, 0.75, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["cosThetaSph"] = {
-    "SetLogy" : False, "rebin" : 5, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dcos#theta_{Sph}", 
+    "SetLogy" : False, "rebin" : 5, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dcos#theta_{Sph}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 1.3,
-    "legloc" : [0.4, 0.72, 0.6, 0.92]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["cosThetaThrust"] = {
-    "SetLogy" : False, "rebin" : 5, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dcos#theta_{Thr}", 
+    "SetLogy" : False, "rebin" : 5, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dcos#theta_{Thr}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 1.3,
-    "legloc" : [0.4, 0.72, 0.6, 0.92]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["eCh"] = {
-    "SetLogy" : True, "rebin" : 10, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dE_{Ch}", 
+    "SetLogy" : True, "rebin" : 10, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dE_{Ch}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.55, 0.7, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["evis"] = {
-    "SetLogy" : True, "rebin" : 10, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dE_{Vis}", 
+    "SetLogy" : True, "rebin" : 10, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dE_{Vis}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.57, 0.72, 0.77, 0.92]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["sprime"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events",
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX",
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.2, 0.72, 0.45, 0.92]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["logtau"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", "YTitleDifferential": "1/#sigma d#sigma/dlog(#tau)",
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", "YTitleDifferential": "1/#sigma d#sigma/dlog(#tau)",
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.2, 0.75, 0.4, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["missP"] = {
-    "SetLogy" : True, "rebin" : 10, "YTitle": "Fraction of events", # "1/#sigma d#sigma/d|#vec{p}_{miss}|", 
+    "SetLogy" : True, "rebin" : 10, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/d|#vec{p}_{miss}|", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.55, 0.7, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["nneu"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dN_{Neu}", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dN_{Neu}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.57, 0.72, 0.77, 0.92]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["ntrk"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dN_{Trk}", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dN_{Trk}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.57, 0.72, 0.77, 0.92]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["ntrkPlusNeu"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dN_{Trk + Neu}", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dN_{Trk + Neu}", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagLowerLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.57, 0.72, 0.77, 0.92]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["sphericity"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", # "1/#sigma d#sigma/dSph", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", # "1/#sigma d#sigma/dSph", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.55, 0.7, 0.75, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
 plotConfig["thrust"] = {
-    "SetLogy" : True, "rebin" : 1, "YTitle": "Fraction of events", "YTitleDifferential": "1/#sigma d#sigma/dT", 
+    "SetLogy" : True, "rebin" : 1, "YTitle": "1/N dN/dX", "YTitleDifferential": "1/#sigma d#sigma/dT", 
     "Ndivisions": 505, "ALEPHTagTop" : ALEPHTagUpperLeft, "scale_max_bin_content" : 5,
-    "legloc" : [0.23, 0.7, 0.48, 0.9]
+    "legloc" : [0.62, 0.66, 0.88, 0.86]
 }
