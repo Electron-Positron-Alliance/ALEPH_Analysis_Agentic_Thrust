@@ -169,6 +169,8 @@ int main(int argc, char* argv[]) {
   dfOut = defineOrRedefine(dfOut, "Thrust", [](const EventResult& r) { return r.Thrust; });
   dfOut = defineOrRedefine(dfOut, "RivetThrust", [](const EventResult& r) { return r.RivetThrust; });
   dfOut = defineOrRedefine(dfOut, "ChargedThrust", [](const EventResult& r) { return r.ChargedThrust; });
+  dfOut = defineOrRedefine(dfOut, "CParameter", [](const EventResult& r) { return r.CParameter; });
+  dfOut = defineOrRedefine(dfOut, "HeavyJetMass", [](const EventResult& r) { return r.HeavyJetMass; });
   dfOut = defineOrRedefine(dfOut, "TotalTrkEnergy", [](const EventResult& r) { return r.TotalTrkEnergy; });
   dfOut = defineOrRedefine(dfOut, "NTrk", [](const EventResult& r) { return r.NTrk; });
   dfOut = defineOrRedefine(dfOut, "Neu", [](const EventResult& r) { return r.Neu; });
@@ -184,6 +186,11 @@ int main(int argc, char* argv[]) {
   dfOut = defineOrRedefine(dfOut, "px", [](const EventResult& r) { return r.px; });
   dfOut = defineOrRedefine(dfOut, "py", [](const EventResult& r) { return r.py; });
   dfOut = defineOrRedefine(dfOut, "pz", [](const EventResult& r) { return r.pz; });
+  dfOut = defineOrRedefine(dfOut, "mass", [](const EventResult& r) { return r.mass; });
+  dfOut = defineOrRedefine(dfOut, "energy", [](const EventResult& r) { return r.energy; });
+  dfOut = defineOrRedefine(dfOut, "d0", [](const EventResult& r) { return r.d0; });
+  dfOut = defineOrRedefine(dfOut, "z0", [](const EventResult& r) { return r.z0; });
+  dfOut = defineOrRedefine(dfOut, "ntpc", [](const EventResult& r) { return r.ntpc; });
   dfOut = defineOrRedefine(dfOut, "pwflag", [](const EventResult& r) { return r.pwflag; });
   dfOut = defineOrRedefine(dfOut, "conversionElectronTheta", [](const EventResult& r) { return r.conversionElectronTheta; });
   dfOut = defineOrRedefine(dfOut, "conversionElectronPhi", [](const EventResult& r) { return r.conversionElectronPhi; });
@@ -194,6 +201,8 @@ int main(int argc, char* argv[]) {
       "Thrust",
       "RivetThrust",
       "ChargedThrust",
+      "CParameter",
+      "HeavyJetMass",
       "TotalTrkEnergy",
       "NTrk",
       "Neu",
@@ -209,6 +218,11 @@ int main(int argc, char* argv[]) {
       "px",
       "py",
       "pz",
+      "mass",
+      "energy",
+      "d0",
+      "z0",
+      "ntpc",
       "pwflag",
       "conversionElectronTheta",
       "conversionElectronPhi",
@@ -219,5 +233,5 @@ int main(int argc, char* argv[]) {
   dfOut.Snapshot(tree, opts.outFileName, outCols, snapshotOpts);
 
   std::cout << "Done." << std::endl;
-  return 1;
+  return 0;
 }

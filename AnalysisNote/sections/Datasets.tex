@@ -1,0 +1,36 @@
+\section{Data and simulated event samples}
+\label{sec:datasets}
+
+The nominal measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$~GeV. This period is used as baseline because matched detector-level and generator-level archived MC inputs required for unfolding are available in this configuration. The 1994 sample corresponds to approximately 40~pb$^{-1}$ after quality requirements and provides the largest fully synchronized archived data/MC configuration for this workflow.
+
+Detector corrections are derived from archived ALEPH MC processed through the same analysis chain. In the preserved sample, the detector-level and generator-level event records are connected through a common event identifier, enabling event-matched response construction and post-unfolding hadronic-selection corrections.
+
+The unfolding step consumes four synchronized inputs:
+\begin{itemize}
+\item detector-level data tree (\texttt{t}),
+\item detector-level MC tree (\texttt{t}),
+\item generator-level MC tree used for response matching (\texttt{tgen}),
+\item generator-level MC tree before hadronic event selection (\texttt{tgenBefore}).
+\end{itemize}
+
+The ratio \texttt{tgenBefore/tgen} is used to derive the hadronic event-selection correction applied after unfolding. Event matching between reco and gen levels is performed with the unique event identifier. For response filling, generator entries are conditioned on the reconstructed selected-event identifier set, consistent with the matched-response construction described in Sec.~\ref{sec:method}.
+
+In addition to the archived baseline MC, alternative modern generator predictions are used in this note through event-level reweighting variations to estimate theory-model dependence. These variations are propagated as dedicated systematic components in the final uncertainty model while preserving the same detector-response baseline.
+
+Table~\ref{tab:sample_bookkeeping} summarizes the event counts in the nominal thrust workflow.
+
+\begin{table}[t!]
+\centering
+\begin{tabular}{l c c}
+\hline
+Sample & Total entries & Selected entries \\
+\hline
+1994 data reco & 1,365,440 & 1,326,312 \\
+1994 MC reco & 771,597 & 751,861 \\
+1994 MC gen (\texttt{tgen}) & 771,597 & 771,597 \\
+1994 MC gen-before (\texttt{tgenBefore}) & 973,769 & 973,769 \\
+\hline
+\end{tabular}
+\caption{Nominal sample bookkeeping for the thrust unfolding chain. Selected entries correspond to \texttt{passEventSelection}=1. For generator-level trees, all entries are retained by construction.}
+\label{tab:sample_bookkeeping}
+\end{table}

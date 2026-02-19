@@ -23,7 +23,7 @@ def parse_args():
     p.add_argument(
         "--exclude",
         nargs="*",
-        default=["no_event_sel", "no_neutrals"],
+        default=["no_event_sel"],
         help="Skip selected variations",
     )
     p.add_argument("--fail-fast", action="store_true", help="Stop on first failed variation")
@@ -60,7 +60,14 @@ def run_cmd(cmd, cwd):
 def variation_file(nominal_path, variation):
     if variation == "nominal":
         return nominal_path
-    return nominal_path.replace("nominal", variation)
+    dirname, basename = os.path.split(nominal_path)
+    token = "_nominal_"
+    if token not in basename:
+        raise ValueError(
+            f"Cannot derive variation file for '{variation}': expected '{token}' in {basename}"
+        )
+    varied = basename.replace(token, f"_{variation}_", 1)
+    return os.path.join(dirname, varied)
 
 
 def main():

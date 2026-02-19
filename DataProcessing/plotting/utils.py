@@ -7,9 +7,11 @@ def build_hist(df, name, expr, nbins, xmin, xmax):
 
 
 def normalize_hist(hist):
-    integral = hist.Integral("width")
-    if integral > 0:
-        hist.Scale(1.0 / integral)
+    # Normalize to differential form: (1/N) dN/dX
+    # where N is the total number of entries (sum of bin contents).
+    total_entries = hist.Integral()
+    if total_entries > 0:
+        hist.Scale(1.0 / total_entries, "width")
 
 
 def make_zero_hist(name, nbins, xmin, xmax, rebin):

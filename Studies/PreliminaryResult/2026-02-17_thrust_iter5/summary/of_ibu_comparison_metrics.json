@@ -1,0 +1,49 @@
+{
+  "ratio_mode": "curve_over_current",
+  "ratio_y_min": 0.75,
+  "ratio_y_max": 1.55,
+  "n_bins": 42,
+  "ratio_metrics": {
+    "aleph_over_current": {
+      "max_abs_deviation_from_unity": 0.30120739742638647,
+      "max_plus_error": 1.57629921499394,
+      "highest_bin_ratio": 1.3012073974263865,
+      "highest_bin_error": 0.2750918175675537
+    },
+    "of_over_current": {
+      "max_abs_deviation_from_unity": 0.5051890012377342,
+      "max_plus_error": 1.3748449765489432,
+      "highest_bin_ratio": 1.1291659384344175,
+      "highest_bin_error": 0.24567903811452568
+    },
+    "ibu_over_current": {
+      "max_abs_deviation_from_unity": 0.31325361958636555,
+      "max_plus_error": 2.906585691958173,
+      "highest_bin_ratio": 1.0912313028175613,
+      "highest_bin_error": 0.4971590635974815
+    }
+  },
+  "chi2_metrics": {
+    "aleph_vs_current": {
+      "chi2": 15.171610810266849,
+      "ndf": 42,
+      "chi2_per_ndf": 0.36122882881587737
+    },
+    "of_vs_current": {
+      "chi2": 27.856410550171155,
+      "ndf": 42,
+      "chi2_per_ndf": 0.6632478702421704
+    },
+    "ibu_vs_current": {
+      "chi2": 17.676764357850118,
+      "ndf": 42,
+      "chi2_per_ndf": 0.4208753418535742
+    }
+  },
+  "input_files": {
+    "legacy_ibu_npz": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/ibu_results.npz",
+    "legacy_of_h5": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/unfold_thrust_ee_ZPole_ALEPH.h5",
+    "aleph_csv": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH/HEPData-ins636645-v1-Table_54.csv"
+  },
+  "output_pdf": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_of_ibu_comparison.pdf"
+}

@@ -1,0 +1,115 @@
+\section{Communication summary (reconstructed project-cycle transcript)}
+\label{sec:app_communication_summary}
+
+This appendix records a reconstructed full communication summary for the current thrust-analysis cycle.
+The source material is the project artifact trail (plans, note rewrites, workflow outputs, and validation products), not a verbatim message log.
+The objective is to preserve the decision chain for internal reproducibility and method auditing.
+
+\subsection{Scope and reconstruction sources}
+
+Scope covered: the thrust Iterative Bayesian Unfolding cycle from code review through preliminary-result packaging and note rewrites (Sections 1--8), including the AI-agent collaboration framing.
+
+Primary reconstruction sources:
+\begin{itemize}
+\item dated planning artifacts under \texttt{Plans/} (2026-02-13 to 2026-02-18);
+\item executable workflow outputs in \texttt{Studies/PreliminaryResult/}, with run directory \texttt{2026-02-17\_thrust\_iter5/};
+\item note section revision trail in \texttt{AnalysisNote/sections/*.tex};
+\item workflow scripts in \texttt{Unfolding/scripts/} and \texttt{Studies/*/scripts/}.
+\end{itemize}
+
+\subsection{Reconstructed communication timeline}
+
+\begin{enumerate}
+\item \textbf{Initial objective setting (2026-02-13).} The collaboration established a thrust-first execution strategy with Iterative Bayesian Unfolding, complete code review, and a JHEP-style internal-note structure.
+\item \textbf{Code-audit phase.} Critical and high-impact defects were identified and fixed (tree defaults, closure mode requirements, return-code handling, systematics path robustness), with findings tracked in \texttt{Plans/2026-02-13\_code\_review\_findings.md}.
+\item \textbf{1994 workflow focus.} Execution direction was corrected to run the full 1994 derivation and unfolding chain rather than legacy partial-year paths.
+\item \textbf{Nominal-regularization policy convergence.} The cycle converged on nominal $N_{\mathrm{iter}}=5$ with 4/6 as regularization systematic envelope for this thrust preliminary pass.
+\item \textbf{Systematics completion requirement.} The scope was expanded to include full experimental and theory branches in the same run-owned output package, with hadronic correction retained in nominal processing.
+\item \textbf{Result-style iteration loop.} Multiple rounds of visual QA enforced consistent pad geometry, ratio-panel readability, uncertainty normalization conventions, and legend/text placement for publication-grade interpretation.
+\item \textbf{ALEPH comparison integration.} Final-result plotting was upgraded to include ratio to ALEPH 2004 in matched binning with uncertainty propagation via ROOT histogram operations.
+\item \textbf{Uncertainty decomposition policy.} The workflow migrated from envelope-only views to explicit component-level plots, including signed shifts, grouped uncertainty structure, and central-window interpretation.
+\item \textbf{Section-by-section rewrite cycle (Sections 1--5 first).} The note was expanded with stronger physics motivation, detector/data context, and reconstruction validation text connected directly to thrust sensitivity.
+\item \textbf{Sections 5+ hardening.} Methods, systematics, and results sections were restructured for executable traceability (script entrypoints, output paths, and release artifacts).
+\item \textbf{AI-agent narrative formalization.} A dedicated section captured operating model, controls, and measurable scorecard, followed by a final chapter logging persistent collaboration and analysis challenges.
+\item \textbf{Physics-tone refinement.}\\
+Introductory framing was strengthened around precision-QCD motivation,\\
+LEP data quality, and validation goals.
+\item \textbf{External-citation expansion.}\\
+AI-for-science and agent-workflow references were expanded, then extended with requested recent case studies.
+\item \textbf{Reproducibility emphasis.} The communication repeatedly enforced path-level provenance for figures and summary products, with explicit checks and output validation scripts.
+\item \textbf{Current-cycle layout request.} Results narrative was requested to present uncertainty decomposition before the final unfolded comparison, and to add a final-result total correlation matrix view.
+\item \textbf{Current-cycle documentation request.} A complete communication appendix was requested for community context, with highlighted key decisions and rationale.
+\end{enumerate}
+
+\subsection{Key exchanges and decisions}
+
+\newcommand{\decisionbox}[3]{%
+\noindent\fbox{%
+\parbox{0.97\textwidth}{%
+\textbf{Decision:} #1\\
+\textbf{Rationale:} #2\\
+\textbf{Impact:} #3
+}}%
+}
+
+\decisionbox
+{Use Iterative Bayesian Unfolding as the baseline correction method for this cycle.}
+{Fast iteration without model retraining was required for rapid experimental cross-check loops.}
+{Workflow scripts, method text, and uncertainty propagation were all aligned to IBU.}
+
+\decisionbox
+{Set nominal regularization to $N_{\mathrm{iter}}=5$ with 4/6 as regularization systematic.}
+{Iteration-scan diagnostics and practical stability/throughput tradeoffs favored this operating point.}
+{All nominal and systematic branches, note text, and final plots were normalized to the same policy.}
+
+\decisionbox
+{Run the full 1994 chain as the maintained baseline dataset year.}
+{The analysis state required consistency in data/MC derivation and response inputs for one complete production year.}
+{Output provenance and note references were consolidated under run-owned 1994 directories.}
+
+\decisionbox
+{Adopt a strict figure-style contract for result plots (connected pads, controlled ratio range, readable labels).}
+{Visual interpretation quality was treated as analysis-relevant, not cosmetic.}
+{Several plotting scripts were iteratively corrected until style and uncertainty semantics stabilized.}
+
+\decisionbox
+{Promote component-level uncertainty views (statistical, unfolding, experimental, theory) over envelope-only summaries.}
+{Readers need source-resolved behavior rather than only combined envelopes.}
+{Results section now reports component behavior explicitly and ties interpretation to central-window metrics.}
+
+\decisionbox
+{Keep ``no-neutrals'' as a cross-check branch and separate it from nominal total uncertainty.}
+{It is a stress test rather than a baseline uncertainty source.}
+{Cross-check visibility is preserved while nominal total remains policy-consistent.}
+
+\decisionbox
+{Introduce explicit AI-agent operating-model and challenge-tracking sections.}
+{The internal-note objective includes evaluating whether an agent can execute research workflows under supervision.}
+{The note now contains controls, measurable scorecard, and persistent challenge logging.}
+
+\decisionbox
+{Expand citations to include recent AI+scientist and theory-assistant case studies.}
+{Program motivation required concrete external evidence beyond generic AI discussion.}
+{Introduction and AI-agent sections now cite both broad and recent workflow-relevant studies.}
+
+\decisionbox
+{Reorder results narrative to show uncertainty structure before final unfolded comparison.}
+{Interpretation of the final spectrum is clearer once uncertainty sources are established first.}
+{Section flow now progresses from component structure to correlated final products to central comparison.}
+
+\decisionbox
+{Add a final-result total correlation matrix plot from \texttt{corr\_total.csv}.}
+{Community-facing usage requires direct visibility of correlated uncertainties after full nominal combination.}
+{Release package now includes a dedicated final total-correlation figure and script-level provenance.}
+
+\subsection{Communication-pattern summary}
+
+The reconstructed cycle indicates a high-frequency specification--execution loop with strong emphasis on:
+\begin{itemize}
+\item explicit physics-policy locking before broader text expansion;
+\item figure-level interpretability as a first-class requirement;
+\item command/path-level provenance for every released artifact;
+\item incremental correction and revalidation rather than large unreviewed batches.
+\end{itemize}
+
+The dominant friction points were precision formatting constraints, rapid scope evolution, and synchronization between code outputs and note narrative. These patterns are consistent with the persistent-challenge tracker in Sec.~\ref{sec:challenges}.

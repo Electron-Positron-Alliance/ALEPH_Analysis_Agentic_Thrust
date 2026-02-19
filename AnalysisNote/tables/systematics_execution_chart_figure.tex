@@ -1,0 +1,48 @@
+\begin{figure}[t!]
+\centering
+\resizebox{0.98\linewidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=6mm,
+  every node/.style={font=\footnotesize},
+  block/.style={draw, rounded corners, align=left, text width=5.5cm, inner sep=4pt},
+  merge/.style={draw, rounded corners, align=center, text width=7.2cm, inner sep=4pt},
+  diag/.style={draw, rounded corners, align=left, text width=5.5cm, inner sep=4pt, dashed},
+  arrow/.style={-Latex, line width=0.8pt}
+]
+
+\node[block] (iter) {\textbf{Iteration component}\newline
+Inputs: \texttt{iter4}, \texttt{iter6}\newline
+Rule: envelope per bin};
+
+\node[block, right=11mm of iter] (track) {\textbf{Track/event component}\newline
+Inputs: \texttt{ntpc7}, \texttt{pt04}, \texttt{ech10}, \texttt{with\_met}\newline
+Rule: quadrature of absolute shifts};
+
+\node[block, right=11mm of track] (neutral) {\textbf{Neutral component}\newline
+Inputs: \texttt{nes\_up}, \texttt{nes\_down}, \texttt{ner}\newline
+Rule: NES envelope, then quadrature with NER};
+
+\node[block, below=7mm of track] (theory) {\textbf{Theory component}\newline
+Inputs: \texttt{pythia8}, \texttt{herwig}, \texttt{sherpa}\newline
+Rule: envelope across generators};
+
+\node[diag, left=11mm of theory] (noneu) {\textbf{Cross-check branch}\newline
+Input: \texttt{no\_neutrals}\newline
+Diagnostic only (excluded from total)};
+
+\node[merge, right=11mm of theory] (total) {\textbf{Total uncertainty model}\newline
+$\Delta_{\mathrm{tot}}=\sqrt{\Delta_{\mathrm{stat}}^2+\Delta_{\mathrm{iter}}^2+\Delta_{\mathrm{exp}}^2+\Delta_{\mathrm{theory}}^2}$\newline
+with $\Delta_{\mathrm{exp}}=\sqrt{\Delta_{\mathrm{track/event}}^2+\Delta_{\mathrm{neutral}}^2}$};
+
+\draw[arrow] (iter.south) -- ++(0,-4mm) -| (total.north west);
+\draw[arrow] (track.south) -- ++(0,-4mm) -- (theory.north);
+\draw[arrow] (neutral.south) -- ++(0,-4mm) -| (total.north east);
+\draw[arrow] (theory.east) -- (total.west);
+\draw[arrow, dashed] (noneu.east) -- (theory.west);
+
+\end{tikzpicture}
+}
+\caption{Systematics combination chart for the thrust baseline. Solid arrows indicate components entering the nominal total uncertainty; dashed branch is the reported stress-test excluded from total.}
+\label{fig:systematics_execution_chart}
+\end{figure}

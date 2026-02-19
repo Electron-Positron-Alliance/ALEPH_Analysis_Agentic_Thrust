@@ -188,6 +188,7 @@ def run_analyze_job(job_config):
 
 def main():
     ops = parse_args()
+    os.makedirs(ops.outDir, exist_ok=True)
 
     file_cfg = get_file_config(ops.input)
     if ops.file_type:
@@ -258,8 +259,17 @@ def main():
                 'temp_config': temp_config
             })
 
+    failures = []
     for job in job_configs:
-        run_analyze_job(job)
+        rc = run_analyze_job(job)
+        if rc != 0:
+            failures.append((job['selection_name'], rc))
+
+    if failures:
+        print("One or more Analyze jobs failed:")
+        for sel_name, rc in failures:
+            print(f"  {sel_name}: exit {rc}")
+        raise SystemExit(1)
 
 
 if __name__ == '__main__':

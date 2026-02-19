@@ -23,7 +23,9 @@ def draw_histogram_canvas(var_name, cfg, xtitle, hists, max_bin, out_path, heade
     elif cfg["SetLogy"]:
         canvas.SetLogy()
 
-    legend = ALEPHLegend(loc=cfg["legloc"], textsize=0.05)
+    n_entries = len(hists)
+    legend_text_size = 0.04 if n_entries > 3 else 0.05
+    legend = ALEPHLegend(loc=cfg["legloc"], textsize=legend_text_size)
     for h, sample, legopt, is_fallback in hists:
         if h.GetMaximum() > 0:
             h.SetMaximum(cfg["scale_max_bin_content"] * max_bin)

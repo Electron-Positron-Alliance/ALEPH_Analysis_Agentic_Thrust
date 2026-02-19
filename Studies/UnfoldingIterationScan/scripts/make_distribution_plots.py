@@ -207,17 +207,22 @@ def main():
     if not os.path.isabs(gen_mc_file):
         gen_mc_file = os.path.abspath(os.path.join(cfg_dir, gen_mc_file))
 
+    observable_name, observable = unfold_mod.get_observable_preset(
+        unfold_mod.get_cfg(cfg, "observable", default="thrust")
+    )
+    axis_label = observable["axis_label"]
+
     data_tree_name = unfold_mod.get_cfg(cfg, "data_tree", default="t")
     reco_tree_name = unfold_mod.get_cfg(cfg, "reco_tree", default="t")
     gen_tree_name = unfold_mod.get_cfg(cfg, "gen_tree", default="tgen")
-    data_branch = unfold_mod.get_cfg(cfg, "data_branch", default="Thrust")
-    reco_branch = unfold_mod.get_cfg(cfg, "reco_branch", default="Thrust")
-    gen_branch = unfold_mod.get_cfg(cfg, "gen_branch", default="Thrust")
+    data_branch = unfold_mod.get_cfg(cfg, "data_branch", default=observable["branch"])
+    reco_branch = unfold_mod.get_cfg(cfg, "reco_branch", default=observable["branch"])
+    gen_branch = unfold_mod.get_cfg(cfg, "gen_branch", default=observable["branch"])
     selection_branch = unfold_mod.get_cfg(cfg, "selection_branch", default="passEventSelection")
     id_branch = unfold_mod.get_cfg(cfg, "id_branch", default="uniqueID")
-    bins = int(unfold_mod.get_cfg(cfg, "bins", default=50))
-    xmin = float(unfold_mod.get_cfg(cfg, "xmin", default=0.5))
-    xmax = float(unfold_mod.get_cfg(cfg, "xmax", default=1.0))
+    bins = int(unfold_mod.get_cfg(cfg, "bins", default=observable["bins"]))
+    xmin = float(unfold_mod.get_cfg(cfg, "xmin", default=observable["xmin"]))
+    xmax = float(unfold_mod.get_cfg(cfg, "xmax", default=observable["xmax"]))
 
     f_data = ROOT.TFile.Open(data_file, "READ")
     f_reco = ROOT.TFile.Open(reco_mc_file, "READ")
@@ -227,10 +232,10 @@ def main():
     tree_reco = unfold_mod.get_tree(f_reco, reco_tree_name, reco_mc_file)
     tree_gen = unfold_mod.get_tree(f_gen, gen_tree_name, gen_mc_file)
 
-    h_data = unfold_mod.make_h1("data_reco", "Data reco;Thrust;Events", bins, xmin, xmax)
+    h_data = unfold_mod.make_h1("data_reco", f"Data reco;{axis_label};Events", bins, xmin, xmax)
     unfold_mod.fill_hist_from_tree(tree_data, data_branch, h_data, xmin, xmax, selection_branch=selection_branch)
 
-    response, h_mc_reco, h_mc_gen, h_resp_counts, _ = unfold_mod.build_response(
+    response, h_mc_reco, h_mc_gen, h_resp_counts, _, _ = unfold_mod.build_response(
         tree_reco=tree_reco,
         tree_gen=tree_gen,
         id_branch=id_branch,
@@ -240,6 +245,7 @@ def main():
         bins=bins,
         xmin=xmin,
         xmax=xmax,
+        axis_label=axis_label,
         RooUnfoldResponse=unfold_mod.RooUnfoldResponse,
     )
 
@@ -298,6 +304,7 @@ def main():
         outpath=os.path.join(outdir, "dist_inputs_data_mcreco_mcgen.pdf"),
         ytitle="1/N dN/dT",
         logy=True,
+        xtitle=axis_label,
     )
 
     # 2) Unfolded distributions for selected iterations + MC truth with ratio to truth.
@@ -312,6 +319,7 @@ def main():
         outpath=os.path.join(outdir, "dist_unfolded_selected_iterations.pdf"),
         ytitle="1/N dN/dT",
         logy=True,
+        xtitle=axis_label,
     )
 
     # 3) Refolded (selected iterations) vs data reco with ratio to data.
@@ -326,6 +334,7 @@ def main():
         outpath=os.path.join(outdir, "dist_refolded_vs_data_selected_iterations.pdf"),
         ytitle="1/N dN/dT",
         logy=True,
+        xtitle=axis_label,
     )
 
     # 4) Shape-normalized unfolded distributions with ratio to truth.
@@ -340,15 +349,16 @@ def main():
         outpath=os.path.join(outdir, "dist_unfolded_shape_selected_iterations.pdf"),
         ytitle="1/N dN/dT",
         logy=True,
+        xtitle=axis_label,
     )
 
     # 5) Response matrix heatmap
     c5 = ROOT.TCanvas("c_response", "", 750, 650)
-    h_resp_counts.SetTitle("Response counts;Reco thrust;Gen thrust")
+    h_resp_counts.SetTitle(f"Response counts;Reco {axis_label};Gen {axis_label}")
     h_resp_counts.Draw("COLZ")
     c5.SaveAs(os.path.join(outdir, "dist_response_counts_matrix.pdf"))
 
-    print("Wrote distribution plots to:", outdir)
+    print(f"Wrote distribution plots for observable '{observable_name}' to: {outdir}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,54 @@
+\section{Systematic uncertainties}
+\label{sec:systematics}
+
+Systematic variations are propagated by rerunning the full unfolding chain for each variation and comparing to the nominal unfolded result. The implementation uses:
+\begin{itemize}
+\item \texttt{run\_thrust\_prelim\_workflow.py} for branch execution;
+\item \texttt{build\_prelim\_uncertainty\_summary.py} for component extraction and total combination.
+\end{itemize}
+For each source $v$, the signed bin-wise shift is
+\begin{equation}
+\delta_v(j)=\frac{U_v(j)-U_{\mathrm{nom}}(j)}{U_{\mathrm{nom}}(j)}.
+\end{equation}
+
+\input{tables/systematics_definition_table}
+
+\subsection{Combination model for the nominal uncertainty}
+
+For the nominal uncertainty used in the final result, the components are combined as
+\begin{equation}
+\Delta_{\mathrm{iter}}(j)=\max\left(|\delta_{\mathrm{iter4}}(j)|,|\delta_{\mathrm{iter6}}(j)|\right),
+\end{equation}
+\begin{equation}
+\Delta_{\mathrm{track/event}}(j)=\sqrt{\sum_{v\in\{\mathrm{ntpc7,pt04,ech10,with\_met}\}} |\delta_v(j)|^2},
+\end{equation}
+\begin{equation}
+\Delta_{\mathrm{neutral}}(j)=\sqrt{\max\left(|\delta_{\mathrm{nes\_up}}(j)|,|\delta_{\mathrm{nes\_down}}(j)|\right)^2 + |\delta_{\mathrm{ner}}(j)|^2},
+\end{equation}
+\begin{equation}
+\Delta_{\mathrm{exp}}(j)=\sqrt{\Delta_{\mathrm{track/event}}^2(j)+\Delta_{\mathrm{neutral}}^2(j)},
+\end{equation}
+\begin{equation}
+\Delta_{\mathrm{theory}}(j)=\max\left(|\delta_{\mathrm{pythia8}}(j)|,|\delta_{\mathrm{herwig}}(j)|,|\delta_{\mathrm{sherpa}}(j)|\right),
+\end{equation}
+with total bin uncertainty
+\begin{equation}
+\Delta_{\mathrm{tot}}(j)=\sqrt{\Delta_{\mathrm{stat}}^2(j)+\Delta_{\mathrm{iter}}^2(j)+\Delta_{\mathrm{exp}}^2(j)+\Delta_{\mathrm{theory}}^2(j)+\Delta_{\mathrm{had}}^2(j)},
+\end{equation}
+where $\Delta_{\mathrm{had}}$ is the hadronic event-selection correction uncertainty obtained from an up/down envelope of the \texttt{tgenBefore/tgen} ratio uncertainty propagated to the normalized differential-thrust basis.
+
+The \texttt{no\_neutrals} branch is kept as a stress-test and shown explicitly, but is not included in $\Delta_{\mathrm{tot}}$.
+
+The non-statistical covariance model is configurable in the summary builder. The current nominal release uses the \texttt{template\_correlated} option, where each non-statistical component covariance is built as
+\begin{equation}
+\mathrm{Cov}^{(c)}_{ij}=\Delta_c(i)\,\Delta_c(j)\,\rho^{\mathrm{stat}}_{ij},
+\end{equation}
+with $\rho^{\mathrm{stat}}_{ij}$ taken from the statistical unfolding covariance correlation template. This keeps component magnitudes tied to the measured per-bin shifts while avoiding a purely diagonal systematic-covariance approximation.
+
+For cross-check studies, \texttt{diagonal} and \texttt{block} component models are available in the same script and can be selected by configuration.
+
+\subsection{Component-level uncertainty views}
+
+To show the structure of each uncertainty source, we present separate component plots for statistical, unfolding, experimental, and theory categories. For unfolding, experimental, and theory plots, the signed shifts ($\pm$) relative to nominal are shown.
+The corresponding four-panel component view is shown in Sec.~\ref{sec:results},
+where it is presented together with the final unfolded spectrum.

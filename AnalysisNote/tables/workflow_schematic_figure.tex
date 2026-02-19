@@ -1,0 +1,41 @@
+\begin{figure}[t!]
+\centering
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=7mm,
+  every node/.style={font=\footnotesize},
+  block/.style={draw, rounded corners, align=left, text width=12.0cm, inner sep=4pt},
+  arrow/.style={-Latex, line width=0.8pt}
+]
+
+\node[block] (inputs) {\textbf{Inputs and configuration}\newline
+Archived ALEPH data/MC trees (\texttt{t}, \texttt{tgen}, \texttt{tgenBefore}), unfolding config, selection definitions, and optional theory-weight arrays.};
+
+\node[block, below=of inputs] (driver) {\textbf{Workflow driver:} \texttt{run\_thrust\_prelim\_workflow.py}\newline
+Executes nominal run and all configured reruns with consistent bookkeeping and output structure.};
+
+\node[block, below=of driver] (nominal) {\textbf{Nominal branch}\newline
+Run IBU with $N_{\mathrm{iter}}=5$, covariance enabled, and hadronic correction applied.\newline
+Output: \texttt{nominal/unfolded\_nominal\_iter5.root}.};
+
+\node[block, below=of nominal] (variations) {\textbf{Systematic rerun branches}\newline
+Iteration: \texttt{iter4}, \texttt{iter6};\quad
+Experimental: \texttt{ntpc7}, \texttt{pt04}, \texttt{ech10}, \texttt{with\_met}, \texttt{nes\_up}, \texttt{nes\_down}, \texttt{ner}, \texttt{no\_neutrals};\quad
+Theory: \texttt{pythia8}, \texttt{herwig}, \texttt{sherpa}.};
+
+\node[block, below=of variations] (summary) {\textbf{Summary builder:} \texttt{build\_prelim\_uncertainty\_summary.py}\newline
+Converts branches to $1/\sigma\,d\sigma/dT$, computes signed shifts, builds component/total uncertainties, exports covariance and correlation products.};
+
+\node[block, below=of summary] (products) {\textbf{Release products and checks}\newline
+Final result and uncertainty component plots, matrix plots/CSVs, binning map, and \texttt{uncertainty\_breakdown.json}; optional validation with \texttt{check\_prelim\_summary\_outputs.py}.};
+
+\draw[arrow] (inputs) -- (driver);
+\draw[arrow] (driver) -- (nominal);
+\draw[arrow] (nominal) -- (variations);
+\draw[arrow] (variations) -- (summary);
+\draw[arrow] (summary) -- (products);
+
+\end{tikzpicture}
+\caption{Schematic analysis flow for the thrust preliminary workflow. This replaces the dense workflow table and shows the execution order and branch structure used in this internal note.}
+\label{fig:workflow_schematic}
+\end{figure}
