@@ -511,7 +511,9 @@ def make_hadronic_event_sel_correction(
             h_corr.SetBinContent(b, num / den)
         else:
             h_corr.SetBinContent(b, 1.0)
-        h_corr.SetBinError(b, 0.0)
+        h_corr.SetBinError(b, 0.0)  # errors intentionally zero: hadronic correction uncertainty
+        # is computed externally via an up/down envelope in build_prelim_uncertainty_summary.py
+        # (compute_hadronic_correction_fractional_shift), not through ROOT error propagation here.
 
     return h_gen_all, h_gen_before, h_corr
 

@@ -1,5 +1,32 @@
 #!/usr/bin/env python3
-"""Build thrust preliminary uncertainty breakdown, covariance exports, and summary plots."""
+"""Build thrust preliminary uncertainty breakdown, covariance exports, and summary plots.
+
+Inputs (resolved from --base_dir):
+  nominal/unfolded_nominal_iter<N>.root  -- IBU-unfolded nominal spectrum + raw stat covariance
+  iteration/unfolded_iter<M>.root        -- IBU results at alternative iteration counts (up/down)
+  experimental/unfolded_<var>.root       -- one ROOT file per experimental systematic variation
+  theory/unfolded_theory_<mc>.root       -- one ROOT file per theory-reweighted MC variation
+
+Uncertainty components computed:
+  stat     -- from RooUnfold raw covariance matrix, transformed to differential cross-section basis
+  iter     -- envelope of Niter up/down shifts relative to nominal
+  exp      -- quadrature of track/event (ntpc7, pt04, ech10, with_met) and neutral (nes, ner) shifts
+  theory   -- max envelope of PYTHIA8, HERWIG, SHERPA reweighted shifts
+  hadronic -- envelope of up/down hadronic-event correction ratio uncertainty (tgenBefore/tgen)
+
+Covariance model for non-statistical components (configurable via --systematic_cov_model):
+  template_correlated: Cov^(c)_ij = Delta_c(i) * Delta_c(j) * rho^stat_ij
+  where rho^stat is the correlation matrix derived from the statistical covariance.
+
+Outputs (written to --outdir, default <base_dir>/summary/):
+  cov_{stat,iter,exp,theory,hadronic,total}.csv  -- covariance matrices (N_bins x N_bins)
+  corr_total.csv, corr_total_fitwindow.csv       -- correlation matrices
+  cov_total_fitwindow.csv                        -- covariance sub-matrix for alpha_s fit window
+  binning.csv, fit_mask.csv                      -- bin edges, centers, fit-window membership
+  uncertainty_components_*.pdf                   -- per-component fractional uncertainty plots
+  final_result_uncertainty_breakdown.pdf         -- final result vs. published ALEPH comparison
+  workflow_summary.json                          -- full provenance and numeric diagnostics
+"""
 
 from __future__ import annotations
 
@@ -1387,6 +1414,7 @@ def main():
     os.makedirs(outdir, exist_ok=True)
     aleph_csv_path = resolve_aleph_csv(args.aleph_csv)
 
+    # --- Load nominal unfolded spectrum ---
     nominal_root = os.path.join(base_dir, "nominal", f"unfolded_nominal_iter{args.nominal_iter}.root")
     ensure_exists(nominal_root, "nominal ROOT")
     nominal_counts = load_hist(nominal_root, args.hist_name)
@@ -1394,6 +1422,7 @@ def main():
     nom = hist_to_array(nominal)
     nbins = len(nom)
 
+    # --- Unfolding iteration uncertainty (Niter up/down envelope) ---
     iter_roots = {
         args.iter_down: os.path.join(base_dir, "iteration", f"unfolded_iter{args.iter_down}.root"),
         args.iter_up: os.path.join(base_dir, "iteration", f"unfolded_iter{args.iter_up}.root"),
@@ -1408,6 +1437,10 @@ def main():
     iter_shifts = [frac_shift(arr, nom) for arr in iter_arrays]
     delta_iter = abs_env(iter_shifts)
 
+    # --- Experimental systematic uncertainties ---
+    # Track/event variations: ntpc7, pt04, ech10, with_met (quadrature sum -> delta_track_event)
+    # Neutral variations: nes_up/down envelope + ner (quadrature sum -> delta_neutral)
+    # no_neutrals is a cross-check only; not included in delta_exp_total.
     exp_arrays = {}
     for var in TRACK_EVENT_VARS + NEUTRAL_VARS + ["no_neutrals"]:
         path = os.path.join(base_dir, "experimental", f"unfolded_{var}.root")
@@ -1426,6 +1459,9 @@ def main():
     delta_exp_total = quad_sum([delta_track_event, delta_neutral])
     delta_no_neutrals = np.abs(exp_shifts["no_neutrals"])
 
+    # --- Theory uncertainty (MC generator reweighting envelope) ---
+    # Each MC (PYTHIA8, HERWIG, SHERPA) is reweighted to data using event-ID-matched weight files.
+    # delta_theory = max envelope of the three fractional shifts relative to nominal.
     theory_arrays = {}
     theory_weight_diagnostics = {}
     for var in THEORY_VARS:
@@ -1442,6 +1478,10 @@ def main():
     theory_shifts = {var: frac_shift(theory_arrays[var], nom) for var in THEORY_VARS}
     delta_theory = abs_env([theory_shifts[v] for v in THEORY_VARS])
 
+    # --- Statistical covariance from RooUnfold ---
+    # The raw covariance is stored in counts space by RooUnfold. It is transformed to the
+    # differential cross-section basis via transform_cov_counts_to_diffxsec. If the raw
+    # covariance is unavailable, fall back to a diagonal matrix from bin errors.
     cov_raw = load_raw_covariance(nominal_root)
     if cov_raw is not None:
         offdiag_raw = cov_raw - np.diag(np.diag(cov_raw))
@@ -1467,6 +1507,7 @@ def main():
             file=sys.stderr,
         )
 
+    # --- Absolute and fractional uncertainty arrays per bin ---
     nom_abs = np.abs(nom)
     stat_abs = np.sqrt(np.clip(np.diag(cov_stat), 0.0, None))
     iter_abs = delta_iter * nom_abs
@@ -1499,6 +1540,11 @@ def main():
     pct_exp = 100.0 * frac_exp
     pct_theory = 100.0 * frac_theory
 
+    # --- Build per-component covariance matrices ---
+    # All non-statistical components use the statistical correlation matrix as a template:
+    #   Cov^(c)_ij = Delta_c(i) * Delta_c(j) * rho^stat_ij
+    # This avoids a purely diagonal systematic covariance while keeping component magnitudes
+    # tied to the measured per-bin shifts. See --systematic_cov_model for alternatives.
     corr_template = corr_from_cov(cov_stat)
     cov_iter = component_covariance_from_model(
         iter_abs,
@@ -1527,6 +1573,7 @@ def main():
     cov_total = cov_stat + cov_iter + cov_exp + cov_theory + cov_hadronic
     corr_total = corr_from_cov(cov_total)
 
+    # --- Bin masking: central reporting range and alpha_s fit window ---
     centers = np.asarray(
         [float(nominal.GetXaxis().GetBinCenter(i)) for i in range(1, nominal.GetNbinsX() + 1)],
         dtype=np.float64,
@@ -1552,6 +1599,7 @@ def main():
     cov_total_fit = cov_total[np.ix_(fit_idx, fit_idx)]
     corr_total_fit = corr_from_cov(cov_total_fit)
 
+    # --- Export covariance matrices and binning to CSV ---
     write_csv(os.path.join(outdir, "cov_stat.csv"), cov_stat)
     write_csv(os.path.join(outdir, "cov_iter.csv"), cov_iter)
     write_csv(os.path.join(outdir, "cov_exp.csv"), cov_exp)
@@ -1583,6 +1631,7 @@ def main():
                 f"{1 if fit_mask[i - 1] else 0}\n"
             )
 
+    # --- Produce uncertainty component plots and final result comparison ---
     component_plots = {
         "statistical": os.path.join(outdir, "uncertainty_components_statistical.pdf"),
         "unfolding": os.path.join(outdir, "uncertainty_components_unfolding.pdf"),

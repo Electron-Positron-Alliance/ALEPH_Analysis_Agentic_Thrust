@@ -78,12 +78,16 @@ EventResult ComputeEventResult(unsigned int slot,
       if (ev.pwflag[iP] == 4) saveParticle = false;
     }
 
-    // count number of ISR near to beampipe
+    // Count ISR photons (pwflag==4, neutral) that are within 0.98 < |cos(theta)| < 1.0 (near
+    // beampipe) and stored with phi==0, the convention used for beam-direction ISR in this ntuple
+    // format. Used for diagnostics only; does not affect event selection.
     if (ev.pwflag[iP] == 4 && ev.charge[iP] == 0 && ev.phi[iP] == 0 && TMath::Abs(TMath::Cos(ev.theta[iP])) > 0.98) Nisr++;
 
     // special cleaning for ALEPH MC
     if (inFileType == "ALEPHMC") {
-      // gen only cleaning neutral cleaning around phi = 0 for photon radiation along beam pipe
+      // Remove beam-pipe radiation artifacts that appear in ALEPH MC generator-level output as
+      // neutral particles with phi ~ 0 and pt stored at exactly 0.001 GeV. The narrow pt window
+      // [0.00099, 0.001009) GeV targets this specific artifact without rejecting real particles.
       if (genTree && ev.charge[iP] == 0 && std::abs(ev.phi[iP]) <= 0.001 && ev.pt[iP] > 0.00099 && ev.pt[iP] < 0.001009)
         saveParticle = false;
 
@@ -216,7 +220,13 @@ EventResult ComputeEventResult(unsigned int slot,
   met = -met;
   out.MissP = met.Mag();
 
-  // include missing momentum vector in thrust calculation
+  // Include missing momentum vector as an extra pseudo-particle in the thrust calculation.
+  // The MET vector (negative sum of all selected particle momenta) is appended to the particle
+  // arrays so it participates in the thrust axis search. pwflag is set to -1 as a sentinel;
+  // this value has no effect on the thrust calculation because getThrust() is called below
+  // without passing the selectedPwflag array (pwflag defaults to NULL, disabling all
+  // pwflag-based filtering inside getThrustHerwig). The with_met systematic variation uses
+  // this branch to assess sensitivity to missing energy from detector acceptance gaps.
   if (sel.doMET) {
     selectedParts += 1;
     selectedE.push_back(met.Mag());
@@ -227,7 +237,7 @@ EventResult ComputeEventResult(unsigned int slot,
     selectedD0.push_back(0.0f);
     selectedZ0.push_back(0.0f);
     selectedNTPC.push_back(-1);
-    selectedPwflag.push_back(-1);
+    selectedPwflag.push_back(-1); // sentinel only; not used by getThrust (see comment above)
   }
 
   // thrust
