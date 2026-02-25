@@ -1,7 +1,7 @@
 \section{Data and simulated event samples}
 \label{sec:datasets}
 
-The nominal measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$~GeV. This period is used as baseline because matched detector-level and generator-level archived MC inputs required for unfolding are available in this configuration. The 1994 sample corresponds to approximately 40~pb$^{-1}$ after quality requirements and provides the largest fully synchronized archived data/MC configuration for this workflow.
+The nominal measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$~GeV. This period is used as baseline because matched detector-level and generator-level archived MC inputs required for unfolding are available in this configuration. The 1994 sample corresponds to approximately 40~pb$^{-1}$ after quality requirements, yielding approximately 1.33 million selected hadronic events, and provides the largest fully synchronized archived data/MC configuration for this workflow.
 
 Detector corrections are derived from archived ALEPH MC processed through the same analysis chain. In the preserved sample, the detector-level and generator-level event records are connected through a common event identifier, enabling event-matched response construction and post-unfolding hadronic-selection corrections.
 
@@ -17,7 +17,7 @@ The ratio \texttt{tgenBefore/tgen} is used to derive the hadronic event-selectio
 
 In addition to the archived baseline MC, alternative modern generator predictions are used in this note through event-level reweighting variations to estimate theory-model dependence. These variations are propagated as dedicated systematic components in the final uncertainty model while preserving the same detector-response baseline.
 
-Table~\ref{tab:sample_bookkeeping} summarizes the event counts in the nominal thrust workflow.
+Table~\ref{tab:sample_bookkeeping} summarizes the event counts in the nominal thrust workflow. The archived MC reco sample contains approximately 772k selected events compared to 1.33M in data, giving a data-to-MC ratio of roughly 1.8. This imbalance means that MC statistical fluctuations contribute at a non-negligible level to the response matrix and that response-bin precision is limited by MC statistics in high-thrust bins where both data and MC counts are low. The experimental systematic program accounts for part of this sensitivity through the neutral efficiency and energy-scale variations.
 
 \begin{table}[t!]
 \centering

@@ -8,6 +8,8 @@ The complete output bundle is
 
 \input{tables/results_key_metrics_table}
 
+\input{tables/uncertainty_breakdown_table}
+
 \subsection{Uncertainty structure across components}
 
 \begin{figure}[t!]
@@ -49,7 +51,7 @@ The ratio is shown as \texttt{ALEPH / Unfolded}, with a gray band around unity r
 
 \FloatBarrier
 
-The largest difference between ALEPH and the current unfolded result occurs in the highest thrust bin ($0.99<T<1.00$), where the ratio is $1.30\pm0.27$. This behavior is visible within the ratio-panel range and is consistent with the larger uncertainty in the endpoint region.
+The largest difference between ALEPH and the current unfolded result occurs in the highest thrust bin ($0.99<T<1.00$), where the ratio is $1.30\pm0.27$. A discrepancy near $T\to1$ is physically expected: this is the dijet limit where the event is nearly perfectly back-to-back, and the thrust distribution is especially sensitive to the MC modeling of soft hadrons that smear events away from the boundary, to the hadronic correction factor $C_{\mathrm{had}}(j)$ whose uncertainty grows at the endpoint, and to the normalization convention used to convert the raw unfolded spectrum to a differential cross-section. Small differences in any of these between the current analysis and the 2004 ALEPH publication can produce visible endpoint disagreement without implying a global inconsistency. The full diagnostic program for this region is documented in \path{Plans/2026-02-19_thrust_difference_checks.md}.
 
 \subsection{Comparison with OmniFold and Iterative Bayesian Unfolding reanalyses}
 
@@ -128,7 +130,7 @@ Summary metadata & \texttt{uncertainty\_breakdown.json} \\
 
 For theory-facing fits in this release, the recommended usage contract is:
 \begin{itemize}
-\item use \texttt{summary/fit\_mask.csv} to define the default fit bin set;
+\item use \texttt{summary/fit\_mask.csv} to define the default fit bin set (45 bins selected by the \texttt{nonzero} mode, covering bins 5--50 of the 50-bin thrust range);
 \item use \texttt{summary/cov\_total\_fitwindow.csv} and \texttt{summary/corr\_total\_fitwindow.csv} as the default covariance/correlation inputs for inversion-based fits;
 \item treat full-range \texttt{cov\_total.csv} and \texttt{corr\_total.csv} as auxiliary products for diagnostics and stress tests;
 \item read \texttt{diagnostics.systematic\_covariance\_model} and \texttt{diagnostics.systematic\_covariance\_model\_params} in \texttt{uncertainty\_breakdown.json} to identify the non-statistical covariance model used in this release.

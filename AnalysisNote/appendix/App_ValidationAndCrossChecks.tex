@@ -1,5 +1,20 @@
 \section{Validation and cross-check details}
 \label{sec:app_validation}
 
-Validation plots used for the nominal iteration-choice and uncertainty interpretation
-are promoted to the main text in Secs.~\ref{sec:method} and \ref{sec:results}.
+This appendix collects supplementary validation material that supports the analysis decisions described in the main text.
+
+\subsection{Iteration-scan closure and stability}
+
+The iteration-scan diagnostics used to select $N_{\mathrm{iter}}=5$ are shown in the main text in Figs.~\ref{fig:refold_selected_iters} and~\ref{fig:iteration_choice_diagnostics}. The refolded spectra confirm that $N_{\mathrm{iter}}=5$ reproduces the detector-level data shape within the expected level of statistical fluctuation. The closure-shape $\chi^2/\mathrm{ndf}$ is stable across $N_\mathrm{iter}\in\{4,5,6\}$, and the iteration-to-iteration shift in the unfolded spectrum decreases monotonically before flattening near $N_\mathrm{iter}=5$--$6$, consistent with convergence. The $N_\mathrm{iter}=100$ refolding confirms that the response model does not diverge at high iteration, though the unfolded spectrum in that limit becomes increasingly sensitive to statistical fluctuations.
+
+\subsection{OmniFold and prior IBU comparison}
+
+The comparison with OmniFold and prior Iterative Bayesian Unfolding spectra from \texttt{unfold-ee-logtau/Results} is documented in Sec.~\ref{sec:results} (Fig.~\ref{fig:final_thrust_of_ibu_comparison}). Compatibility metrics are $\chi^2/\mathrm{ndf}=0.663$ (OmniFold), $0.421$ (prior IBU), evaluated over the 42 ALEPH bins using the current total uncertainty model on the diagonal. Differences are localized to the high-thrust endpoint and are consistent with the expected sensitivity of IBU to regularization strength and normalization convention in that region.
+
+\subsection{Difference-check program}
+
+A structured diagnostic program for inter-analysis differences (binning/normalization alignment, hadronic-correction treatment, event/sample synchronization, regularization dependence, and theory-envelope masking) is documented in \path{Plans/2026-02-19_thrust_difference_checks.md}. Execution and acceptance criteria are defined there; no final physics interpretation of residual inter-analysis differences is assigned until that program is completed.
+
+\subsection{Output integrity verification}
+
+After each full workflow run, a dedicated script \texttt{check\_prelim\_summary\_outputs.py} verifies that all required output files are present and non-empty, that the covariance matrix is positive semi-definite on the diagonal, and that the fit mask selects a non-zero number of bins. The 2026-02-17 run passed all checks (1/1 integrity check passed, as recorded in Table~\ref{tab:ai_agent_scorecard}).

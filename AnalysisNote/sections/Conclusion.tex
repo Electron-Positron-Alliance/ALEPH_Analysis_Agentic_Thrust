@@ -1,15 +1,17 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-A complete thrust-only baseline measurement has been produced with Iterative Bayesian Unfolding on archived ALEPH 1994 data, using nominal $N_{\mathrm{iter}}=5$ and explicit propagation of unfolding, experimental, and theory systematics.
-
-The current result package provides:
+A complete thrust-only baseline measurement has been produced with Iterative Bayesian Unfolding on archived ALEPH 1994 data at $\sqrt{s}\simeq91.2$~GeV, using nominal $N_{\mathrm{iter}}=5$ and explicit propagation of unfolding-regularization, experimental, theory-modeling, and hadronic-correction systematics. The result package provides:
 \begin{itemize}
-\item unfolded central values with hadronic event correction,
-\item covariance and correlation matrices for theory-facing use,
-\item component-level uncertainty views with individual variation branches,
-\item a direct comparison to the published ALEPH thrust result.
+\item unfolded central values with hadronic event correction applied bin-by-bin,
+\item covariance and correlation matrices in both full-range and fit-window configurations for theory-facing use,
+\item component-level uncertainty views with individual variation branches and signed shifts,
+\item a direct comparison to the published ALEPH thrust result~\cite{Heister:2003aj}.
 \end{itemize}
 
-This establishes a first end-to-end repository baseline for thrust with Iterative Bayesian Unfolding.
-It also defines the starting point for extension to C-parameter and heavy-jet mass, including future multidimensional correlation studies.
+In the central reporting range $0.60\le T<0.95$, the mean total uncertainty is $8.43\%$, dominated by theory modeling ($6.1\%$) and hadronic correction ($3.2\%$) components. The mean statistical uncertainty is $1.7\%$ and the unfolding-regularization uncertainty is $0.34\%$, confirming that the regularization choice is not a dominant limitation in this pass. The current result is broadly consistent with the published ALEPH 2004 thrust distribution ($\chi^2/\mathrm{ndf}=0.36$ over 42 bins), with the largest localized discrepancy at the $T\to 1$ endpoint.
+
+The precision QCD motivation for this work is the persistent $e^{+}e^{-}$ $\alpha_s$ puzzle: recent thrust-based extractions yield $\alpha_s(m_Z)\simeq0.1136$, approximately $3.5\sigma$ below the world average $\alpha_s(m_Z)=0.1180$~\cite{Benitez:2024nav,ParticleDataGroup:2022pth}. The covariance and correlation products from this baseline are designed to serve as direct inputs to precision $\alpha_s$ fits, with explicit bin masking and fit-window products that allow theory consumers to use the result without modification. Resolving or constraining the $\alpha_s$ tension requires both high-quality experimental inputs and carefully controlled uncertainty accounting; this note addresses the experimental side.
+
+This establishes a first end-to-end repository baseline for thrust with IBU and defines the template for extension to C-parameter and heavy-jet mass, including future multidimensional correlation studies.
+The AI-agent operating model demonstrated in this cycle — executable-workflow orchestration under physicist supervision with full provenance tracking — provides a scalable framework for that extension program.

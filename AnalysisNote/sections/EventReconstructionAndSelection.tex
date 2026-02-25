@@ -87,6 +87,10 @@ acceptance, and stable visible-energy topology before entering event-shape recon
 chosen to follow ALEPH-standard hadronic selections while retaining explicit control over the
 regions that dominate event-shape sensitivity.
 
+The neutral hadron cleaning requirement (reject \texttt{pwflag}=5 for $-0.19\le\cos\theta<-0.18$) removes a localized region where the ALEPH hadronic calorimeter response is known to produce spurious neutral-hadron candidates. This narrow angular window corresponds to a structural gap in the detector and was identified from the data/MC neutral-hadron $\cos\theta$ distribution.
+
+$V^0$ candidates (\texttt{pwflag}=3) include $K_S$ and $\Lambda$ from displaced-vertex reconstruction. These objects enter the thrust sum with their measured momentum vector rather than individual decay products, which is consistent with treating them as single hadronic objects for event-shape purposes. Their contribution to the thrust numerator and denominator is captured by the neutral-response systematic variations.
+
 \subsection{Particle-category kinematic validation}
 
 Before constructing thrust-family observables, we validate the reconstructed particle-level
