@@ -45,8 +45,8 @@ These challenge classes are expected in future observable expansions and motivat
 
 The present release is robust enough for a preliminary thrust result, but several limitations remain:
 \begin{itemize}
-\item hadronic-event correction uncertainty is not yet propagated as an independent component;
-\item systematic inter-bin correlations use a conservative approximation; non-statistical components are diagonal in this pass;
+\item hadronic-event correction uncertainty is propagated as an independent component ($\Delta_{\mathrm{had}}$, central-range mean $\approx 3.2\%$); the endpoint bins remain sensitive to correction-factor extrapolation;
+\item systematic inter-bin correlations use the statistical correlation matrix as a template ($\mathrm{Cov}^{(c)}_{ij} = \Delta_c(i)\,\Delta_c(j)\,\rho^{\mathrm{stat}}_{ij}$); this is an approximation that assumes systematic and statistical correlations share the same bin-to-bin structure;
 \item endpoint thrust bins remain statistically and modeling sensitive;
 \item analysis scope is currently one-dimensional (thrust only), while the future target includes the thrust-family observables and potentially multidimensional unfolding.
 \end{itemize}
@@ -66,7 +66,7 @@ Plot-style drift across scripts & Inconsistent figure interpretation and repeate
 Method-to-code traceability gaps & Readers cannot quickly map claims to executable steps & Workflow and provenance tables in Sec.~\ref{sec:method} and Sec.~\ref{sec:results} & In progress \\
 High-frequency iterative edits & Risk of contradictory text/figure states between sections & Require explicit script/output-path references for result figures and rerun figure checks after edits & In progress \\
 Endpoint-bin instability & Dominates max uncertainties and can obscure central-range behavior & Report central-window metrics alongside full-range behavior & Open \\
-Hadronic-correction uncertainty missing & Potential underestimation in total uncertainty model & Add dedicated variation and propagate through summary builder & Open \\
+Hadronic-correction uncertainty & Included as independent $\Delta_{\mathrm{had}}$ component; endpoint bins remain sensitive to correction-factor extrapolation & Envelope of up/down ratio uncertainty propagated via summary builder; central-range mean $\approx 3.2\%$ & Resolved \\
 \hline
 \end{tabularx}
 \normalsize
