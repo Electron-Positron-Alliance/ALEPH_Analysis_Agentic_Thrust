@@ -69,7 +69,7 @@ The thrust observable is defined as~\cite{PhysRevLett.39.1587}
 T = \max_{\hat{n}} \frac{\sum_i |\vec{p}_i \cdot \hat{n}|}{\sum_i |\vec{p}_i|},
 \end{equation}
 with all selected charged and neutral reconstructed objects from Sec.~\ref{sec:event_selection} entering the sum.
-The unfolding range is $0.5 \le T < 1.0$ with 50 uniform bins.
+The unfolding range is $0.5 \le T < 1.0$ with 50 uniform bins (bin width $\Delta T = 0.01$). This binning matches the resolution scale of the TPC-based thrust reconstruction in the central range and is consistent with the ALEPH published event-shape analysis~\cite{Heister:2003aj}, facilitating direct comparison in a common binning space.
 
 \input{tables/method_config_table}
 
@@ -86,7 +86,7 @@ Response filling uses event-by-event matching through \texttt{uniqueID}. Reconst
 \item the miss term required by RooUnfold for inefficiency handling.
 \end{itemize}
 
-This matched-response construction enforces a consistent phase-space definition between detector-level selection and generator-level truth used in unfolding.
+This matched-response construction enforces a consistent phase-space definition between detector-level selection and generator-level truth used in unfolding. Generator-level events with no matched reco entry (misses, from reconstruction inefficiency or acceptance gaps) are handled by RooUnfold's efficiency correction. Reco-level events with no matched gen entry (fakes, from beam background or random coincidences) are not expected to be significant in the archived ALEPH hadronic sample and are not separately subtracted.
 
 \subsection{Iterative Bayesian Unfolding setup and iteration choice}
 
@@ -145,7 +145,7 @@ C_{\mathrm{had}}(j)=\frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 U_j^{\mathrm{corr}} = U_j\,C_{\mathrm{had}}(j).
 \end{equation}
 
-For the nominal run, the statistical covariance is read from the unfolding output and transformed to the normalized differential-thrust basis used in this note. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by
+For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the data and response histograms through the IBU iteration chain without toy MC sampling. The resulting covariance matrix is read from the unfolding output and transformed to the normalized differential-thrust basis used in this note. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by
 \texttt{build\_prelim\_uncertainty\_summary.py}.
 
 Response and matrix visualizations are exported by the matrix-plot helper script
