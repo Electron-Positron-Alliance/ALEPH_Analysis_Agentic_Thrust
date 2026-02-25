@@ -104,6 +104,8 @@ with $N_{\mathrm{iter}}=4$ and $6$ propagated as unfolding-regularization system
 The iteration-choice diagnostics are shown in
 Figs.~\ref{fig:refold_selected_iters} and~\ref{fig:iteration_choice_diagnostics}, including $N=4,5,6,10,100$ refolding checks.
 
+The response matrix has a diagonal fraction of $f_{\mathrm{diag}}=0.33$, meaning approximately two-thirds of events migrate out of their generated thrust bin at reconstruction level. This level of bin-to-bin migration is expected for thrust at ALEPH given the finite charged-particle momentum resolution and the sensitivity of thrust to soft particles near the event boundary. It implies that the unfolding correction is non-trivial and that the choice of regularization strength meaningfully affects the result. The iteration diagnostics in Fig.~\ref{fig:iteration_choice_diagnostics} show that the closure-shape $\chi^2/\mathrm{ndf}$ is stable and the iteration-to-iteration change in the unfolded spectrum is small for $N_{\mathrm{iter}} \in \{4,5,6\}$, providing confidence that $N_{\mathrm{iter}}=5$ sits in a well-regularized plateau rather than near an instability. The propagated $N_{\mathrm{iter}}=4,6$ systematic covers residual regularization-bias uncertainty at the level documented in Sec.~\ref{sec:systematics}.
+
 \begin{figure}[t!]
 \centering
 \includegraphics[width=0.92\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/dist_refolded_vs_data_selected_iterations.pdf}

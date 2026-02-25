@@ -35,9 +35,22 @@ with total bin uncertainty
 \begin{equation}
 \Delta_{\mathrm{tot}}(j)=\sqrt{\Delta_{\mathrm{stat}}^2(j)+\Delta_{\mathrm{iter}}^2(j)+\Delta_{\mathrm{exp}}^2(j)+\Delta_{\mathrm{theory}}^2(j)+\Delta_{\mathrm{had}}^2(j)},
 \end{equation}
-where $\Delta_{\mathrm{had}}$ is the hadronic event-selection correction uncertainty obtained from an up/down envelope of the \texttt{tgenBefore/tgen} ratio uncertainty propagated to the normalized differential-thrust basis.
+where $\Delta_{\mathrm{had}}$ is the hadronic event-selection correction uncertainty described in Sec.~\ref{sec:had_uncertainty} below.
 
-The \texttt{no\_neutrals} branch is kept as a stress-test and shown explicitly, but is not included in $\Delta_{\mathrm{tot}}$.
+\subsection{Hadronic event-selection correction uncertainty}
+\label{sec:had_uncertainty}
+
+After unfolding, a bin-wise hadronic event-selection correction $C_{\mathrm{had}}(j) = N_{\mathrm{genBefore}}(j)/N_{\mathrm{gen}}(j)$ is applied to account for the fraction of hadronic events that pass the generator-level selection (see Sec.~\ref{sec:method}). The uncertainty on this correction is propagated as an independent component $\Delta_{\mathrm{had}}$.
+
+The correction ratio $C_{\mathrm{had}}(j)$ is computed from two generator-level histograms: \texttt{tgenBefore} (events passing hadronic selection) and \texttt{tgen} (all generated events). Statistical uncertainties on both histograms are propagated through the ratio using standard error propagation, yielding bin-wise up and down variations $C_{\mathrm{had}}^{\pm}(j)$. These variations are applied to the unfolded spectrum and normalized to the differential cross-section basis, producing up and down shifted spectra. The fractional hadronic correction uncertainty is then defined as the envelope:
+\begin{equation}
+\delta_{\mathrm{had}}^{\pm}(j) = \frac{U_j \cdot C_{\mathrm{had}}^{\pm}(j) / \int U \cdot C_{\mathrm{had}}^{\pm}\,dT}{U_j^{\mathrm{corr}}} - 1,
+\end{equation}
+with $\Delta_{\mathrm{had}}(j) = \max(|\delta_{\mathrm{had}}^{+}(j)|, |\delta_{\mathrm{had}}^{-}(j)|)$.
+
+In the central range $0.60 \le T < 0.95$, the mean hadronic correction uncertainty is approximately $3.2\%$, making it the third-largest component after theory ($6.1\%$) and experimental ($3.3\%$). Its covariance is built with the same \texttt{template\_correlated} model applied to other non-statistical components. The computation is implemented in \texttt{compute\_hadronic\_correction\_fractional\_shift} in \texttt{build\_prelim\_uncertainty\_summary.py}; note that the correction histogram stored in the nominal ROOT file carries zero bin errors by design, as the uncertainty is derived externally by this function rather than through ROOT error propagation.
+
+The \texttt{no\_neutrals} branch removes all calorimeter neutral objects from the event and recomputes thrust using charged tracks only. It is not a physical uncertainty but a stress-test of the analysis sensitivity to the neutral-particle contribution: a large shift indicates that the calorimeter response and neutral-hadron modeling significantly shape the thrust distribution, while a small shift would indicate robustness to neutral inputs. The observed central-range mean shift of approximately 23\% confirms that neutral objects are a leading input to thrust and that the calorimeter modeling must be well-controlled. Because this variation is not a physical uncertainty on the measurement (it tests a configuration the data do not correspond to), it is excluded from $\Delta_{\mathrm{tot}}$ and treated as a cross-check only.
 
 The non-statistical covariance model is configurable in the summary builder. The current nominal release uses the \texttt{template\_correlated} option, where each non-statistical component covariance is built as
 \begin{equation}

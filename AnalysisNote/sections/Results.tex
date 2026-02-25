@@ -22,7 +22,7 @@ The complete output bundle is
 \end{figure}
 
 The component-wise uncertainty behavior is summarized in Fig.~\ref{fig:uncertainty_components_fourpanel}. The dominant mean contributions in this thrust-only pass are theory and experimental components, while iteration remains subleading for the nominal choice and neighboring iteration values. The hadronic-correction uncertainty is now propagated as an additional independent component in the total model.
-Because endpoint bins are low-statistics and highly sensitive to selection/modeling differences, full-range maxima are tail-dominated. For this reason, the note reports central-range metrics in parallel ($0.60\le T<0.95$), where the mean total uncertainty is $8.43\%$ and the dominant mean contribution is theory.
+Because endpoint bins are low-statistics and highly sensitive to selection/modeling differences, full-range maxima are tail-dominated. For this reason, the note reports central-range metrics in parallel ($0.60\le T<0.95$), where the mean total uncertainty is $8.43\%$ and the dominant mean contribution is theory. This figure is derived from the full covariance matrix projection (diagonal of $\mathrm{Cov}_{\mathrm{tot}}$ in the differential cross-section basis) and differs from the naive quadrature of component means ($\approx7.9\%$) because the off-diagonal terms of the \texttt{template\_correlated} covariance model contribute to the projected total when averaged over bins.
 
 \subsection{Final-result total correlation matrix}
 
@@ -65,7 +65,7 @@ To compare directly with prior thrust reanalyses in the same archived-data progr
 \subsection{Observed differences and diagnostic program}
 
 The comparison in Fig.~\ref{fig:final_thrust_of_ibu_comparison} shows that differences between the current result and prior reanalysis outputs are localized rather than globally incompatible.
-Using the current uncertainty model, the aggregate compatibility metrics are $\chi^2/\mathrm{ndf}=0.663$ (OmniFold vs current), $\chi^2/\mathrm{ndf}=0.421$ (prior IBU vs current), and $\chi^2/\mathrm{ndf}=0.361$ (ALEPH 2004 vs current), evaluated over the 42 ALEPH bins.
+Using the current uncertainty model, the aggregate compatibility metrics are $\chi^2/\mathrm{ndf}=0.663$ (OmniFold vs current), $\chi^2/\mathrm{ndf}=0.421$ (prior IBU vs current), and $\chi^2/\mathrm{ndf}=0.361$ (ALEPH 2004 vs current), evaluated over the 42 ALEPH bins. All three values are well below unity, which is expected rather than anomalous: the uncertainty model is deliberately conservative (particularly the theory envelope and hadronic correction components), and the $\chi^2$ is computed with only the diagonal of the total covariance rather than the full matrix, which further suppresses the test statistic when off-diagonal correlations are positive. A sub-unity $\chi^2/\mathrm{ndf}$ in this context confirms broad consistency with the comparison curves but should not be interpreted as evidence that uncertainties are overestimated.
 The largest visible tension appears in the endpoint region, with highest-bin ratios of $1.129\pm0.246$ (OmniFold/current), $1.091\pm0.497$ (IBU/current), and $1.301\pm0.275$ (ALEPH/current) for $0.99<T<1.00$.
 
 To determine the origin of these differences, the next diagnostic cycle separates central-value effects from uncertainty-model effects.
