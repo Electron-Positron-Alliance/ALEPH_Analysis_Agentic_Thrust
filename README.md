@@ -1,4 +1,4 @@
-# ALEPH_Thrust_Analysis
+# ALEPH_Agentic_Event_Shape_Analysis 
 C++/ROOT analysis code for computing event-shape observables on archived ALEPH data.
 
 ## Primary workflow
