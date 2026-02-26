@@ -1,9 +1,57 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Achieving Standard Model predictions at the precision required for future collider programs, including the High-Luminosity LHC, demands QCD calculations with uncertainty control matched to percent-level experimental constraints. In this regime, theoretical uncertainty becomes a limiting factor, and precision QCD is central to robust interpretation of potential anomalies. Recent AI-for-science studies highlight both the opportunity and the evaluation burden of this regime, where scientific utility depends on rigorous validation rather than purely generative capability~\cite{Wang:2023aai,Messeri:2024aiu}.
+Machine learning has been central to high-energy physics for decades, enabling
+reconstruction algorithms, event classification, and detector optimization across
+collider experiments. However, a new frontier has emerged with the recent capability
+of large language models (LLMs) developed by major AI labs---including
+Anthropic~\cite{Anthropic:2025accelerating}, OpenAI~\cite{OpenAI:2025gpt5science},
+Google DeepMind~\cite{GoogleDeepMind:2025geminiscience}, and others---to assist directly
+with scientific reasoning, mathematical proof, and code generation. In this emerging
+domain, there exists a striking asymmetry in fundamental physics: nearly all current
+applications of LLMs to accelerate scientific progress operate on the theoretical or
+computational side. Recent examples include LLM-assisted derivations of new results in
+theoretical particle physics~\cite{OpenAI:2025newresult}, design of novel protein
+structures for biology and health research~\cite{GoogleDeepMind:2025alphaproteo}, and
+assistance with complex mathematical simplifications in high-energy physics calculations.
+The experimental side of the AI-assisted scientific loop remains largely absent. This
+asymmetry constrains discovery. To realize a future where AI discovers new physics,
+LLM-assisted scientific workflows must be developed and validated across \textit{both}
+precision theory \textit{and} precision experiment. Such frameworks, operating across
+the theory--experiment interface, would have the capacity not only to propose new
+theoretical models or observables, but to design experimental tests of those predictions
+and hold them accountable to measured data.
 
-Precision QCD can be pursued at hadron colliders, but tests are most cleanly controlled in lepton-collider environments with well-defined initial states. Although there is currently no active high-energy lepton collider, archived LEP data now provide an unprecedented open-data opportunity for precision event-shape studies through sustained curation and reanalysis efforts~\cite{EEAlliance:website,Badea:2019vey,Chen:2021uws}. Relative to hadron- and nuclear-collision open-data settings, the LEP $e^{+}e^{-}$ environment provides substantially tighter control of soft-event complexity and initial-state structure, making it especially powerful for precision comparisons between experiment and theory.
+This vision parallels the evolution of AI in neighboring scientific domains. In materials
+science and structural biology, AI work has progressed from computational prediction with
+post-hoc human validation in the lab, toward AI-designed experiments executed by autonomous
+robotic systems. This creates closed feedback loops where AI proposes, executes, measures,
+and learns. The key enabler was developing AI systems that understood both the computational
+theory space and the experimental measurement space. High-energy physics faces a parallel
+opportunity. While we cannot deploy robotic particle detectors, the wealth of open, curated
+data from past experiments---particularly the precision LEP dataset---can serve as a
+``pseudo-laboratory'' for developing and validating LLM-assisted workflows that operate
+across the precision theory--experiment interface. This requires experimental infrastructure
+on both sides: precision theoretical predictions and precision experimental measurements
+with rigorous covariance quantification, where LLM-assisted reasoning is tested and held
+accountable to measurable constraints.
+
+Achieving Standard Model predictions at the precision required for future collider programs,
+including the High-Luminosity LHC, demands QCD calculations with uncertainty control
+matched to percent-level experimental precision. In this regime, precision experimental
+measurement becomes validation infrastructure for AI models. When percent-level uncertainties
+are coupled to rigorous covariance quantification and end-to-end reproducibility, high-precision
+measurements define the testing ground where AI predictions are made quantitative, falsifiable,
+and subject to rigorous scientific accountability~\cite{Wang:2023aai,Messeri:2024aiu,Woodruff:2026practicalsi}.
+
+Precision QCD can be pursued at hadron colliders, but tests are most cleanly controlled in
+lepton-collider environments with well-defined initial states. Although there is currently
+no active high-energy lepton collider, archived LEP data now provide an unprecedented
+open-data opportunity for precision event-shape studies with explicit uncertainty control
+and covariance quantification~\cite{EEAlliance:website,Badea:2019vey,Chen:2021uws}. Relative
+to hadron- and nuclear-collision open-data settings, the LEP $e^{+}e^{-}$ environment provides
+substantially tighter control of soft-event complexity and initial-state structure, making it
+a uniquely clean benchmark for both precision QCD and precision AI model development.
 
 Event-shape observables measured at LEP continue to anchor comparisons between perturbative calculations, generator modeling, and non-perturbative hadronization constraints. Among these observables, thrust is a primary precision test because it probes both perturbative radiation and non-perturbative dynamics in a single distribution~\cite{PhysRevLett.39.1587,Abbate:2010xh,Heister:2003aj}. Recent thrust-based extractions report $\alpha_s(m_Z)\simeq 0.1136\pm 0.0012$, below the 2023 world-average value $\alpha_s(m_Z)=0.1180\pm 0.0009$~\cite{Benitez:2024nav,ParticleDataGroup:2022pth}. This persistent tension, often referred to as the $e^{+}e^{-}$ $\alpha_s$ puzzle, sharpens the need for renewed measurements with explicit uncertainty control and publishable covariance information. The thrust peak and logarithmic moments are also increasingly important for constraining non-perturbative shape-function effects~\cite{Abbate:2010xh,Assi:2025ibi}.
 
