@@ -222,7 +222,7 @@ TVector3 getThrustHerwig(int n, float *px, float *py, float *pz, bool doWeight =
     if (pick0) thrust = TVector3(px[0], py[0], pz[0]);
     else thrust = TVector3(px[1], py[1], pz[1]);
   }
-  else if (n == 3) { //combine lowest 2 magnitude momentum, then use same algo as n=2 CHRIS: SOMETHING SEEMS WRONG HERE BASED ON DESCRIPTION? No combination is done, just picking mag max
+  else if (n == 3) { //special case for 3 particles: select the highest-magnitude particle as thrust axis
     bool pick0Over1 = TMath::Power(px[0], 2) + TMath::Power(py[0], 2) + TMath::Power(pz[0], 2) >= TMath::Power(px[1], 2) + TMath::Power(py[1], 2) + TMath::Power(pz[1], 2);
 
     if (pick0Over1) {

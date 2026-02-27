@@ -45,6 +45,7 @@ These challenge classes are expected in future observable expansions and motivat
 
 The present release is robust enough for a preliminary thrust result, but several limitations remain:
 \begin{itemize}
+\item for events with exactly 3 selected particles, the thrust algorithm selects the highest-magnitude particle as the axis rather than enumerating all possible hemisphere assignments; this approximation is justified because (i) 3-particle hadronic events are rare in $Z \to q\bar{q}$ decays (impact on thrust value typically $\lesssim 0.1\%$ for $T > 0.5$), and (ii) the response-matrix migration structure dominates uncertainty in the endpoint bins where such events concentrate;
 \item hadronic-event correction uncertainty is propagated as an independent component ($\Delta_{\mathrm{had}}$, central-range mean $\approx 3.2\%$); the endpoint bins remain sensitive to correction-factor extrapolation;
 \item systematic inter-bin correlations use the statistical correlation matrix as a template ($\mathrm{Cov}^{(c)}_{ij} = \Delta_c(i)\,\Delta_c(j)\,\rho^{\mathrm{stat}}_{ij}$); this is an approximation that assumes systematic and statistical correlations share the same bin-to-bin structure;
 \item endpoint thrust bins remain statistically and modeling sensitive;
