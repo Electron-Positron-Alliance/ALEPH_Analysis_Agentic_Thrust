@@ -7,6 +7,7 @@ import os
 import sys
 
 import ROOT
+ROOT.gSystem.Load("/Users/anthonybadea/code/RooUnfold/build/libRooUnfold.dylib")
 from ROOT import RooUnfold
 from ROOT import RooUnfoldBayes
 
@@ -153,10 +154,20 @@ def make_plot_with_ratio(
     ratio_frame.GetYaxis().SetTitle("Ratio")
     ratio_frame.Draw("AXIS")
 
-    unity = ROOT.TLine(ratio_denom.GetXaxis().GetXmin(), 1.0, ratio_denom.GetXaxis().GetXmax(), 1.0)
+    _xlo = ratio_denom.GetXaxis().GetXmin()
+    _xhi = ratio_denom.GetXaxis().GetXmax()
+    unity = ROOT.TLine(_xlo, 1.0, _xhi, 1.0)
     unity.SetLineStyle(2)
     unity.SetLineColor(ROOT.kGray + 2)
     unity.Draw("SAME")
+    # ±10 % reference bands
+    _ref_lines = []
+    for _rval in (0.90, 1.10):
+        _rl = ROOT.TLine(_xlo, _rval, _xhi, _rval)
+        _rl.SetLineStyle(3)
+        _rl.SetLineColor(ROOT.kGray + 1)
+        _rl.Draw("SAME")
+        _ref_lines.append(_rl)  # keep alive
 
     for s in samples:
         ratio = build_ratio_hist_with_errors(s["hist"], ratio_denom, f"ratio_{s['hist'].GetName()}")

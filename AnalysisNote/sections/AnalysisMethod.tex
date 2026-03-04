@@ -1,66 +1,11 @@
 \section{Analysis method}
 \label{sec:method}
 
-This section documents the thrust workflow at implementation level, with explicit mapping from analysis statements to executable scripts and produced artifacts. The intent is that a reader can reconstruct what the code does without opening the codebase.
-
-\subsection{Executable workflow map}
-
-The thrust preliminary workflow uses two entrypoints (both under
-\texttt{Unfolding/scripts/}):
-\begin{itemize}
-\item \texttt{run\_thrust\_prelim\_workflow.py} for nominal and systematic reruns;
-\item \texttt{build\_prelim\_uncertainty\_summary.py} for uncertainty assembly and final summaries.
-\end{itemize}
-Figure~\ref{fig:workflow_schematic} summarizes the executable stages and branch structure.
-
-\input{tables/workflow_schematic_figure}
-
-The outputs used in this note correspond to run directory
-\texttt{2026-02-17\_thrust\_iter5/} inside
-\texttt{Studies/PreliminaryResult/}.
-For compatibility with earlier directory layout, wrappers are available under
-\path{Studies/PreliminaryResult/scripts/}.
-
-\subsection{Reproduction contract for this release}
-
-The following command sequence is the explicit rerun contract for this note.
-It assumes a ROOT-enabled Python environment (for example \texttt{py312}) and shell access to ROOT libraries.
-
-\begin{verbatim}
-# Example environment setup
-source ~/code/root/bin/thisroot.sh
-conda activate py312
-RUN_DIR=Studies/PreliminaryResult/2026-02-17_thrust_iter5
-NOM_ROOT=$RUN_DIR/nominal/unfolded_nominal_iter5.root
-SUM_DIR=$RUN_DIR/summary
-MATRIX_DIR=Studies/UnfoldingIterationScan/scripts
-MATRIX_SCRIPT=$MATRIX_DIR/make_unfolding_matrix_plots.py
-
-# 1) Full workflow (nominal + iteration + experimental + theory)
-python Unfolding/scripts/run_thrust_prelim_workflow.py \
-  --config Unfolding/unfold_config.json \
-  --outdir $RUN_DIR \
-  --nominal-iter 5 --iter-down 4 --iter-up 6 \
-  --theory-weights-dir /path/to/theory_reweighting/training-<tag>
-
-# 2) Uncertainty summary and final result plots
-python Unfolding/scripts/build_prelim_uncertainty_summary.py \
-  --base-dir $RUN_DIR \
-  --outdir $SUM_DIR \
-  --aleph-csv /path/to/HEPData-ins636645-v1-Table_54.csv
-
-# 3) Matrix plots and CSV exports
-python $MATRIX_SCRIPT \
-  --input-root $NOM_ROOT \
-  --outdir $SUM_DIR/matrices_nominal_iter5
-
-# 4) Output integrity check
-python Unfolding/scripts/check_prelim_summary_outputs.py \
-  --base-dir $RUN_DIR
-\end{verbatim}
-
-The \texttt{--theory-weights-dir} argument is required unless theory variations are explicitly skipped.
-If the ALEPH CSV is not available at repository-local default location, \texttt{--aleph-csv} must be provided explicitly.
+This section documents the thrust analysis method, including the observable
+definition, the response construction, the unfolding setup, systematic execution,
+and the correction and covariance workflow. Executable workflow details, command
+sequences, and pseudocode are collected in
+Appendix~\ref{sec:app_workflow_code} to keep the main text focused on physics.
 
 \subsection{Observable definition and nominal configuration}
 
@@ -69,7 +14,7 @@ The thrust observable is defined as~\cite{PhysRevLett.39.1587}
 T = \max_{\hat{n}} \frac{\sum_i |\vec{p}_i \cdot \hat{n}|}{\sum_i |\vec{p}_i|},
 \end{equation}
 with all selected charged and neutral reconstructed objects from Sec.~\ref{sec:event_selection} entering the sum.
-The unfolding range is $0.5 \le T < 1.0$ with 50 uniform bins (bin width $\Delta T = 0.01$). This binning matches the resolution scale of the TPC-based thrust reconstruction in the central range and is consistent with the ALEPH published event-shape analysis~\cite{Heister:2003aj}, facilitating direct comparison in a common binning space.
+We first adopt bins identical to the published ALEPH event-shape analysis~\cite{Heister:2003aj}, using 50 uniform bins over $0.5 \le T < 1.0$ (bin width $\Delta T = 0.01$), which enables a direct bin-by-bin comparison with the published ALEPH result. We then test fine bins throughout the full thrust space to assess the usable binning resolution in different regions, particularly in the high-thrust (low $\tau = 1-T$) regime. The thrust resolution study in Sec.~\ref{sec:thrust_resolution} informs the finest binning achievable in each region.
 
 \input{tables/method_config_table}
 
@@ -108,28 +53,87 @@ Figs.~\ref{fig:refold_selected_iters} and~\ref{fig:iteration_choice_diagnostics}
 
 The response matrix has a diagonal fraction of $f_{\mathrm{diag}}=0.33$, meaning approximately two-thirds of events migrate out of their generated thrust bin at reconstruction level. This level of bin-to-bin migration is expected for thrust at ALEPH given the finite charged-particle momentum resolution and the sensitivity of thrust to soft particles near the event boundary. It implies that the unfolding correction is non-trivial and that the choice of regularization strength meaningfully affects the result. The iteration diagnostics in Fig.~\ref{fig:iteration_choice_diagnostics} show that the closure-shape $\chi^2/\mathrm{ndf}$ is stable and the iteration-to-iteration change in the unfolded spectrum is small for $N_{\mathrm{iter}} \in \{4,5,6\}$, providing confidence that $N_{\mathrm{iter}}=5$ sits in a well-regularized plateau rather than near an instability. The propagated $N_{\mathrm{iter}}=4,6$ systematic covers residual regularization-bias uncertainty at the level documented in Sec.~\ref{sec:systematics}.
 
+The ``miss'' term---generator-level events with no matched reconstructed counterpart---is
+documented in Fig.~\ref{fig:miss_term_efficiency}. These are events that fail the
+reco-level hadronic event selection despite being generated within the fiducial volume.
+The miss rate is concentrated at low thrust ($T\lesssim0.7$) and in events with low
+charged multiplicity, consistent with the hadronic event selection removing poorly
+reconstructed events. RooUnfold accounts for miss events via
+\texttt{response.Miss($x_{\mathrm{gen}}$)}, which correct the unfolded spectrum for
+this acceptance effect.
+
 \begin{figure}[t!]
 \centering
-\includegraphics[width=0.92\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/dist_refolded_vs_data_selected_iterations.pdf}
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/miss_term/miss_term_efficiency.pdf}
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/miss_term/miss_term_thrust.pdf}
+\caption{Left: reco efficiency (matched/all gen) as a function of $T_{\mathrm{gen}}$.
+Right: thrust distributions for all gen, matched, and miss events (normalized to unit area).
+Miss events are concentrated at low thrust and low multiplicity, consistent with
+events failing the hadronic event selection.}
+\label{fig:miss_term_efficiency}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.65\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/dist_refolded_vs_data_selected_iterations.pdf}
 \caption{Refolded spectra from selected iteration points ($N_{\mathrm{iter}}=4,5,6,10,100$) compared with detector-level data.}
 \label{fig:refold_selected_iters}
 \end{figure}
 
 \begin{figure}[t!]
 \centering
-\includegraphics[width=0.32\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_closure_shape_vs_iterations.pdf}
-\includegraphics[width=0.32\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_iter_delta_counts_vs_iterations.pdf}
-\includegraphics[width=0.32\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_iter_delta_shape_vs_iterations.pdf}
-\caption{Iteration-choice diagnostics used to define the nominal unfolding setup: closure-shape $\chi^2/\mathrm{ndf}$ (left), iteration-to-iteration count-level stability (center), and iteration-to-iteration shape stability (right).}
+\includegraphics[width=0.65\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/pull_panel/dist_refolded_vs_data_pull.pdf}
+\caption{Pull panel for refolded spectra: per-bin pull $(N_{\mathrm{data}} - N_{\mathrm{refold}})/\sigma$ for selected iteration points, showing bin-by-bin agreement between the detector-level data and each refolded prediction. Produced by \texttt{refolding\_pull\_panel.py} (see \texttt{Studies/Phase2\_Checks\_2026-03-03/}).}
+\label{fig:refold_pull_panel}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_closure_shape_vs_iterations.pdf}
+\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_iter_delta_counts_vs_iterations.pdf}
+\\[2mm]
+\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_iter_delta_shape_vs_iterations.pdf}
+\caption{Iteration-choice diagnostics: closure-shape $\chi^2/\mathrm{ndf}$ (top left), iteration-to-iteration count-level stability (top right), and iteration-to-iteration shape stability (bottom left).}
 \label{fig:iteration_choice_diagnostics}
 \end{figure}
 
 \FloatBarrier
 
+\subsection{Thrust resolution study}
+\label{sec:thrust_resolution}
+
+The usable binning resolution varies across the thrust spectrum. To quantify this,
+we use the matched reco--gen event pairs to study the thrust resolution as a function
+of true thrust. Specifically, we plot $(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ versus
+$T_{\mathrm{gen}}$ in a two-dimensional histogram, and extract the resolution
+$\sigma(T)$ as a function of $T_{\mathrm{gen}}$ from the per-slice width of the
+$(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ distribution. This study is particularly
+important in the high-thrust (low $\tau = 1-T$) regime, which spans the peak of the
+thrust distribution and the deep non-perturbative region. The previous ALEPH
+analyses~\cite{Heister:2003aj} chose bin sizes to be ``somewhat smaller than twice
+the corresponding detector resolution,'' and our IBU approach, while less sensitive
+to binning than the matrix method, still uses this principle to guide the finest
+bins tested in the region.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.60\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/thrust_resolution/thrust_resolution_2d.pdf}
+\caption{Two-dimensional distribution of $(T_{\mathrm{reco}}-T_{\mathrm{gen}})$ vs $T_{\mathrm{gen}}$ for matched MC event pairs. The spread narrows toward $T\to1$ (low-$\tau$ region), motivating finer binning there.}
+\label{fig:thrust_resolution_2d}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/thrust_resolution/thrust_resolution_profile.pdf}
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/thrust_resolution/thrust_resolution_bias.pdf}
+\caption{Left: per-slice RMS of $(T_{\mathrm{reco}}-T_{\mathrm{gen}})$ as a function of $T_{\mathrm{gen}}$, giving the thrust resolution profile $\sigma(T)$. Right: mean bias $\langle T_{\mathrm{reco}}-T_{\mathrm{gen}}\rangle$ vs $T_{\mathrm{gen}}$; values consistent with zero indicate no systematic shift.}
+\label{fig:thrust_resolution_profile}
+\end{figure}
+
 \subsection{Systematics execution map}
 
 Systematic branches are executed by rerunning unfolding with variation-specific inputs or theory weights, then converting each branch into a signed shift relative to nominal.
-The combination structure is shown in Fig.~\ref{fig:systematics_execution_chart}.
+The combination structure is summarized in Table~\ref{fig:systematics_execution_chart}.
 
 \input{tables/systematics_execution_chart_figure}
 
@@ -148,10 +152,7 @@ U_j^{\mathrm{corr}} = U_j\,C_{\mathrm{had}}(j).
 For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the data and response histograms through the IBU iteration chain without toy MC sampling. The resulting covariance matrix is read from the unfolding output and transformed to the normalized differential-thrust basis used in this note. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by
 \texttt{build\_prelim\_uncertainty\_summary.py}.
 
-Response and matrix visualizations are exported by the matrix-plot helper script
-\path{make_unfolding_matrix_plots.py}.
-
-Full provenance metadata for the run — including git commit, ROOT version, RooUnfold version, environment fingerprint, response diagnostics, theory-weight coverage, and all computed uncertainty metrics — is written to \path{summary/uncertainty_breakdown.json}. This file is the primary machine-readable record of the result and is the canonical reference for any numeric claims in Sec.~\ref{sec:results}.
+Response and matrix visualizations are exported by the matrix-plot helper script (see Appendix~\ref{sec:app_workflow_code} for details). Full provenance metadata for the run, including git commit, ROOT version, RooUnfold version, environment fingerprint, response diagnostics, theory-weight coverage, and all computed uncertainty metrics, is written to a structured JSON summary file. This file is the primary machine-readable record of the result and is the canonical reference for any numeric claims in Sec.~\ref{sec:results}.
 
 \begin{figure}[t!]
 \centering
@@ -169,34 +170,4 @@ Full provenance metadata for the run — including git commit, ROOT version, Roo
 \label{fig:covariance_correlation_nominal}
 \end{figure}
 
-\subsection{Workflow pseudocode (analysis-control view)}
-
-\noindent Nominal and systematics execution logic is summarized below.
-
-\begin{verbatim}
-load nominal configuration
-run nominal unfolding (iterations=5, covariance=true)
-run iteration variations (iterations=4,6)
-run experimental variations (ntpc7, pt04, ech10, with_met,
-                             nes_up, nes_down, ner, no_neutrals)
-run theory variations with event-level weights (pythia8, herwig, sherpa)
-build uncertainty summary products and final plots
-export covariance/correlation CSVs and matrix visualizations
-validate required outputs and consistency checks
-\end{verbatim}
-
-\noindent Uncertainty-summary logic is:
-\begin{verbatim}
-convert all unfolded branches to 1/sigma dsigma/dT
-compute signed branch shifts delta_v = (U_v - U_nom)/U_nom
-build components:
-  iteration = envelope(iter4, iter6)
-  track/event = quadrature(ntpc7, pt04, ech10, with_met)
-  neutral = quadrature(envelope(nes_up, nes_down), ner)
-  theory = envelope(pythia8, herwig, sherpa)
-  hadronic = envelope(up/down C_had uncertainty)
-build component covariance model (nominal: template_correlated)
-combine total = stat + iteration + experimental + theory + hadronic
-write component plots and final comparison plot
-write full-range and fit-window covariance/correlation outputs
-\end{verbatim}
+The nominal and systematics execution logic, including command sequences, pseudocode for workflow control and uncertainty assembly, and the reproduction contract for this note, are documented in Appendix~\ref{sec:app_workflow_code}.

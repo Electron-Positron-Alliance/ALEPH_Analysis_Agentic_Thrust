@@ -1,0 +1,89 @@
+{
+  "group_definition": {
+    "track_event_selection": [
+      "ntpc7",
+      "pt04",
+      "ech10",
+      "with_met"
+    ],
+    "neutral_response_pair": [
+      "nes_up",
+      "nes_down"
+    ],
+    "neutral_response_single": [
+      "ner"
+    ],
+    "stress_test_reported_separately": [
+      "no_neutrals"
+    ]
+  },
+  "combination_recipe": {
+    "nes_pair": "max(abs(nes_up), abs(nes_down))",
+    "track_event_group": "quadrature(ntpc7, pt04, ech10, with_met)",
+    "neutral_group": "quadrature(nes_pair, ner)",
+    "total_systematic": "quadrature(track_event_group, neutral_group)",
+    "stress_test": "no_neutrals is reported but excluded from nominal total"
+  },
+  "mean_abs_track_event_fraction": 0.18929034715800952,
+  "mean_abs_neutral_response_fraction": 0.02425528307970489,
+  "mean_abs_total_syst_fraction": 0.19512013737150422,
+  "max_abs_total_syst_fraction": 4.668857587247268,
+  "mean_abs_no_neutrals_fraction": 0.3344289546895418,
+  "max_abs_no_neutrals_fraction": 9.808749862595723,
+  "rows_from_existing_summary": [
+    {
+      "variation": "ech10",
+      "integral": 1675432.8950390876,
+      "max_abs_fractional_diff": 0.000860914531553972,
+      "mean_abs_fractional_diff": 0.0001794182725486442
+    },
+    {
+      "variation": "ner",
+      "integral": 1675285.2018444592,
+      "max_abs_fractional_diff": 0.23852509622425103,
+      "mean_abs_fractional_diff": 0.018838595734636008
+    },
+    {
+      "variation": "nes_down",
+      "integral": 1675269.615977487,
+      "max_abs_fractional_diff": 0.05133592337489765,
+      "mean_abs_fractional_diff": 0.008016340649410434
+    },
+    {
+      "variation": "nes_up",
+      "integral": 1675291.8783633932,
+      "max_abs_fractional_diff": 0.10545331537836115,
+      "mean_abs_fractional_diff": 0.013447114276222777
+    },
+    {
+      "variation": "no_neutrals",
+      "integral": 1476390.3615612672,
+      "max_abs_fractional_diff": 9.808749862595723,
+      "mean_abs_fractional_diff": 0.3715877274328242
+    },
+    {
+      "variation": "nominal",
+      "integral": 1675276.8956182536,
+      "max_abs_fractional_diff": 0.0,
+      "mean_abs_fractional_diff": 0.0
+    },
+    {
+      "variation": "ntpc7",
+      "integral": 1675170.9913208305,
+      "max_abs_fractional_diff": 3.740493514410061,
+      "mean_abs_fractional_diff": 0.15605250855270902
+    },
+    {
+      "variation": "pt04",
+      "integral": 1668438.9174782776,
+      "max_abs_fractional_diff": 2.7923948115280495,
+      "mean_abs_fractional_diff": 0.09954052630307943
+    },
+    {
+      "variation": "with_met",
+      "integral": 1675292.047775815,
+      "max_abs_fractional_diff": 0.991419523888233,
+      "mean_abs_fractional_diff": 0.051629461298772855
+    }
+  ]
+}

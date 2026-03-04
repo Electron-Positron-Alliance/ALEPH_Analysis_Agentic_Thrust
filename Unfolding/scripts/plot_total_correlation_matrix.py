@@ -14,9 +14,15 @@ import ROOT
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--corr-csv", required=True, help="Path to corr_total.csv")
-    p.add_argument("--binning-csv", required=True, help="Path to binning.csv")
-    p.add_argument("--output-pdf", required=True, help="Output PDF path")
+    p.add_argument("--corr-csv",
+                   default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/corr_total.csv",
+                   help="Path to corr_total.csv")
+    p.add_argument("--binning-csv",
+                   default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/binning.csv",
+                   help="Path to binning.csv")
+    p.add_argument("--output-pdf",
+                   default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/matrix_total_correlation_final.pdf",
+                   help="Output PDF path")
     p.add_argument("--title", default="Total correlation matrix (final result)")
     return p.parse_args()
 
@@ -108,7 +114,12 @@ def draw_and_save(hist, out_pdf: str):
     label = ROOT.TLatex()
     label.SetNDC(True)
     label.SetTextSize(0.037)
-    label.DrawLatex(0.13, 0.965, "ALEPH e^{+}e^{-}, #sqrt{s}=91.2 GeV")
+    label.SetTextFont(42)
+    # Two labels in top margin: ALEPH stamp (left) and plot title (right)
+    label.DrawLatex(0.12, 0.945, "ALEPH e^{+}e^{-}, #sqrt{s}=91.2 GeV")
+    label.SetTextSize(0.034)
+    label.SetTextAlign(31)  # right-align
+    label.DrawLatex(0.84, 0.945, "Total correlation matrix (final result)")
 
     c.SaveAs(out_pdf)
     c.Close()
@@ -126,6 +137,7 @@ def main():
 if __name__ == "__main__":
     ROOT.gROOT.SetBatch(True)
     ROOT.gStyle.SetOptStat(0)
+    ROOT.gStyle.SetOptTitle(0)
     ROOT.gStyle.SetPalette(ROOT.kBird)
     try:
         main()

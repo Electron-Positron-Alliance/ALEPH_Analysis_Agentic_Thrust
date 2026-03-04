@@ -1,61 +1,112 @@
 \section{AI-agent usage in this analysis program}
 \label{sec:ai_agent}
 
-This internal note includes an explicit evaluation of AI-agent support for an experimental QCD analysis workflow. The central question is not only whether an agent can generate text or isolated scripts, but whether it can execute a full analysis loop under physicist supervision: data/MC processing, unfolding orchestration, systematic propagation, figure production, and note maintenance with traceable links to code and outputs.
+This internal note includes an explicit evaluation of AI-agent support for an
+experimental QCD analysis workflow. The central question is not only whether an
+agent can generate text or isolated scripts, but whether it can execute a full
+analysis loop under physicist supervision: data and MC processing, unfolding
+orchestration, systematic propagation, figure production, and note maintenance
+with traceable links to code and outputs.
 
 \subsection{Scope and operating model}
 
-The current operating model is human-in-the-loop. Physics decisions remain analyst-owned, while the agent is used for implementation speed, consistency checks, and documentation rigor. In practical terms, the agent is used to:
+The agent used in this analysis is interfaced through Anthropic Claude Code.
+The operating model is human-in-the-loop: the physicist formulates goals and
+provides expert direction through iterative prompts; the agent executes the
+corresponding implementation steps; the physicist reviews the outputs and
+provides feedback; the process is then repeated. Physics decisions remain
+analyst-owned, while the agent provides implementation speed, consistency
+checks, and documentation rigor. In practical terms, the agent is used to:
 \begin{itemize}
 \item execute and monitor multi-step workflows;
 \item enforce consistent plotting and note formatting conventions;
-\item connect analysis statements in the note to concrete script paths, configuration keys, and produced artifacts;
+\item connect analysis statements in the note to concrete script paths,
+      configuration keys, and produced artifacts;
 \item iterate quickly on uncertainty-view and validation presentation.
 \end{itemize}
 
-This model is intentionally conservative: the agent is treated as an accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker.
+This model is intentionally conservative: the agent is treated as an
+accelerator for engineering and documentation tasks, not as an autonomous
+scientific decision-maker. The interaction is analogous to advising a
+graduate student, where the physicist supplies expert judgment and direction
+while the student (agent) carries out the technical execution.
 
-\subsection{Boundaries and controls}
+\subsection{Boundaries, controls, and reproducibility}
 
-To keep scientific accountability explicit, each high-impact step has a control point where analyst signoff is required before results are treated as baseline:
+To keep scientific accountability explicit, each high-impact step has a
+control point where analyst sign-off is required before results are treated
+as baseline:
 \begin{itemize}
-\item event/object selection definition;
+\item event and object selection definition;
 \item nominal unfolding regularization choice ($N_{\mathrm{iter}}=5$ in this pass);
 \item systematic-combination policy;
 \item final figure and uncertainty-presentation choices;
 \item interpretation language in the note.
 \end{itemize}
 
-All result-level claims are expected to be reproducible from concrete workflow artifacts in
-\texttt{Studies/PreliminaryResult/2026-02-17\_thrust\_iter5/} and script entrypoints documented in Sec.~\ref{sec:method}.
+Reproducibility is ensured through multiple complementary mechanisms. All
+analysis steps are version-controlled, with code and configuration managed
+in a git repository so that any result can be traced to a specific commit
+and set of inputs. Workflow runs produce structured output artifacts,
+including summary files that capture the configuration used, the software
+versions, and checksums of key outputs. Physicist oversight at each review
+stage provides an additional layer of validation: discrepancies between
+expected and observed outputs are flagged before any result is promoted to
+the baseline. These controls together ensure that results are reproducible
+independently of the AI agent's involvement and that the physicist retains
+full accountability for all scientific claims.
 
 \subsection{Why this matters for the broader physics program}
 
-A major objective is to extend AI use in fundamental physics beyond purely theoretical calculations. The experimental side of the loop must produce reliable, uncertainty-aware observables and covariance products that can be consumed by precision QCD fits. Recent AI+scientist and HEP-theory case studies support this direction while also highlighting verification, reproducibility, and expert oversight as first-class constraints~\cite{Woodruff:2026practicalsi,Bubeck:2025coscientist,OpenAITheory:2026singleminus,Schwartz:2026cparameterllm}. In this note, that bridge is represented by release-grade covariance and correlation outputs for thrust, with the next step being expansion to C-parameter and heavy-jet mass and eventual multidimensional constraints.
+The broader objective is to extend AI use in fundamental physics beyond
+purely theoretical calculations. The experimental side of the loop must
+produce reliable, uncertainty-aware observables and covariance products that
+can be consumed by precision QCD fits. AI is used beyond theory calculations:
+the goal is to accelerate fundamental physics by leveraging AI agents, LLMs,
+and other advanced models for both theoretical calculations and experimental
+analysis, ideally with a feedback loop between them. Figure~\ref{fig:ai_loop}
+illustrates this loop: theory predictions inform the experimental analysis,
+which in turn constrains further theory proposals, with the physicist
+providing expert oversight at each stage.
 
-This section therefore serves as both a method statement and a record of feasibility: the agent can assist with end-to-end experimental workflow execution when constrained by explicit controls, validation checks, and human review.
-
-\subsection{Quantitative scorecard for this cycle}
-
-Table~\ref{tab:ai_agent_scorecard} summarizes measured outcomes for this internal-note cycle using concrete workflow artifacts.
-
-\begin{table}[t!]
+\begin{figure}[t!]
 \centering
-\scriptsize
-\begin{tabularx}{0.98\textwidth}{p{0.34\textwidth}c c c X}
-\hline
-Task category & Attempted & Passed & Required human corrections & Evidence source \\
-\hline
-Workflow branch executions (nominal + systematics) & 14 & 14 & 0 & Workflow summary metadata \\
-Summary output integrity checks & 1 & 1 & 0 & Prelim summary checker output \\
-Critical-review findings closure in same pass & 6 & 6 & 0 & \path{Plans/review_correctness_2026-02-25.md} (all 6 resolved with physicist direction; 2 exploration-phase claims retracted after direct code verification) \\
-\hline
-\end{tabularx}
-\normalsize
-\caption{AI-agent scorecard for the current thrust internal-note cycle. “Required human corrections” counts categories where analyst intervention is still needed before closure.}
-\label{tab:ai_agent_scorecard}
-\end{table}
+\begin{tikzpicture}[
+  node distance=2.2cm and 3.5cm,
+  box/.style={rectangle, draw, rounded corners, minimum width=3.2cm,
+              minimum height=1.0cm, align=center, font=\small},
+  human/.style={rectangle, draw, rounded corners, dashed,
+                minimum width=2.6cm, minimum height=0.9cm,
+                align=center, font=\small\itshape, fill=gray!10},
+  arr/.style={-{Stealth[length=6pt]}, thick}
+]
+\node[box] (theory) {Theory prediction\\(QCD calculations,\\generator tunes)};
+\node[box, right=of theory] (expt) {Experimental analysis\\(unfolding, covariance,\\systematic propagation)};
+\node[box, below=1.5cm of expt] (prop) {New proposals\\(observables, fits,\\theory improvements)};
+\node[human, below=1.5cm of theory] (human) {Physicist\\(expert oversight)};
+\draw[arr] (theory) -- (expt) node[midway, above, font=\scriptsize] {prediction vs.\ data};
+\draw[arr] (expt) -- (prop) node[midway, right, font=\scriptsize] {precision constraints};
+\draw[arr] (prop) -- (human) node[midway, below, font=\scriptsize] {new directions};
+\draw[arr] (human) -- (theory) node[midway, left, font=\scriptsize] {guidance};
+\end{tikzpicture}
+\caption{Schematic of the theory--experiment loop targeted by the AI-assisted
+  physics program. Theory predictions are confronted with precision experimental
+  measurements, which generate constraints that inform new proposals. The physicist
+  provides expert oversight and decision-making at each stage.}
+\label{fig:ai_loop}
+\end{figure}
 
-Residual risk remains dominated by reproducibility portability and documentation completeness rather than raw workflow execution. In other words, the agent currently performs routine orchestration reliably, while high-stakes release hardening still requires explicit analyst direction and signoff.
+Recent AI-and-scientist and HEP-theory case studies support this direction while
+also highlighting verification, reproducibility, and expert oversight as
+first-class
+constraints~\cite{Woodruff:2026practicalsi,Bubeck:2025coscientist,OpenAITheory:2026singleminus,Schwartz:2026cparameterllm}.
+In this note, the bridge is represented by release-grade covariance and
+correlation outputs for thrust, with the next step being expansion to
+C-parameter and heavy-jet mass and eventual multidimensional constraints.
 
-The operational details of this collaboration model, including interaction protocol and persistent bottlenecks observed from the agent side, are documented in Sec.~\ref{sec:challenges}.
+This section therefore serves as both a method statement and a record of
+feasibility: the agent can assist with end-to-end experimental workflow
+execution when constrained by explicit controls, validation checks, and
+human review. The operational details of this collaboration model, including
+interaction protocol and persistent bottlenecks observed from the agent side,
+are documented in Sec.~\ref{sec:challenges}.

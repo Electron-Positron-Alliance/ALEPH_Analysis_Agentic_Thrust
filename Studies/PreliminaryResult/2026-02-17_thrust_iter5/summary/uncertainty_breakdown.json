@@ -1,5 +1,5 @@
 {
-  "base_dir": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5",
+  "base_dir": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5",
   "nominal_iteration": 5,
   "iteration_systematic": [
     4,
@@ -79,30 +79,28 @@
     "total": 0.42093184603648487
   },
   "outputs": {
-    "cov_stat": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_stat.csv",
-    "cov_iter": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_iter.csv",
-    "cov_exp": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_exp.csv",
-    "cov_theory": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_theory.csv",
-    "cov_hadronic": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_hadronic.csv",
-    "cov_total": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_total.csv",
-    "corr_total": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/corr_total.csv",
-    "fit_mask": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/fit_mask.csv",
-    "cov_total_fitwindow": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_total_fitwindow.csv",
-    "corr_total_fitwindow": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/corr_total_fitwindow.csv",
-    "binning": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/binning.csv",
+    "cov_stat": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_stat.csv",
+    "cov_iter": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_iter.csv",
+    "cov_exp": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_exp.csv",
+    "cov_theory": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_theory.csv",
+    "cov_hadronic": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_hadronic.csv",
+    "cov_total": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_total.csv",
+    "corr_total": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/corr_total.csv",
+    "fit_mask": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/fit_mask.csv",
+    "cov_total_fitwindow": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_total_fitwindow.csv",
+    "corr_total_fitwindow": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/corr_total_fitwindow.csv",
+    "binning": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/binning.csv",
     "component_plots": {
-      "statistical": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_statistical.pdf",
-      "unfolding": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_unfolding.pdf",
-      "experimental": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_experimental.pdf",
-      "theory": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_theory.pdf"
+      "statistical": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_statistical.pdf",
+      "unfolding": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_unfolding.pdf",
+      "experimental": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_experimental.pdf",
+      "theory": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_theory.pdf"
     },
-    "final_plot": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_uncertainty_breakdown.pdf",
+    "final_plot": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_uncertainty_breakdown.pdf",
     "aleph_csv": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH/HEPData-ins636645-v1-Table_54.csv",
     "ratio_mode": "aleph_over_unfolded",
     "ratio_y_min": 0.75,
-    "ratio_y_max": 1.55,
-    "of_ibu_comparison_plot": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_of_ibu_comparison.pdf",
-    "of_ibu_comparison_metrics": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/of_ibu_comparison_metrics.json"
+    "ratio_y_max": 1.55
   },
   "diagnostics": {
     "response_diagonal_fraction": 0.33169694930312915,
@@ -164,73 +162,19 @@
         "weights_mapped_std": 2.0501420230402716
       }
     },
-    "of_ibu_comparison_enabled": true,
-    "of_ibu_input_paths": {
-      "legacy_results_dir": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results",
-      "legacy_ibu_npz": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/ibu_results.npz",
-      "legacy_of_h5": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/unfold_thrust_ee_ZPole_ALEPH.h5"
-    },
-    "of_ibu_comparison_metrics": {
-      "ratio_mode": "curve_over_current",
-      "ratio_y_min": 0.75,
-      "ratio_y_max": 1.55,
-      "n_bins": 42,
-      "ratio_metrics": {
-        "aleph_over_current": {
-          "max_abs_deviation_from_unity": 0.30120739742638647,
-          "max_plus_error": 1.57629921499394,
-          "highest_bin_ratio": 1.3012073974263865,
-          "highest_bin_error": 0.2750918175675537
-        },
-        "of_over_current": {
-          "max_abs_deviation_from_unity": 0.5051890012377342,
-          "max_plus_error": 1.3748449765489432,
-          "highest_bin_ratio": 1.1291659384344175,
-          "highest_bin_error": 0.24567903811452568
-        },
-        "ibu_over_current": {
-          "max_abs_deviation_from_unity": 0.31325361958636555,
-          "max_plus_error": 2.906585691958173,
-          "highest_bin_ratio": 1.0912313028175613,
-          "highest_bin_error": 0.4971590635974815
-        }
-      },
-      "chi2_metrics": {
-        "aleph_vs_current": {
-          "chi2": 15.171610810266849,
-          "ndf": 42,
-          "chi2_per_ndf": 0.36122882881587737
-        },
-        "of_vs_current": {
-          "chi2": 27.856410550171155,
-          "ndf": 42,
-          "chi2_per_ndf": 0.6632478702421704
-        },
-        "ibu_vs_current": {
-          "chi2": 17.676764357850118,
-          "ndf": 42,
-          "chi2_per_ndf": 0.4208753418535742
-        }
-      },
-      "input_files": {
-        "legacy_ibu_npz": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/ibu_results.npz",
-        "legacy_of_h5": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/unfold_thrust_ee_ZPole_ALEPH.h5",
-        "aleph_csv": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH/HEPData-ins636645-v1-Table_54.csv"
-      },
-      "output_pdf": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_of_ibu_comparison.pdf"
-    }
+    "of_ibu_comparison_enabled": false
   },
   "provenance": {
-    "generated_at_utc": "2026-02-19T14:33:35.865854+00:00",
+    "generated_at_utc": "2026-03-03T19:13:54.255546+00:00",
     "python_executable": "/Users/anthonybadea/code/miniconda3/envs/py312/bin/python",
     "python_version": "3.12.12",
-    "platform": "macOS-26.1-arm64-arm-64bit",
+    "platform": "macOS-26.3-arm64-arm-64bit",
     "conda_prefix": "/Users/anthonybadea/code/miniconda3/envs/py312",
     "root_version": "6.36.06",
-    "roounfold_version": "class_version:2",
-    "roounfold_library": "/Users/anthonybadea/code/RooUnfold/build/libRooUnfold.dylib",
-    "git_commit": "2e3aaac84e1b91ce639faead0851722b0ba79c71",
+    "roounfold_version": "unavailable",
+    "roounfold_library": "unavailable",
+    "git_commit": "c0f569a57f4e22fbc82ffb5f9eccb4d998b4811f",
     "git_dirty": true,
-    "env_fingerprint": "d96e9c76140bf07813dbcaab576e87001f98d25c15b07e7337c13a08f55c6704"
+    "env_fingerprint": "dc4c1e9d21ff7cd2e3b281addac776ce5e1d0e400181fb1c57b2fd5a5228ac49"
   }
 }

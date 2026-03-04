@@ -1,0 +1,61 @@
+{
+  "results_dir": "Studies/ValidationExec_2026-02-13/systematics_full_1994",
+  "nominal": "unfolded_nominal.root",
+  "hist": "unfolded_corrected",
+  "rows": [
+    {
+      "variation": "ech10",
+      "integral": 1675432.8950390876,
+      "max_abs_fractional_diff": 0.000860914531553972,
+      "mean_abs_fractional_diff": 0.0001794182725486442
+    },
+    {
+      "variation": "ner",
+      "integral": 1675285.2018444592,
+      "max_abs_fractional_diff": 0.23852509622425103,
+      "mean_abs_fractional_diff": 0.018838595734636008
+    },
+    {
+      "variation": "nes_down",
+      "integral": 1675269.615977487,
+      "max_abs_fractional_diff": 0.05133592337489765,
+      "mean_abs_fractional_diff": 0.008016340649410434
+    },
+    {
+      "variation": "nes_up",
+      "integral": 1675291.8783633932,
+      "max_abs_fractional_diff": 0.10545331537836115,
+      "mean_abs_fractional_diff": 0.013447114276222777
+    },
+    {
+      "variation": "no_neutrals",
+      "integral": 1476390.3615612672,
+      "max_abs_fractional_diff": 9.808749862595723,
+      "mean_abs_fractional_diff": 0.3715877274328242
+    },
+    {
+      "variation": "nominal",
+      "integral": 1675276.8956182536,
+      "max_abs_fractional_diff": 0.0,
+      "mean_abs_fractional_diff": 0.0
+    },
+    {
+      "variation": "ntpc7",
+      "integral": 1675170.9913208305,
+      "max_abs_fractional_diff": 3.740493514410061,
+      "mean_abs_fractional_diff": 0.15605250855270902
+    },
+    {
+      "variation": "pt04",
+      "integral": 1668438.9174782776,
+      "max_abs_fractional_diff": 2.7923948115280495,
+      "mean_abs_fractional_diff": 0.09954052630307943
+    },
+    {
+      "variation": "with_met",
+      "integral": 1675292.047775815,
+      "max_abs_fractional_diff": 0.991419523888233,
+      "mean_abs_fractional_diff": 0.051629461298772855
+    }
+  ]
+}

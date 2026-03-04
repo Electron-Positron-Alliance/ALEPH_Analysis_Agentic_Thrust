@@ -1,3 +1,96 @@
+\section{Workflow code and reproduction contract}
+\label{sec:app_workflow_code}
+
+This appendix documents the executable workflow structure, command sequences, and
+pseudocode for the thrust analysis, moved here from the main text to keep the
+analysis sections focused on physics content.
+
+\subsection{Executable workflow map}
+
+The thrust preliminary workflow uses two entrypoints (both under
+\texttt{Unfolding/scripts/}):
+\begin{itemize}
+\item \texttt{run\_thrust\_prelim\_workflow.py} for nominal and systematic reruns;
+\item \texttt{build\_prelim\_uncertainty\_summary.py} for uncertainty assembly and
+      final summaries.
+\end{itemize}
+Figure~\ref{fig:workflow_schematic} summarizes the executable stages and branch structure.
+
+\input{tables/workflow_schematic_figure}
+
+\subsection{Reproduction contract}
+
+The following command sequence is the explicit rerun contract for this note.
+It assumes a ROOT-enabled Python environment and shell access to ROOT libraries.
+
+\begin{verbatim}
+# Example environment setup
+source ~/code/root/bin/thisroot.sh
+conda activate py312
+RUN_DIR=Studies/PreliminaryResult/2026-02-17_thrust_iter5
+NOM_ROOT=$RUN_DIR/nominal/unfolded_nominal_iter5.root
+SUM_DIR=$RUN_DIR/summary
+MATRIX_SCRIPT=Studies/UnfoldingIterationScan/scripts/make_unfolding_matrix_plots.py
+
+# 1) Full workflow (nominal + iteration + experimental + theory)
+python Unfolding/scripts/run_thrust_prelim_workflow.py \
+  --config Unfolding/unfold_config.json \
+  --outdir $RUN_DIR \
+  --nominal-iter 5 --iter-down 4 --iter-up 6 \
+  --theory-weights-dir /path/to/theory_reweighting/training-<tag>
+
+# 2) Uncertainty summary and final result plots
+python Unfolding/scripts/build_prelim_uncertainty_summary.py \
+  --base-dir $RUN_DIR \
+  --outdir $SUM_DIR \
+  --aleph-csv /path/to/HEPData-ins636645-v1-Table_54.csv
+
+# 3) Matrix plots and CSV exports
+python $MATRIX_SCRIPT \
+  --input-root $NOM_ROOT \
+  --outdir $SUM_DIR/matrices_nominal_iter5
+
+# 4) Output integrity check
+python Unfolding/scripts/check_prelim_summary_outputs.py \
+  --base-dir $RUN_DIR
+\end{verbatim}
+
+The \texttt{--theory-weights-dir} argument is required unless theory variations are
+explicitly skipped. If the ALEPH CSV is not available at the repository-local default
+location, \texttt{--aleph-csv} must be provided explicitly.
+
+\subsection{Workflow pseudocode}
+
+Nominal and systematics execution logic is summarized below.
+
+\begin{verbatim}
+load nominal configuration
+run nominal unfolding (iterations=5, covariance=true)
+run iteration variations (iterations=4,6)
+run experimental variations (ntpc7, pt04, ech10, with_met,
+                             nes_up, nes_down, ner, no_neutrals)
+run theory variations with event-level weights (pythia8, herwig, sherpa)
+build uncertainty summary products and final plots
+export covariance/correlation CSVs and matrix visualizations
+validate required outputs and consistency checks
+\end{verbatim}
+
+Uncertainty-summary logic:
+\begin{verbatim}
+convert all unfolded branches to 1/sigma dsigma/dT
+compute signed branch shifts delta_v = (U_v - U_nom)/U_nom
+build components:
+  iteration = envelope(iter4, iter6)
+  track/event = quadrature(ntpc7, pt04, ech10, with_met)
+  neutral = quadrature(envelope(nes_up, nes_down), ner)
+  theory = envelope(pythia8, herwig, sherpa)
+  hadronic = envelope(up/down C_had uncertainty)
+build component covariance model (nominal: template_correlated)
+combine total = stat + iteration + experimental + theory + hadronic
+write component plots and final comparison plot
+write full-range and fit-window covariance/correlation outputs
+\end{verbatim}
+
 \section{Validation and cross-check details}
 \label{sec:app_validation}
 
@@ -9,7 +102,7 @@ The iteration-scan diagnostics used to select $N_{\mathrm{iter}}=5$ are shown in
 
 \subsection{OmniFold and prior IBU comparison}
 
-The comparison with OmniFold and prior Iterative Bayesian Unfolding spectra from \texttt{unfold-ee-logtau/Results} is documented in Sec.~\ref{sec:results} (Fig.~\ref{fig:final_thrust_of_ibu_comparison}). Compatibility metrics are $\chi^2/\mathrm{ndf}=0.663$ (OmniFold), $0.421$ (prior IBU), evaluated over the 42 ALEPH bins using the current total uncertainty model on the diagonal. Differences are localized to the high-thrust endpoint and are consistent with the expected sensitivity of IBU to regularization strength and normalization convention in that region.
+The comparison with OmniFold and prior Iterative Bayesian Unfolding spectra from \texttt{unfold-ee-logtau/Results} is documented in Sec.~\ref{sec:results} (Fig.~\ref{fig:final_thrust_result}). Compatibility metrics are $\chi^2/\mathrm{ndf}=0.663$ (OmniFold), $0.421$ (prior IBU), evaluated over the 42 ALEPH bins using the current total uncertainty model on the diagonal. Differences are localized to the high-thrust endpoint and are consistent with the expected sensitivity of IBU to regularization strength and normalization convention in that region.
 
 \subsection{Difference-check program}
 
@@ -17,4 +110,4 @@ A structured diagnostic program for inter-analysis differences (binning/normaliz
 
 \subsection{Output integrity verification}
 
-After each full workflow run, a dedicated script \texttt{check\_prelim\_summary\_outputs.py} verifies that all required output files are present and non-empty, that the covariance matrix is positive semi-definite on the diagonal, and that the fit mask selects a non-zero number of bins. The 2026-02-17 run passed all checks (1/1 integrity check passed, as recorded in Table~\ref{tab:ai_agent_scorecard}).
+After each full workflow run, a dedicated script \texttt{check\_prelim\_summary\_outputs.py} verifies that all required output files are present and non-empty, that the covariance matrix is positive semi-definite on the diagonal, and that the fit mask selects a non-zero number of bins. The 2026-02-17 run passed all checks (1/1 integrity check passed).

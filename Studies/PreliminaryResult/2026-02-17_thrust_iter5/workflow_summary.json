@@ -1,0 +1,280 @@
+{
+  "config": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Unfolding/unfold_config.json",
+  "output_dir": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5",
+  "nominal_iteration": 5,
+  "iteration_systematic": [
+    4,
+    6
+  ],
+  "experimental_variations": [
+    "ntpc7",
+    "pt04",
+    "ech10",
+    "no_neutrals",
+    "with_met",
+    "nes_up",
+    "nes_down",
+    "ner"
+  ],
+  "theory_variations": [
+    "pythia8",
+    "herwig",
+    "sherpa"
+  ],
+  "records": [
+    {
+      "group": "nominal",
+      "tag": "iter5",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/nominal/unfolded_nominal_iter5.root",
+      "overrides": {
+        "iterations": 5,
+        "calculate_covariance": "true",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "iteration",
+      "tag": "iter4",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/iteration/unfolded_iter4.root",
+      "overrides": {
+        "iterations": 4,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "iteration",
+      "tag": "iter6",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/iteration/unfolded_iter6.root",
+      "overrides": {
+        "iterations": 6,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "ntpc7",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_ntpc7.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_ntpc7_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_ntpc7_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "pt04",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_pt04.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_pt04_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_pt04_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "ech10",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_ech10.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_ech10_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_ech10_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "no_neutrals",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_no_neutrals.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_neutrals_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_no_neutrals_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "with_met",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_with_met.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_with_met_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_with_met_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "nes_up",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_nes_up.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_nes_up_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "nes_down",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_nes_down.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_nes_down_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "experimental",
+      "tag": "ner",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_ner.root",
+      "overrides": {
+        "reco_mc_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_ner_t.root",
+        "data_file": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "false"
+      },
+      "returncode": 0,
+      "plot_returncode": 0
+    },
+    {
+      "group": "theory",
+      "tag": "pythia8",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/theory/unfolded_theory_pythia8.root",
+      "overrides": {
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "true",
+        "theory_variation_weights_path": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/arxivPaperResults2025/theory_reweighting/training-bf3b5fc3/Reweight_Step2_Ensemble_Pythia8.npy",
+        "strict_theory_weight_length": "true",
+        "normalize_weights_mean1": "true"
+      },
+      "returncode": 0,
+      "plot_returncode": 0,
+      "theory_weight_diagnostics": {
+        "available": true,
+        "coverage_tgenBefore": 1.0,
+        "coverage_tgen": 1.0,
+        "weights_input_entries": 973769,
+        "weights_input_mean": 0.9976773603602438,
+        "weights_input_std": 1.14982133135797,
+        "weights_mapped_entries": 771597,
+        "weights_mapped_mean": 0.9981544151893351,
+        "weights_mapped_std": 1.1444892158191975
+      }
+    },
+    {
+      "group": "theory",
+      "tag": "herwig",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/theory/unfolded_theory_herwig.root",
+      "overrides": {
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "true",
+        "theory_variation_weights_path": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/arxivPaperResults2025/theory_reweighting/training-bf3b5fc3/Reweight_Step2_Ensemble_Herwig.npy",
+        "strict_theory_weight_length": "true",
+        "normalize_weights_mean1": "true"
+      },
+      "returncode": 0,
+      "plot_returncode": 0,
+      "theory_weight_diagnostics": {
+        "available": true,
+        "coverage_tgenBefore": 1.0,
+        "coverage_tgen": 1.0,
+        "weights_input_entries": 973769,
+        "weights_input_mean": 0.9932042803982546,
+        "weights_input_std": 1.6443495545170714,
+        "weights_mapped_entries": 771597,
+        "weights_mapped_mean": 0.9949974916062198,
+        "weights_mapped_std": 1.6391984680305425
+      }
+    },
+    {
+      "group": "theory",
+      "tag": "sherpa",
+      "out_root": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Thrust_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/theory/unfolded_theory_sherpa.root",
+      "overrides": {
+        "iterations": 5,
+        "calculate_covariance": "false",
+        "apply_hadronic_event_correction": "true",
+        "apply_theory_event_weights": "true",
+        "theory_variation_weights_path": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/arxivPaperResults2025/theory_reweighting/training-bf3b5fc3/Reweight_Step2_Ensemble_Sherpa.npy",
+        "strict_theory_weight_length": "true",
+        "normalize_weights_mean1": "true"
+      },
+      "returncode": 0,
+      "plot_returncode": 0,
+      "theory_weight_diagnostics": {
+        "available": true,
+        "coverage_tgenBefore": 1.0,
+        "coverage_tgen": 1.0,
+        "weights_input_entries": 973769,
+        "weights_input_mean": 0.9915362217827192,
+        "weights_input_std": 2.0470412591440565,
+        "weights_mapped_entries": 771597,
+        "weights_mapped_mean": 0.9944594990217885,
+        "weights_mapped_std": 2.0501420230402716
+      }
+    }
+  ],
+  "failures": [],
+  "provenance": {
+    "generated_at_utc": "2026-02-19T14:04:28.164977+00:00",
+    "python_executable": "/Users/anthonybadea/code/miniconda3/envs/py312/bin/python3",
+    "python_version": "3.12.12",
+    "platform": "macOS-26.1-arm64-arm-64bit",
+    "conda_prefix": "/Users/anthonybadea/code/miniconda3",
+    "root_version": "6.36.06",
+    "roounfold_version": "class_version:2",
+    "roounfold_library": "/Users/anthonybadea/code/RooUnfold/build/libRooUnfold.dylib",
+    "git_commit": "2e3aaac84e1b91ce639faead0851722b0ba79c71",
+    "git_dirty": true,
+    "env_fingerprint": "2d385a6539d686e0c767c6fd38aecd45a37d9eaa7a4d79e50dfc407b6a523019"
+  }
+}

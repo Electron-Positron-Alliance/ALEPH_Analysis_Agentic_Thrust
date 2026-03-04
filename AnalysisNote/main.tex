@@ -17,24 +17,26 @@
 \renewcommand{\bottomfraction}{0.45}
 \renewcommand{\textfraction}{0.08}
 \renewcommand{\floatpagefraction}{0.85}
+\usepackage{lineno}
+\linenumbers
 
-\title{Analysis note: precision QCD as a testing ground for precision AI, an agentic measurement of thrust on ALEPH archived data}
+\title{Analysis note: precision QCD as a testing ground for precision AI, an agentic measurement of thrust with ALEPH archived data}
 
-\author[a]{ALEPH Reanalysis Team}
-\affiliation[a]{Institution list to be finalized}
-\emailAdd{to-be-finalized@cern.ch}
+\author[a]{Anthony Badea}
+\affiliation[a]{University of Chicago, Enrico Fermi Institute, 60637 IL, USA}
+\emailAdd{anthony.badea@cern.ch}
 
 \abstract{
-High-precision experimental measurements provide an essential testing ground for precision artificial intelligence. As large language models and AI-assisted workflows are increasingly applied to physics calculations and autonomous research, the experimental precision frontier---percent-level measurements with rigorous uncertainty control and full covariance quantification---offers both a validation benchmark and an accountability framework where AI predictions must be quantitative, reproducible, and physically interpretable. Archived LEP1 $e^{+}e^{-}$ data exemplify this regime: the clean initial state, multiple hadronization models, and well-understood detector structure create an ideal sandbox for developing and testing AI-assisted measurement without sacrificing scientific rigor.
-
-This note presents a thrust reanalysis using archived ALEPH data with detector corrections based on Iterative Bayesian Unfolding (RooUnfold), validated through closure tests, refolding checks, iteration-regularization scans, and systematic stability studies. In addition to the unfolded spectrum, complete covariance and correlation matrices are produced for downstream phenomenology use. The workflow itself is framed as an experimental proof-of-concept: we demonstrate that an agentic AI system can execute a full data-driven analysis loop (simulation, reconstruction, unfolding, systematic propagation, documentation) under explicit physicist control and validation checkpoints, with 100\% workflow success and zero required corrections to result-level outputs. The resulting covariance-aware baseline is designed to enable new precision theory--experiment loops in which AI-assisted QCD calculations, tune variants, or novel observables can be directly confronted with high-precision data and held accountable to quantitative constraints. We argue that precision measurements should be understood not only as physics results but as infrastructure for validating the reliability of AI in science.
+We present a measurement of the thrust distribution in $e^{+}e^{-}$ collisions at $\sqrt{s}=91.2$~GeV using archived ALEPH data, carried out entirely by an AI agent under expert physicist direction---no analysis code was written by hand. 
+A detector-corrected spectrum with full covariance is obtained via Iterative Bayesian Unfolding, suitable for precision QCD phenomenology. 
+This work is a first step toward a closed theory--experiment loop in which AI agents perform rigorous measurements directly confrontable with AI-assisted theoretical calculations, accelerating the cycle that drives discovery in fundamental physics. 
+We argue that precision QCD, leveraging the open LEP data and advanced theoretical calculations, provides an ideal testing ground for developing such precision AI systems.
 }
 
 \keywords{QCD, event shapes, electron-positron collisions, unfolding}
 
 \begin{document}
 \maketitle
-\tableofcontents
 
 \input{sections/Introduction}
 \input{sections/AIAgentUsage}

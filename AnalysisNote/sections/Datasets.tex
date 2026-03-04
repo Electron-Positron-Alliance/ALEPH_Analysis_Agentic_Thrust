@@ -1,11 +1,23 @@
 \section{Data and simulated event samples}
 \label{sec:datasets}
 
-The nominal measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$~GeV. This period is used as baseline because matched detector-level and generator-level archived MC inputs required for unfolding are available in this configuration. The 1994 sample corresponds to approximately 40~pb$^{-1}$ after quality requirements, yielding approximately 1.33 million selected hadronic events, and provides the largest fully synchronized archived data/MC configuration for this workflow.
+The nominal measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$~GeV. This period is used because matched detector-level and generator-level archived MC inputs required for unfolding are available in this configuration. The 1994 sample corresponds to approximately 40~pb$^{-1}$ after quality requirements, yielding approximately 1.33 million selected hadronic events, and provides the largest fully synchronized archived data/MC configuration for this workflow.
 
 Detector corrections are derived from archived ALEPH MC processed through the same analysis chain. The archived MC was produced with the standard ALEPH detector simulation software chain (JETSET~7.4 parton shower and hadronization with the ALEPH tune, GEANT~3 detector simulation), consistent with the simulation used in the published ALEPH event-shape analyses of the same dataset~\cite{Heister:2003aj}. In the preserved sample, the detector-level and generator-level event records are connected through a common event identifier, enabling event-matched response construction and post-unfolding hadronic-selection corrections.
 
-The unfolded result is corrected to stable-hadron level, defined as all final-state particles with laboratory lifetime $c\tau > 10$~mm (the JETSET~7.4 stable-particle definition), inclusive over the full hadronic Z phase space. The hadronic event-selection correction $C_{\mathrm{had}}(j) = N_{\mathrm{genBefore}}(j)/N_{\mathrm{gen}}(j)$ accounts for the efficiency of the hadronic event selection at the generator level: multiplying the unfolded spectrum by $C_{\mathrm{had}}$ restores events lost to the hadronic selection, yielding a result that is not conditioned on generator-level hadronic event selection criteria.
+The unfolded result is corrected to stable-hadron level, defined as all final-state particles with stable or long-lived decays, inclusive over the full hadronic Z phase space. Two generator-level corrections are applied after unfolding.
+
+The hadronic event-selection correction,
+\begin{equation}
+C_{\mathrm{had}}(j) = \frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
+\end{equation}
+accounts for the efficiency of the hadronic event selection at the generator level: multiplying the unfolded spectrum by $C_{\mathrm{had}}$ restores events lost to the hadronic selection, yielding a result independent of the generator-level hadronic event selection.
+
+An initial-state radiation (ISR) correction,
+\begin{equation}
+C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)},
+\end{equation}
+would additionally correct the result from the ISR-inclusive generator-level distribution to the pure $\sqrt{s}=M_Z$ distribution. Both published ALEPH event-shape analyses~\cite{Barate:1996fi,Heister:2003aj} apply this correction. The ISR correction is not yet implemented in the current analysis and represents a systematic gap relative to the published results; its expected impact and planned implementation are discussed in Sec.~\ref{sec:systematics}.
 
 The unfolding step consumes four synchronized inputs:
 \begin{itemize}
@@ -15,11 +27,11 @@ The unfolding step consumes four synchronized inputs:
 \item generator-level MC tree before hadronic event selection (\texttt{tgenBefore}).
 \end{itemize}
 
-The ratio \texttt{tgenBefore/tgen} is used to derive the hadronic event-selection correction applied after unfolding. Event matching between reco and gen levels is performed with the unique event identifier. For response filling, generator entries are conditioned on the reconstructed selected-event identifier set, consistent with the matched-response construction described in Sec.~\ref{sec:method}.
+The ratio \texttt{tgenBefore/tgen} is used to derive the hadronic event-selection correction applied after unfolding. Event matching between reco and gen levels is performed with the unique event identifier. For response filling, generator entries are matched to the reconstructed selected-event identifier set, consistent with the matched-response construction described in Sec.~\ref{sec:method}.
 
 In addition to the archived baseline MC, alternative modern generator predictions — PYTHIA~8.3, Herwig~7.3, and Sherpa~2.2 — are used in this note through event-level reweighting variations to estimate theory-model dependence. These variations are propagated as dedicated systematic components in the final uncertainty model while preserving the same detector-response baseline.
 
-Table~\ref{tab:sample_bookkeeping} summarizes the event counts in the nominal thrust workflow. The archived MC reco sample contains approximately 772k selected events compared to 1.33M in data, giving a data-to-MC ratio of roughly 1.8. This imbalance means that MC statistical fluctuations contribute at a non-negligible level to the response matrix and that response-bin precision is limited by MC statistics in high-thrust bins where both data and MC counts are low. The experimental systematic program accounts for part of this sensitivity through the neutral efficiency and energy-scale variations.
+Table~\ref{tab:sample_bookkeeping} summarizes the event counts in the nominal thrust workflow. The archived MC reco sample contains approximately 772k selected events compared to 1.33M in data, giving a data-to-MC ratio of roughly 1.8. This imbalance means that MC statistical fluctuations contribute at a non-negligible level to the response matrix and that response-bin precision is limited by MC statistics in thrust bins where both data and MC counts are low.
 
 \begin{table}[t!]
 \centering
