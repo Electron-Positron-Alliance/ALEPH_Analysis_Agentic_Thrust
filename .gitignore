@@ -80,3 +80,4 @@ DataProcessing/plotting/plots/
 *.toc
 *.vrb
 *.xdv
+TObject.C
