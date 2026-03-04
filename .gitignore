@@ -37,12 +37,20 @@ dist/
 *.csv
 
 # Plots and exported figures
+# PDFs needed to compile the analysis note are tracked via !-exceptions below
 *.pdf
 *.png
 *.jpg
 *.jpeg
 *.svg
 *.eps
+
+# Track analysis note figure PDFs (Studies/ plots referenced by AnalysisNote/)
+!Studies/PreliminaryResult/2026-02-17_thrust_iter5/pwflag_kinematics/*.pdf
+!Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/*.pdf
+!Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/matrices_nominal_iter5/*.pdf
+!Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/*.pdf
+!Studies/Phase2_Checks_2026-03-03/plots/**/*.pdf
 
 # Project-specific generated folders
 DataProcessing/bin/
