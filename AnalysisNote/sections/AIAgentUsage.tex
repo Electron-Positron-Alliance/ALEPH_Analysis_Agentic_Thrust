@@ -28,6 +28,15 @@ checks, and documentation rigor. In practical terms, the agent is used to:
 This model is intentionally conservative: the agent is treated as an
 accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker at this stage. The interaction is analogous to advising a graduate student, where the physicist supplies expert judgment and direction while the student (agent) carries out the technical execution.
 
+\subsection{Inputs and context supplied to agents}
+\label{sec:agent_inputs}
+
+The context supplied to the agent at the start of each session can be grouped into four categories.
+First, \textit{reference materials}: the published ALEPH thrust measurement~\cite{Heister:2003aj}, prior ROOT-based analysis macros for event selection and thrust calculation, and internal analysis notes documenting the miniDST format, detector calibration, and \texttt{pwflag} definitions.
+Second, \textit{data inputs}: the LEP\,1 open-data miniDST files for the 1994 running period at $\sqrt{s}=91.2$~GeV, together with the corresponding ALEPH Monte Carlo simulation samples.
+Third, \textit{physicist-written prompts}: each iteration began with a prompt specifying the physics objective (e.g.\ ``propagate the hadronic-event correction as an independent systematic component with per-bin envelope uncertainties''), acceptance criteria (e.g.\ ``refolded spectra must reproduce detector-level data within statistical precision''), and output-format expectations (figure style, table layout, note section to update).
+Fourth, \textit{what was not supplied}: no pre-written unfolding code, no systematic-uncertainty framework, and no covariance-matrix infrastructure were provided. The agent constructed these from the physics descriptions in the prompts, using the reference code as stylistic guidance rather than as a template to copy. This distinction is important for assessing what the agent can build from first principles versus what it merely adapts from existing implementations.
+
 \subsection{Boundaries, controls, and reproducibility}
 
 To keep scientific accountability explicit, each high-impact step has a
@@ -40,6 +49,30 @@ as baseline:
 \item final figure and uncertainty-presentation choices;
 \item interpretation language in the note.
 \end{itemize}
+
+Beyond these sign-off gates, the physicist performed concrete validation checks at each major analysis stage. These checks are enumerated here to make the human-oversight component explicit and reproducible.
+
+\textit{Event selection.}
+Cut-flow yields were compared to the published ALEPH numbers~\cite{Heister:2003aj} to verify selection efficiency.
+Distributions of $\cos\theta_{\mathrm{thrust}}$ and $\varphi$ were inspected for detector artifacts; this step uncovered a localized $\varphi$ excess in the data that was traced to a detector region and corrected before proceeding.
+
+\textit{Unfolding.}
+Refolded spectra were required to reproduce the detector-level data within statistical precision.
+An iteration scan confirmed that $\chi^{2}/\mathrm{ndf}$ is stable across iterations~4--6.
+Independent cross-checks with OmniFold ($\chi^{2}/\mathrm{ndf}=0.663$) and a prior-sensitivity IBU variant ($\chi^{2}/\mathrm{ndf}=0.421$) were reviewed to ensure the baseline result is not an artifact of the nominal method.
+
+\textit{Systematic uncertainties.}
+Each variation's impact on the unfolded distribution was inspected for bin-to-bin continuity and physical reasonableness.
+The total covariance matrix was verified to be positive semi-definite.
+The ${\sim}23\%$ difference between energy-flow and charged-only thrust was confirmed to be an observable-redefinition effect rather than a detector systematic (see Sec.~\ref{sec:exp_systematics}).
+
+\textit{Final result.}
+The unfolded thrust distribution was compared to the ALEPH\,2004 published result, yielding $\chi^{2}/\mathrm{ndf}=0.36$ over 42~bins.
+Per-bin uncertainty breakdowns were examined for pathological bins, particularly the endpoint region $T\in[0.99,1.00]$.
+
+\textit{Documentation.}
+All figure captions, table entries, and interpretive statements in the note were reviewed by the physicist for physics accuracy.
+Agent-generated text was treated as a draft requiring human approval before inclusion in the baseline.
 
 Reproducibility is ensured through multiple complementary mechanisms. All
 analysis steps are version-controlled, with code and configuration managed

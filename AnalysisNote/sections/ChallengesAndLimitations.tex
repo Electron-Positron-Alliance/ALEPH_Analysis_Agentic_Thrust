@@ -28,3 +28,14 @@ For each major workflow iteration, this section should record:
 \end{itemize}
 
 Keeping this log in the main body is intentional: it makes assumptions and remaining risks visible to internal readers and future maintainers.
+
+\subsection{Scaling human oversight: toward systematic validation}
+\label{sec:scaling_oversight}
+
+A recurring theme in this work is that the set of things that can go wrong silently grows rapidly with analysis complexity. The one-dimensional thrust measurement already required validation of event selection, unfolding closure, systematic propagation, covariance-matrix properties, and figure/table accuracy. Extending the program to additional observables, multidimensional unfolding, or theory--experiment feedback loops will multiply these failure modes.
+
+The current mitigation relies on structured sign-off points, automated integrity checks (file presence, covariance positive semi-definiteness, fit-mask validity), and version-controlled provenance. While adequate for a single-observable proof of concept, this approach does not scale without further investment in systematic testing infrastructure.
+
+Software engineering and machine-learning operations (MLOps) communities have partially addressed analogous challenges through continuous-integration and continuous-deployment (CI/CD) pipelines, where automated test suites run on every code change and failures block deployment. Adapting these patterns to physics analysis workflows is a natural next step: for example, automated regression tests could verify that modifying one systematic variation does not silently shift the unfolded spectrum outside a predefined tolerance. Physics-specific assertions --- such as verifying that the unfolded distribution integrates to unity, that the response matrix is properly normalized, or that refolded spectra agree with detector-level data --- could be encoded as unit tests that run after each agent iteration.
+
+The key unsolved challenge is encoding implicit physics priors as testable assertions. Many of the validation checks performed by the physicist in this analysis (Sec.~\ref{sec:ai_agent}) rely on domain intuition that is difficult to formalize: recognizing that a $\varphi$ excess indicates a detector artifact, judging whether a per-bin uncertainty is ``physically reasonable,'' or deciding that a $23\%$ shift constitutes an observable redefinition rather than a systematic effect. Developing methods to translate such expert knowledge into machine-executable tests --- whether through formal specification languages, learned anomaly detectors, or structured physicist--agent dialogue protocols --- is an important direction for making AI-assisted experimental physics robust and scalable.
