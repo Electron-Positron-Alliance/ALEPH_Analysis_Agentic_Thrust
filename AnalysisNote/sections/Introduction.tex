@@ -4,9 +4,9 @@
 Machine learning has been central to high-energy physics for decades, enabling
 reconstruction algorithms, event classification, and detector optimization across
 collider experiments. A new frontier has emerged with large language models (LLMs)
-developed by major AI laboratories---including
+developed by major AI laboratories, including
 Anthropic~\cite{Anthropic:2025accelerating}, OpenAI~\cite{OpenAI:2025gpt5science},
-Google DeepMind~\cite{GoogleDeepMind:2025geminiscience}, and others---that can now
+Google DeepMind~\cite{GoogleDeepMind:2025geminiscience}, and others, that can now
 assist directly with scientific reasoning, mathematical proof, and code generation.
 A striking asymmetry persists in fundamental physics: nearly all current
 AI-assisted scientific workflows operate on the theoretical or computational side.
@@ -14,15 +14,15 @@ Recent examples include AI-assisted derivations of new results in
 theoretical particle physics~\cite{OpenAI:2025newresult}, design of novel protein
 structures for biology and health research~\cite{GoogleDeepMind:2025alphaproteo},
 and assistance with complex mathematical simplifications in high-energy physics
-calculations. The experimental side of the AI-assisted scientific loop remains
+calculations. The experimental side of the AI-assisted fundamental physics research loop remains
 largely absent. To realize a future where AI rapidly accelerates the discovery of
 new physics, AI-assisted scientific workflows must be developed and validated
 across \textit{both} precision theory \textit{and} precision experiment.
 
 A logical first step toward closing this gap is an agentic analysis of real
 experimental data with expert physicist oversight. This is precisely the approach
-pursued here: the physicist opened Anthropic Claude Code, brainstormed the
-analysis goals, then iteratively prompted the AI agent to execute the full
+pursued here: the physicist opened AI Agent (OpenAI Codex and Anthropic Claude Code), brainstormed the
+analysis goals, then iteratively prompted the AI agents to execute the full
 analysis workflow. No analysis code was written by hand; the physicist's role is
 analogous to advising a graduate student, providing expert direction, reviewing
 results, and iterating. The agent was supplied with prior ALEPH analysis code,
@@ -40,13 +40,10 @@ by autonomous robotic systems, creating closed feedback loops where AI proposes,
 executes, measures, and learns. High-energy physics faces a parallel opportunity.
 While we cannot deploy robotic particle detectors (yet), the emergence of open,
 curated data, partially enabled by the e+e$^-$ alliance~\cite{EEAlliance:website},
-from past experiments---particularly the precision LEP dataset---can serve as a
+from past experiments, particularly the precision LEP dataset, can serve as a
 ``pseudo-laboratory'' for developing and validating AI-assisted scientific workflows
 that operate across the precision theory--experiment
-interface~\cite{Badea:2019vey,Chen:2021uws}. This requires experimental infrastructure
-on both sides: precision theoretical predictions and precision experimental measurements
-with rigorous covariance quantification, where AI-assisted reasoning is tested and held
-accountable to measurable constraints~\cite{Wang:2023aai,Messeri:2024aiu,Woodruff:2026practicalsi}.
+interface~\cite{Badea:2019vey,Chen:2021uws}. This requires infrastructure on both sides: precise theoretical predictions and experimental measurements with rigorous uncertainty quantification, where AI-assisted reasoning is tested and held accountable to measurable constraints~\cite{Wang:2023aai,Messeri:2024aiu,Woodruff:2026practicalsi}.
 
 Precision QCD provides an excellent domain for this program, precisely because of the
 combination of high-precision $e^{+}e^{-}$ data and sophisticated high-precision theory
@@ -58,32 +55,20 @@ When percent-level uncertainties are coupled to rigorous covariance quantificati
 end-to-end reproducibility, high-precision measurements define the testing ground where
 AI predictions are made quantitative, falsifiable, and subject to rigorous scientific
 accountability. Although there is currently no active high-energy lepton collider,
-archived LEP data now provide an unprecedented open-data opportunity for precision
-event-shape studies with explicit uncertainty control~\cite{EEAlliance:website,Badea:2019vey,Chen:2021uws}.
-Relative to hadron- and nuclear-collision open-data settings, the LEP $e^{+}e^{-}$
-environment provides substantially tighter control of soft-event complexity and
-initial-state structure, making it a uniquely clean benchmark for both precision QCD
-and precision AI model development.
+archived LEP data now provide an unprecedented open-data opportunity for precision studies with excellent uncertainty control~\cite{EEAlliance:website,Badea:2019vey,Chen:2021uws}.
+Relative to hadron- and nuclear-collision open-data settings, the LEP $e^{+}e^{-}$ environment is considerably simpler experimentally and theoretically, making it a uniquely clean testing ground for new research in precision Physics+AI development.
 
-Among event-shape observables, thrust is an ideal first variable for this program.
-Thrust $T$ probes both perturbative radiation and non-perturbative dynamics in a
+From both an AI and precision physics perspective, thrust is an ideal first variable for this program.
+Thrust probes both perturbative radiation and non-perturbative dynamics in a
 single distribution, is computable at high perturbative order, and has well-established
 connections to resummed calculations, making comparison to theory controlled and
-interpretable~\cite{PhysRevLett.39.1587,Abbate:2010xh,Heister:2003aj}. It is defined as
-$T = \max_{\hat{n}} \left(\sum_i |\vec{p}_i \cdot \hat{n}| / \sum_i |\vec{p}_i|\right)$,
-where the sum runs over all selected particles and the thrust axis $\hat{n}$ maximizes
-the quantity.
-
-Event-shape observables measured at LEP continue to anchor comparisons between
+interpretable~\cite{PhysRevLett.39.1587,Abbate:2010xh,Heister:2003aj}. Thrust, along with other event-shape observables measured at LEP, continue to anchor comparisons between
 perturbative calculations, generator modeling, and non-perturbative hadronization
 constraints. Recent thrust-based $\alpha_s$ extractions report
 $\alpha_s(m_Z)\simeq 0.1136\pm 0.0012$, below the 2023 world-average value
 $\alpha_s(m_Z)=0.1180\pm 0.0009$~\cite{Benitez:2024nav,ParticleDataGroup:2022pth}.
-This persistent tension, often referred to as the $e^{+}e^{-}$ $\alpha_s$ puzzle,
-sharpens the need for renewed measurements with explicit uncertainty control and
-publishable covariance information. The thrust peak and logarithmic moments are also
-increasingly important for constraining non-perturbative shape-function
-effects~\cite{Abbate:2010xh,Assi:2025ibi}.
+This persistent tension, often referred to as the $e^{+}e^{-}$ $\alpha_{s}$ puzzle, is of great interest because $\alpha_{s}$ is the least precisely measured fundamental constant of nature. The associated uncertainties propagate to all measurements involving QCD, and the effective field theory tools used to extract $\alpha_{s}$ are widely employed throughout the field. Put differently, if something is missed in the simplest case of $e^{+}e^{-}$ collisions, it is likely that similar effects will also be missed in precision studies of more complex systems such as $pp$ collisions. 
+
 
 The immediate objective of this note is to establish a robust detector-corrected
 thrust baseline using Iterative Bayesian Unfolding (IBU) implemented in RooUnfold,
@@ -93,9 +78,9 @@ systematic propagation, figure production, and note maintenance with traceable l
 to code and outputs. This analysis is also part of a broader program of
 AI-assisted scientific workflows in high-energy physics, where agent-oriented
 frameworks are developing rapidly alongside AI-assisted theoretical
-calculations~\cite{Abolhasani:2023sdl,MacLeod:2020sdl,Chen:2024scienceagentbench,Lu:2024aiscientist,Woodruff:2026practicalsi,Bubeck:2025coscientist,OpenAITheory:2026singleminus,Schwartz:2026cparameterllm}.
+calculations~\cite{Abolhasani:2023sdl,MacLeod:2020sdl,Chen:2024scienceagentbench,Lu:2024aiscientist,Woodruff:2026practicalsi,Bubeck:2025coscientist,OpenAITheory:2026singleminus,Schwartz:2026cparameterllm}. We utilize the thrust measurement as a testing ground to understand the capabilities or the agent, establish a software base to conduct agentic analysis of the LEP data, and identify areas for improvement. We note that areas for improvement include both the core capabilities of the AI and the interaction of the physicist with the AI.
 In addition to the unfolded spectrum, complete covariance and correlation matrices
-are produced for downstream phenomenology use. In the next stage, the same framework
+are produced for downstream phenomenology use. We envision using our work to pursue a next stage, where the same framework
 will be extended to additional event-shape observables (C-parameter and heavy-jet
 mass), and the approach of using AI-assisted scientific workflows for both theoretical
 and experimental analysis will be pursued in a loop between them. Since thrust is
@@ -111,6 +96,6 @@ Sec.~\ref{sec:event_selection} details reconstruction and selections, including
 particle-category and event-level validation; Sec.~\ref{sec:method} presents
 thrust construction and the executable unfolding workflow;
 Sec.~\ref{sec:systematics} and Sec.~\ref{sec:results} document uncertainty
-propagation and the final thrust baseline outputs; Sec.~\ref{sec:challenges}
+propagation and the final thrust baseline outputs; Sec.~\ref{sec:conclusion} reports our conclusions from the study; Sec.~\ref{sec:challenges}
 closes the note with practical collaboration protocol, persistent analysis
 challenges, and mitigation tracking.

@@ -10,7 +10,7 @@ with traceable links to code and outputs.
 
 \subsection{Scope and operating model}
 
-The agent used in this analysis is interfaced through Anthropic Claude Code.
+The agent used in this analysis is interfaced through Anthropic Claude Code and OpenAI Codex, depending on the preference of the physicist.
 The operating model is human-in-the-loop: the physicist formulates goals and
 provides expert direction through iterative prompts; the agent executes the
 corresponding implementation steps; the physicist reviews the outputs and
@@ -26,10 +26,7 @@ checks, and documentation rigor. In practical terms, the agent is used to:
 \end{itemize}
 
 This model is intentionally conservative: the agent is treated as an
-accelerator for engineering and documentation tasks, not as an autonomous
-scientific decision-maker. The interaction is analogous to advising a
-graduate student, where the physicist supplies expert judgment and direction
-while the student (agent) carries out the technical execution.
+accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker at this stage. The interaction is analogous to advising a graduate student, where the physicist supplies expert judgment and direction while the student (agent) carries out the technical execution.
 
 \subsection{Boundaries, controls, and reproducibility}
 
@@ -38,7 +35,7 @@ control point where analyst sign-off is required before results are treated
 as baseline:
 \begin{itemize}
 \item event and object selection definition;
-\item nominal unfolding regularization choice ($N_{\mathrm{iter}}=5$ in this pass);
+\item nominal unfolding regularization choice;
 \item systematic-combination policy;
 \item final figure and uncertainty-presentation choices;
 \item interpretation language in the note.
@@ -58,55 +55,36 @@ full accountability for all scientific claims.
 
 \subsection{Why this matters for the broader physics program}
 
-The broader objective is to extend AI use in fundamental physics beyond
-purely theoretical calculations. The experimental side of the loop must
-produce reliable, uncertainty-aware observables and covariance products that
-can be consumed by precision QCD fits. AI is used beyond theory calculations:
-the goal is to accelerate fundamental physics by leveraging AI agents, LLMs,
-and other advanced models for both theoretical calculations and experimental
-analysis, ideally with a feedback loop between them. Figure~\ref{fig:ai_loop}
-illustrates this loop: theory predictions inform the experimental analysis,
-which in turn constrains further theory proposals, with the physicist
-providing expert oversight at each stage.
+The broader objective of this work is to extend modern AI, including large
+language models (LLMs), beyond purely theoretical calculations in
+fundamental physics. To fully close the theory--experiment loop, the
+experimental side must produce reliable, uncertainty-aware observables and
+covariance products that can be directly consumed by precision QCD fits.
+In this vision, AI is applied not only to theoretical calculations but also
+to experimental analysis workflows.
 
-\begin{figure}[t!]
-\centering
-\begin{tikzpicture}[
-  node distance=2.2cm and 3.5cm,
-  box/.style={rectangle, draw, rounded corners, minimum width=3.2cm,
-              minimum height=1.0cm, align=center, font=\small},
-  human/.style={rectangle, draw, rounded corners, dashed,
-                minimum width=2.6cm, minimum height=0.9cm,
-                align=center, font=\small\itshape, fill=gray!10},
-  arr/.style={-{Stealth[length=6pt]}, thick}
-]
-\node[box] (theory) {Theory prediction\\(QCD calculations,\\generator tunes)};
-\node[box, right=of theory] (expt) {Experimental analysis\\(unfolding, covariance,\\systematic propagation)};
-\node[box, below=1.5cm of expt] (prop) {New proposals\\(observables, fits,\\theory improvements)};
-\node[human, below=1.5cm of theory] (human) {Physicist\\(expert oversight)};
-\draw[arr] (theory) -- (expt) node[midway, above, font=\scriptsize] {prediction vs.\ data};
-\draw[arr] (expt) -- (prop) node[midway, right, font=\scriptsize] {precision constraints};
-\draw[arr] (prop) -- (human) node[midway, below, font=\scriptsize] {new directions};
-\draw[arr] (human) -- (theory) node[midway, left, font=\scriptsize] {guidance};
-\end{tikzpicture}
-\caption{Schematic of the theory--experiment loop targeted by the AI-assisted
-  physics program. Theory predictions are confronted with precision experimental
-  measurements, which generate constraints that inform new proposals. The physicist
-  provides expert oversight and decision-making at each stage.}
-\label{fig:ai_loop}
-\end{figure}
+The goal is to accelerate progress in fundamental physics by leveraging AI
+agents, LLMs, and other advanced models across both domains, ideally within
+a feedback loop between theory and experiment. In this loop, illustrated in
+Fig.~\ref{fig:ai_loop}, theory predictions inform experimental analyses,
+whose results in turn constrain and guide further theoretical proposals.
+Throughout this process, the physicist provides expert oversight and
+validation at each stage.
 
-Recent AI-and-scientist and HEP-theory case studies support this direction while
-also highlighting verification, reproducibility, and expert oversight as
-first-class
-constraints~\cite{Woodruff:2026practicalsi,Bubeck:2025coscientist,OpenAITheory:2026singleminus,Schwartz:2026cparameterllm}.
-In this note, the bridge is represented by release-grade covariance and
-correlation outputs for thrust, with the next step being expansion to
-C-parameter and heavy-jet mass and eventual multidimensional constraints.
+Recent case studies in AI-assisted scientific discovery and HEP theory
+support this direction, while also emphasizing verification,
+reproducibility, and expert oversight as essential constraints
+for reliable deployment of such systems
+\cite{Woodruff:2026practicalsi,Bubeck:2025coscientist,OpenAITheory:2026singleminus,Schwartz:2026cparameterllm}.
+In the present work, the experimental--theory bridge is represented by
+release-grade covariance and correlation outputs for thrust, with the next
+step being an expansion to additional event-shape observables such as the
+C-parameter and heavy-jet mass, and ultimately to multidimensional
+constraints.
 
-This section therefore serves as both a method statement and a record of
-feasibility: the agent can assist with end-to-end experimental workflow
-execution when constrained by explicit controls, validation checks, and
-human review. The operational details of this collaboration model, including
-interaction protocol and persistent bottlenecks observed from the agent side,
-are documented in Sec.~\ref{sec:challenges}.
+This section therefore serves both as a methodological statement and as a proof of concept. In particular, it shows that an AI agent can
+assist with end-to-end execution of experimental workflows when constrained
+by explicit controls, validation checks, and human review. The operational
+details of this collaboration model, including the interaction protocol and
+persistent bottlenecks observed from the agent perspective, are documented
+in Sec.~\ref{sec:challenges}.

@@ -21,17 +21,24 @@
 \usepackage{lineno}
 \linenumbers
 
-\title{Analysis note: precision QCD as a testing ground for precision AI, an agentic measurement of thrust with ALEPH archived data}
+% \title{Analysis note: LEP open data and precision physics as a testing ground for precision AI systems, an agentic measurement of thrust with ALEPH archived data}
+
+\title{Analysis note: Proof of concept AI agentic experimental measurement of LEP archived data} 
+
+% LEP open data and precision physics as a testing ground for precision AI systems, an agentic measurement of thrust with ALEPH archived data}
 
 \author[a]{Anthony Badea}
+\author[b]{Yen-Jie Lee}
+
 \affiliation[a]{University of Chicago, Enrico Fermi Institute, 60637 IL, USA}
 \emailAdd{anthony.badea@cern.ch}
+\affiliation[b]{Laboratory for Nuclear Science, Massachusetts Institute of Technology, Cambridge, MA 02139, USA}%
 
 \abstract{
-We present a measurement of the thrust distribution in $e^{+}e^{-}$ collisions at $\sqrt{s}=91.2$~GeV using archived ALEPH data, carried out entirely by an AI agent under expert physicist direction---no analysis code was written by hand. 
+We present a measurement of the thrust distribution in $e^{+}e^{-}$ collisions at $\sqrt{s}=91.2$~GeV using archived ALEPH data, carried out entirely by AI agents (OpenAI Codex and Anthropic Claude) under expert physicist direction. 
 A detector-corrected spectrum with full covariance is obtained via Iterative Bayesian Unfolding, suitable for precision QCD phenomenology. 
-This work is a first step toward a closed theory--experiment loop in which AI agents perform rigorous measurements directly confrontable with AI-assisted theoretical calculations, accelerating the cycle that drives discovery in fundamental physics. 
-We argue that precision QCD, leveraging the open LEP data and advanced theoretical calculations, provides an ideal testing ground for developing such precision AI systems.
+This work is a first step toward a theory--experiment loop in which AI agents perform rigorous measurements directly confrontable with AI-assisted theoretical calculations, accelerating the cycle that drives discovery in fundamental physics. 
+Our work suggests that precision physics, leveraging the open LEP data and advanced theoretical calculations, provides an ideal testing ground for developing advanced AI systems for scientific applications.
 }
 
 \keywords{QCD, event shapes, electron-positron collisions, unfolding}
@@ -49,6 +56,11 @@ We argue that precision QCD, leveraging the open LEP data and advanced theoretic
 \input{sections/Results}
 \input{sections/Conclusion}
 \input{sections/ChallengesAndLimitations}
+
+\FloatBarrier
+\section*{Acknowledgments}
+
+The authors would like to thank Roberto Tenchini and Guenther Dissertori from the ALEPH Collaboration for their useful comments and suggestions on the use of ALEPH data. This work has been supported by Schmidt Sciences Foundation (to A.B.) and Department of Energy, Office of Science, under Grant No. DE-SC0011088 (to Y.-J.L.).
 
 \bibliographystyle{JHEP}
 \bibliography{biblio}
