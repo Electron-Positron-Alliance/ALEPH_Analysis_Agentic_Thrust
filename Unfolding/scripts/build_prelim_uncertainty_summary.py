@@ -148,6 +148,14 @@ def parse_args():
         default=1.55,
         help="Upper y-limit for optional comparison ratio panel.",
     )
+    p.add_argument(
+        "--isr-cache",
+        default=None,
+        help=(
+            "Path to isr_correction_cache.root (pre-computed by run_thrust_prelim_workflow.py). "
+            "If omitted, auto-detected at <base-dir>/isr_cache/isr_correction_cache.root."
+        ),
+    )
     return p.parse_args()
 
 
@@ -821,6 +829,51 @@ def compute_hadronic_correction_fractional_shift(
     return abs_env([shift_up, shift_down])
 
 
+def compute_isr_correction_fractional_shift(
+    nominal_root: str,
+    nominal_counts,
+    nominal_diffxsec: np.ndarray,
+    isr_cache_file: str | None = None,
+) -> np.ndarray:
+    src = isr_cache_file if (isr_cache_file and os.path.exists(isr_cache_file)) else nominal_root
+    h_isr0 = load_hist(src, "mc_isr0")
+    h_isr1 = load_hist(src, "mc_isr1")
+    nbins = nominal_counts.GetNbinsX()
+    if h_isr0.GetNbinsX() != nbins or h_isr1.GetNbinsX() != nbins:
+        raise ValueError(
+            "ISR correction histograms have inconsistent binning relative to nominal histogram"
+        )
+
+    h_up = nominal_counts.Clone("isr_corr_up_counts")
+    h_down = nominal_counts.Clone("isr_corr_down_counts")
+    h_up.SetDirectory(0)
+    h_down.SetDirectory(0)
+
+    for ibin in range(1, nbins + 1):
+        n_isr0 = float(h_isr0.GetBinContent(ibin))
+        n_isr0_err = float(h_isr0.GetBinError(ibin))
+        n_isr1 = float(h_isr1.GetBinContent(ibin))
+        n_isr1_err = float(h_isr1.GetBinError(ibin))
+        rel = 0.0
+        if n_isr0 > 0.0 and n_isr1 > 0.0:
+            rel = math.sqrt((n_isr0_err / n_isr0) ** 2 + (n_isr1_err / n_isr1) ** 2)
+
+        c_nom = float(nominal_counts.GetBinContent(ibin))
+        e_nom = float(nominal_counts.GetBinError(ibin))
+        up_scale = 1.0 + rel
+        down_scale = max(0.0, 1.0 - rel)
+        h_up.SetBinContent(ibin, c_nom * up_scale)
+        h_down.SetBinContent(ibin, c_nom * down_scale)
+        h_up.SetBinError(ibin, e_nom * up_scale)
+        h_down.SetBinError(ibin, e_nom * down_scale)
+
+    arr_up = hist_to_array(to_diff_xsec(h_up))
+    arr_down = hist_to_array(to_diff_xsec(h_down))
+    shift_up = frac_shift(arr_up, nominal_diffxsec)
+    shift_down = frac_shift(arr_down, nominal_diffxsec)
+    return abs_env([shift_up, shift_down])
+
+
 def write_csv(path: str, arr: np.ndarray):
     np.savetxt(path, arr, delimiter=",", fmt="%.10e")
 
@@ -933,6 +986,7 @@ def make_final_plot(
     iter_abs: np.ndarray,
     theory_abs: np.ndarray,
     hadronic_abs: np.ndarray | None = None,
+    isr_abs: np.ndarray | None = None,
 ):
     from PlotConfig import plotConfig
     from style import ALEPHLegend, apply_style, myText, style_ratio
@@ -942,7 +996,9 @@ def make_final_plot(
 
     if hadronic_abs is None:
         hadronic_abs = np.zeros_like(stat_abs)
-    total_abs = np.sqrt(stat_abs**2 + exp_abs**2 + iter_abs**2 + theory_abs**2 + hadronic_abs**2)
+    if isr_abs is None:
+        isr_abs = np.zeros_like(stat_abs)
+    total_abs = np.sqrt(stat_abs**2 + exp_abs**2 + iter_abs**2 + theory_abs**2 + hadronic_abs**2 + isr_abs**2)
 
     def band_hist(name: str, color: int, alpha: float, abs_err: np.ndarray):
         h = nominal.Clone(name)
@@ -1418,6 +1474,14 @@ def main():
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     base_dir = os.path.abspath(args.base_dir)
     outdir = os.path.abspath(args.outdir or os.path.join(base_dir, "summary"))
+    isr_cache_file = args.isr_cache
+    if isr_cache_file is None:
+        auto = os.path.join(base_dir, "isr_cache", "isr_correction_cache.root")
+        if os.path.exists(auto):
+            isr_cache_file = auto
+            print(f"Auto-detected ISR cache: {isr_cache_file}")
+        else:
+            print("WARNING: ISR cache not found; ISR uncertainty will be zero.", file=sys.stderr)
     os.makedirs(outdir, exist_ok=True)
     aleph_csv_path = resolve_aleph_csv(args.aleph_csv)
 
@@ -1425,6 +1489,23 @@ def main():
     nominal_root = os.path.join(base_dir, "nominal", f"unfolded_nominal_iter{args.nominal_iter}.root")
     ensure_exists(nominal_root, "nominal ROOT")
     nominal_counts = load_hist(nominal_root, args.hist_name)
+
+    # Determine whether the ISR correction needs to be applied post-hoc.
+    # When run_thrust_prelim_workflow.py produces ROOT files with apply_isr_correction=true it
+    # writes an isr_corr histogram into each output file.  Older files (pre-ISR implementation)
+    # lack that histogram, so we apply the cached correction here to every loaded histogram so
+    # that the nominal central values and all systematic-variant arrays are in the same ISR basis.
+    h_isr_corr_to_apply = None
+    try:
+        load_hist(nominal_root, "isr_corr")
+        # ISR already baked in; no post-hoc correction needed.
+    except KeyError:
+        if isr_cache_file:
+            h_isr_corr_to_apply = load_hist(isr_cache_file, "isr_corr")
+            print("ISR correction will be applied post-hoc from cache to all loaded histograms.")
+    if h_isr_corr_to_apply is not None:
+        nominal_counts.Multiply(h_isr_corr_to_apply)
+
     nominal = to_diff_xsec(nominal_counts)
     nom = hist_to_array(nominal)
     nbins = len(nom)
@@ -1438,7 +1519,10 @@ def main():
     iter_shift_map = {}
     for it, path in iter_roots.items():
         ensure_exists(path, f"iteration ROOT ({it})")
-        arr = hist_to_array(to_diff_xsec(load_hist(path, args.hist_name)))
+        h_it = load_hist(path, args.hist_name)
+        if h_isr_corr_to_apply is not None:
+            h_it.Multiply(h_isr_corr_to_apply)
+        arr = hist_to_array(to_diff_xsec(h_it))
         iter_arrays.append(arr)
         iter_shift_map[it] = frac_shift(arr, nom)
     iter_shifts = [frac_shift(arr, nom) for arr in iter_arrays]
@@ -1452,7 +1536,10 @@ def main():
     for var in TRACK_EVENT_VARS + NEUTRAL_VARS + ["no_neutrals"]:
         path = os.path.join(base_dir, "experimental", f"unfolded_{var}.root")
         ensure_exists(path, f"experimental ROOT ({var})")
-        exp_arrays[var] = hist_to_array(to_diff_xsec(load_hist(path, args.hist_name)))
+        h_exp = load_hist(path, args.hist_name)
+        if h_isr_corr_to_apply is not None:
+            h_exp.Multiply(h_isr_corr_to_apply)
+        exp_arrays[var] = hist_to_array(to_diff_xsec(h_exp))
     exp_shifts = {var: frac_shift(exp_arrays[var], nom) for var in exp_arrays}
 
     delta_track_event = quad_sum([np.abs(exp_shifts[v]) for v in TRACK_EVENT_VARS])
@@ -1474,7 +1561,10 @@ def main():
     for var in THEORY_VARS:
         path = os.path.join(base_dir, "theory", f"unfolded_theory_{var}.root")
         ensure_exists(path, f"theory ROOT ({var})")
-        theory_arrays[var] = hist_to_array(to_diff_xsec(load_hist(path, args.hist_name)))
+        h_th = load_hist(path, args.hist_name)
+        if h_isr_corr_to_apply is not None:
+            h_th.Multiply(h_isr_corr_to_apply)
+        theory_arrays[var] = hist_to_array(to_diff_xsec(h_th))
         try:
             theory_weight_diagnostics[var] = extract_theory_weight_diagnostics(path)
         except Exception as exc:
@@ -1528,10 +1618,23 @@ def main():
         nominal_diffxsec=nom,
     )
     hadronic_abs = delta_hadronic * nom_abs
+    isr_hists_available = False
+    try:
+        delta_isr = compute_isr_correction_fractional_shift(
+            nominal_root=nominal_root,
+            nominal_counts=nominal_counts,
+            nominal_diffxsec=nom,
+            isr_cache_file=isr_cache_file,
+        )
+        isr_hists_available = True
+    except KeyError:
+        delta_isr = np.zeros_like(nom)
+    isr_abs = delta_isr * nom_abs
     no_neutrals_abs = delta_no_neutrals * nom_abs
-    total_abs = np.sqrt(stat_abs**2 + exp_abs**2 + iter_abs**2 + theory_abs**2 + hadronic_abs**2)
+    total_abs = np.sqrt(stat_abs**2 + exp_abs**2 + iter_abs**2 + theory_abs**2 + hadronic_abs**2 + isr_abs**2)
 
     frac_stat = fractional_uncertainty(stat_abs, nom)
+    frac_isr = fractional_uncertainty(isr_abs, nom)
     frac_iter = fractional_uncertainty(iter_abs, nom)
     frac_exp_track_event = fractional_uncertainty(exp_track_event_abs, nom)
     frac_exp_neutral = fractional_uncertainty(exp_neutral_abs, nom)
@@ -1540,6 +1643,7 @@ def main():
     frac_hadronic = fractional_uncertainty(hadronic_abs, nom)
     frac_total = fractional_uncertainty(total_abs, nom)
     frac_no_neutrals = fractional_uncertainty(no_neutrals_abs, nom)
+    pct_isr = 100.0 * frac_isr
     pct_stat = 100.0 * frac_stat
     pct_iter = 100.0 * frac_iter
     pct_exp_track_event = 100.0 * frac_exp_track_event
@@ -1577,7 +1681,13 @@ def main():
         corr_template=corr_template,
         block_rho=args.block_correlation_rho,
     )
-    cov_total = cov_stat + cov_iter + cov_exp + cov_theory + cov_hadronic
+    cov_isr = component_covariance_from_model(
+        isr_abs,
+        args.systematic_cov_model,
+        corr_template=corr_template,
+        block_rho=args.block_correlation_rho,
+    )
+    cov_total = cov_stat + cov_iter + cov_exp + cov_theory + cov_hadronic + cov_isr
     corr_total = corr_from_cov(cov_total)
 
     # --- Bin masking: central reporting range and alpha_s fit window ---
@@ -1612,6 +1722,7 @@ def main():
     write_csv(os.path.join(outdir, "cov_exp.csv"), cov_exp)
     write_csv(os.path.join(outdir, "cov_theory.csv"), cov_theory)
     write_csv(os.path.join(outdir, "cov_hadronic.csv"), cov_hadronic)
+    write_csv(os.path.join(outdir, "cov_isr.csv"), cov_isr)
     write_csv(os.path.join(outdir, "cov_total.csv"), cov_total)
     write_csv(os.path.join(outdir, "corr_total.csv"), corr_total)
     write_csv(os.path.join(outdir, "cov_total_fitwindow.csv"), cov_total_fit)
@@ -1644,6 +1755,7 @@ def main():
         "unfolding": os.path.join(outdir, "uncertainty_components_unfolding.pdf"),
         "experimental": os.path.join(outdir, "uncertainty_components_experimental.pdf"),
         "theory": os.path.join(outdir, "uncertainty_components_theory.pdf"),
+        "isr": os.path.join(outdir, "uncertainty_components_isr.pdf"),
     }
     make_component_group_plot(
         out_path=component_plots["statistical"],
@@ -1777,6 +1889,23 @@ def main():
         legend_margin=0.14,
         signed=True,
     )
+    make_component_group_plot(
+        out_path=component_plots["isr"],
+        template_hist=nominal,
+        components={"isr_correction": pct_isr},
+        labels={"isr_correction": "ISR correction (MC stat)"},
+        colors={"isr_correction": ROOT.kOrange + 1},
+        line_styles={"isr_correction": 1},
+        y_min=0.0,
+        y_max=50.0,
+        legend_loc=[0.62, 0.82, 0.92, 0.90],
+        legend_textsize=0.032,
+        legend_ncols=1,
+        legend_entry_sep=0.016,
+        legend_column_sep=0.05,
+        legend_margin=0.14,
+        signed=False,
+    )
     ratio_stats = make_final_plot(
         out_path=os.path.join(outdir, "final_result_uncertainty_breakdown.pdf"),
         nominal=nominal,
@@ -1786,6 +1915,7 @@ def main():
         iter_abs=iter_abs,
         theory_abs=theory_abs,
         hadronic_abs=hadronic_abs,
+        isr_abs=isr_abs,
     )
     comparison_plot_path = None
     comparison_metrics_path = None
@@ -1824,6 +1954,7 @@ def main():
         "exp_total": frac_exp,
         "theory": frac_theory,
         "hadronic_correction": frac_hadronic,
+        "isr_correction": frac_isr,
         "no_neutrals_crosscheck": frac_no_neutrals,
         "stat": frac_stat,
         "total": frac_total,
@@ -1870,6 +2001,7 @@ def main():
             "cov_exp": os.path.join(outdir, "cov_exp.csv"),
             "cov_theory": os.path.join(outdir, "cov_theory.csv"),
             "cov_hadronic": os.path.join(outdir, "cov_hadronic.csv"),
+            "cov_isr": os.path.join(outdir, "cov_isr.csv"),
             "cov_total": os.path.join(outdir, "cov_total.csv"),
             "corr_total": os.path.join(outdir, "corr_total.csv"),
             "fit_mask": os.path.join(outdir, "fit_mask.csv"),
@@ -1901,6 +2033,11 @@ def main():
             "hadronic_correction_uncertainty_model": (
                 "Envelope of up/down hadronic-correction ratio uncertainty propagated through "
                 "normalized differential-thrust conversion."
+            ),
+            "isr_correction_uncertainty_included": isr_hists_available,
+            "isr_correction_uncertainty_model": (
+                "Envelope of up/down ISR correction ratio uncertainty (mc_isr0/mc_isr1 MC-stat) "
+                "propagated through normalized differential-thrust conversion."
             ),
             "fit_mask_mode": args.fit_mask_mode,
             "fit_window_selected_bins": int(fit_idx.size),

@@ -98,7 +98,7 @@ This appendix collects supplementary validation material that supports the analy
 
 \subsection{Iteration-scan closure and stability}
 
-The iteration-scan diagnostics used to select $N_{\mathrm{iter}}=5$ are shown in the main text in Figs.~\ref{fig:refold_selected_iters} and~\ref{fig:iteration_choice_diagnostics}. The refolded spectra confirm that $N_{\mathrm{iter}}=5$ reproduces the detector-level data shape within the expected level of statistical fluctuation. The closure-shape $\chi^2/\mathrm{ndf}$ is stable across $N_\mathrm{iter}\in\{4,5,6\}$, and the iteration-to-iteration shift in the unfolded spectrum decreases monotonically before flattening near $N_\mathrm{iter}=5$--$6$, consistent with convergence. The $N_\mathrm{iter}=100$ refolding confirms that the response model does not diverge at high iteration, though the unfolded spectrum in that limit becomes increasingly sensitive to statistical fluctuations.
+The iteration-scan diagnostics used to select $N_{\mathrm{iter}}=5$ confirm that the refolded spectra reproduce the detector-level data shape within the expected level of statistical fluctuation. The closure-shape $\chi^2/\mathrm{ndf}$ is stable across $N_\mathrm{iter}\in\{4,5,6\}$, and the iteration-to-iteration shift in the unfolded spectrum decreases monotonically before flattening near $N_\mathrm{iter}=5$--$6$, consistent with convergence. The $N_\mathrm{iter}=100$ refolding confirms that the response model does not diverge at high iteration, though the unfolded spectrum in that limit becomes increasingly sensitive to statistical fluctuations.
 
 \subsection{OmniFold and prior IBU comparison}
 
@@ -110,4 +110,4 @@ A structured diagnostic program for inter-analysis differences (binning/normaliz
 
 \subsection{Output integrity verification}
 
-After each full workflow run, a dedicated script \texttt{check\_prelim\_summary\_outputs.py} verifies that all required output files are present and non-empty, that the covariance matrix is positive semi-definite on the diagonal, and that the fit mask selects a non-zero number of bins. The 2026-02-17 run passed all checks (1/1 integrity check passed).
+After each full workflow run, a dedicated script \texttt{check\_prelim\_summary\_outputs.py} verifies that all required output files are present and non-empty, that the covariance matrix is positive semi-definite on the diagonal, and that the fit mask selects a non-zero number of bins. The 2026-03-05 run passed all checks (1/1 integrity check passed).

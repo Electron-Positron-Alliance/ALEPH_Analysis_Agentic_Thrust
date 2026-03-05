@@ -180,6 +180,11 @@ def main() -> int:
         fail("strict-fit mode requires outputs.cov_hadronic")
     else:
         print("WARNING: outputs.cov_hadronic missing; assuming legacy summary format", file=sys.stderr)
+    cov_isr = None
+    cov_isr_key = "cov_isr"
+    if cov_isr_key in outputs:
+        require_file(outputs[cov_isr_key])
+        cov_isr = load_csv_matrix(outputs[cov_isr_key])
     cov_total = load_csv_matrix(outputs["cov_total"])
     corr_total = load_csv_matrix(outputs["corr_total"])
     cov_total_fit = None
@@ -201,6 +206,8 @@ def main() -> int:
         check_symmetric(name, mat, args.sym_tol)
     if cov_had is not None:
         check_symmetric("cov_hadronic", cov_had, args.sym_tol)
+    if cov_isr is not None:
+        check_symmetric("cov_isr", cov_isr, args.sym_tol)
     if cov_total_fit is not None:
         check_symmetric("cov_total_fitwindow", cov_total_fit, args.sym_tol)
     if corr_total_fit is not None:
@@ -225,6 +232,8 @@ def main() -> int:
     cov_total_model = cov_stat + cov_iter + cov_exp + cov_theory
     if cov_had is not None:
         cov_total_model = cov_total_model + cov_had
+    if cov_isr is not None:
+        cov_total_model = cov_total_model + cov_isr
     closure_delta = float(np.max(np.abs(cov_total - cov_total_model)))
     if closure_delta > 1e-10:
         fail(f"cov_total is inconsistent with covariance components: max residual {closure_delta:.3e}")

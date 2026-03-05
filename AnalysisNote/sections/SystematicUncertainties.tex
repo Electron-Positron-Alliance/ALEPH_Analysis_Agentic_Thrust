@@ -7,8 +7,211 @@ signed bin-wise shift is
 \begin{equation}
 \delta_v(j)=\frac{U_v(j)-U_{\mathrm{nom}}(j)}{U_{\mathrm{nom}}(j)}.
 \end{equation}
+The sources are grouped into six independent components: statistical,
+unfolding-regularization, experimental detector, theory modeling,
+hadronic event-selection correction, and ISR correction.
+The sections below describe each component and its physics motivation
+before presenting the combination model and numerical results.
 
-\input{tables/systematics_definition_table}
+\subsection{Statistical uncertainty}
+\label{sec:stat_uncertainty}
+
+The statistical uncertainty arises from Poisson fluctuations in the
+$\sim 700{,}000$ hadronic-event data sample. It is propagated analytically by
+RooUnfold (\texttt{RooUnfold::kCovariance}) through the IBU iteration chain,
+without toy-MC sampling, yielding a full statistical covariance matrix
+$\mathrm{Cov}^{(\mathrm{stat})}_{ij}$. The per-bin fractional uncertainty
+$\Delta_{\mathrm{stat}}(j)=\sqrt{\mathrm{Cov}^{(\mathrm{stat})}_{jj}}/U_j^{\mathrm{corr}}$
+is small and nearly uniform across the spectrum, typically below $2\%$ in the
+central range, owing to the high statistics of the 1994 ALEPH dataset.
+
+The unfolding regularization uncertainty is closely related: two additional unfolding
+passes at $N_{\mathrm{iter}}=4$ and $N_{\mathrm{iter}}=6$ quantify the sensitivity
+of the result to the regularization choice. The iteration envelope
+$\Delta_{\mathrm{iter}}(j)=\max(|\delta_{\mathrm{iter4}}(j)|,|\delta_{\mathrm{iter6}}(j)|)$
+is sub-percent in the bulk of the spectrum, confirming that the nominal
+$N_{\mathrm{iter}}=5$ sits on a stable plateau and that regularization is not a
+limiting source of uncertainty. Figure~\ref{fig:unc_comp_stat_iter} shows the
+signed per-bin shifts for both components across the measurement range.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_statistical.pdf}%
+\hfill%
+\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_unfolding.pdf}
+\caption{Signed per-bin shifts for the statistical (left) and unfolding-iteration
+(right) uncertainty components. The statistical component is nearly flat and small
+across the spectrum. The iteration panel shows $N_{\mathrm{iter}}=4$ and $6$
+relative to the nominal $N_{\mathrm{iter}}=5$; the envelope (dashed black) is
+sub-percent in the bulk, confirming a stable regularization plateau.}
+\label{fig:unc_comp_stat_iter}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Experimental systematic uncertainties}
+\label{sec:exp_systematics}
+
+Experimental systematic variations probe detector response effects that could
+bias the reconstructed thrust distribution. Seven branches are defined, divided
+into two sub-groups: track/event selection and neutral-object response,
+summarized in Table~\ref{tab:exp_systematics}.
+
+\begin{table}[t!]
+\centering
+\small
+\begin{tabularx}{0.97\textwidth}{p{0.15\textwidth}p{0.10\textwidth}p{0.46\textwidth}p{0.17\textwidth}}
+\hline
+Group & Branch & What is varied & Combination \\
+\hline
+Track/event & \texttt{ntpc7}
+  & TPC hit requirement $N_{\mathrm{TPC}}>7$ (nominal $>4$)
+  & \multirow{4}{=}{Quadrature of four shifts} \\[2pt]
+ & \texttt{pt04}
+  & Charged $p_T>0.4$~GeV threshold (nominal $>0.2$~GeV)
+  & \\[2pt]
+ & \texttt{ech10}
+  & Charged-energy cut $>10$~GeV (nominal $>15$~GeV)
+  & \\[2pt]
+ & \texttt{with\_met}
+  & Missing-$E_T$ added as pseudo-particle
+  & \\[6pt]
+\hline
+Neutral response & \texttt{nes\_up/dn}
+  & Neutral energies scaled up/down; probes ECAL energy-scale
+  & Envelope then quadrature with \texttt{ner} \\[2pt]
+ & \texttt{ner}
+  & Neutral objects randomly removed; probes reco efficiency
+  & Quadrature with \texttt{nes} envelope \\[2pt]
+\hline
+\end{tabularx}
+\normalsize
+\caption{Experimental systematic variations. Track/event branches are combined in
+quadrature; neutral-response branches as envelope+quadrature.
+$\Delta_{\mathrm{exp}}$ is the quadrature sum of the two sub-totals.}
+\label{tab:exp_systematics}
+\end{table}
+
+The four track/event variations are combined in quadrature:
+\begin{equation}
+\Delta_{\mathrm{track/event}}(j)=
+  \sqrt{\sum_{v\in\{\mathrm{ntpc7,\,pt04,\,ech10,\,with\_met}\}} |\delta_v(j)|^2}.
+\end{equation}
+The three neutral-object response variations are combined as:
+\begin{equation}
+\Delta_{\mathrm{neutral}}(j)=
+  \sqrt{\max\!\left(|\delta_{\mathrm{nes\_up}}(j)|,|\delta_{\mathrm{nes\_down}}(j)|\right)^2
+        + |\delta_{\mathrm{ner}}(j)|^2}.
+\end{equation}
+The full experimental envelope is then
+\begin{equation}
+\Delta_{\mathrm{exp}}(j)=
+  \sqrt{\Delta_{\mathrm{track/event}}^2(j)+\Delta_{\mathrm{neutral}}^2(j)}.
+\end{equation}
+Figure~\ref{fig:unc_comp_exp} shows the signed per-bin shifts for all seven
+branches. The largest contributions arise at low thrust ($T\lesssim 0.62$) where
+the steeply rising spectrum amplifies small absolute shifts; in the central range
+the experimental envelope is typically $5$--$15\%$.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.85\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_experimental.pdf}
+\caption{Signed per-bin shifts for the seven experimental variation branches,
+with the group envelope (dashed black). The four track/event branches
+(\texttt{ntpc7}, \texttt{pt04}, \texttt{ech10}, \texttt{with\_met}) and three
+neutral-response branches (\texttt{nes\_up}, \texttt{nes\_down}, \texttt{ner})
+are shown; the $y$-axis is clipped to $\pm 50\%$.}
+\label{fig:unc_comp_exp}
+\end{figure}
+
+The neutral-object response variations are chosen in preference to a simpler approach
+of removing all neutral particles from the event. The fundamental reason is that
+removing neutrals entirely redefines the observable: the resulting distribution is no
+longer the energy-flow thrust $T_{\mathrm{EF}}$ but a different quantity,
+charged-only thrust $T_{\mathrm{ch}}$, computed from a different particle-level
+definition. Treating the difference $T_{\mathrm{EF}} - T_{\mathrm{ch}}$ as a
+systematic uncertainty on the energy-flow measurement would conflate two distinct
+observables and produce an uncertainty that is unphysically large. Instead,
+\texttt{nes\_up}, \texttt{nes\_down}, and \texttt{ner} vary the detector response
+to neutral objects while holding the particle-level definition fixed, providing a
+physically meaningful probe of calorimeter modeling uncertainties without changing
+what is being measured.
+
+To quantify this distinction, the full unfolding chain was repeated with neutral
+particles ($\mathrm{pwflag}\in\{4,5\}$) removed, yielding a charged-only thrust
+distribution. Both the energy-flow and charged-only results are processed through
+the complete analysis chain --- IBU with $N_{\mathrm{iter}}=5$, hadronic correction
+$C_{\mathrm{had}}(j)$, and ISR correction $C_{\mathrm{ISR}}(j)$ --- using
+separate response matrices for each particle-level definition. Both distributions
+are shown with statistical uncertainties only; the full systematic suite is not
+propagated for this diagnostic comparison, and the charged-only branch is excluded
+from the nominal total uncertainty combination.
+
+The charged-only spectrum is systematically softer than the energy-flow result at low
+thrust, as expected from the missing neutral-energy deposits. In the central range the
+mean shift is approximately $23\%$ --- a magnitude that could not plausibly represent
+a detector uncertainty on the energy-flow measurement, confirming that the two
+distributions correspond to fundamentally different observables. No pathological
+bin-level disagreement is observed, confirming that the neutral-hadron cleaning cut
+(Sec.~\ref{sec:neutral_hadron_cleaning}) does not introduce a bias in the energy-flow
+thrust distribution. Figure~\ref{fig:charged_vs_ef} shows the comparison.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.70\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/charged_only_vs_energy_flow/charged_only_vs_energy_flow.pdf}
+\caption{Comparison of the charged-only (red open circles) and energy-flow (black
+filled circles) unfolded thrust distributions. Both are processed through the complete
+analysis chain: IBU ($N_{\mathrm{iter}}=5$), hadronic correction $C_{\mathrm{had}}(j)$,
+and ISR correction $C_{\mathrm{ISR}}(j)$, with separate response matrices for each
+particle-level definition. Error bars represent statistical uncertainties only. Both
+distributions are normalized to $(1/N)\,\mathrm{d}N/\mathrm{d}T$. The ratio panel shows
+charged-only / energy-flow; the dashed line marks unity. The ${\sim}23\%$ central-range
+shift reflects the different particle-level definitions of the two observables, not a
+detector systematic effect, motivating the use of neutral-response variations
+(\texttt{nes\_up}, \texttt{nes\_down}, \texttt{ner}) to probe calorimeter uncertainties
+within the energy-flow observable.}
+\label{fig:charged_vs_ef}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Theory systematic uncertainties}
+\label{sec:theory_systematics}
+
+Theory systematic variations probe the residual model dependence introduced by
+the Monte Carlo generator used to build the detector response matrix. The nominal
+response matrix is constructed from Jetset~7.4/Pythia~6, the ALEPH simulation.
+Three additional generators are used to reweight the generator-level thrust
+distribution event-by-event, producing alternative response matrices that span a
+wide range of parton-shower algorithms and hadronization models:
+\texttt{pythia8} (Pythia~8 with Monash tune, dipole-ordered shower),
+\texttt{herwig} (Herwig~7.3, angular-ordered shower with cluster hadronization), and
+\texttt{sherpa} (Sherpa with AHADIC++ hadronization).
+The theory envelope is taken as the maximum absolute shift across the three generators:
+\begin{equation}
+\Delta_{\mathrm{theory}}(j)=
+  \max\!\left(|\delta_{\mathrm{pythia8}}(j)|,
+             |\delta_{\mathrm{herwig}}(j)|,
+             |\delta_{\mathrm{sherpa}}(j)|\right).
+\end{equation}
+All three generators agree well with the nominal at high thrust ($T>0.95$)
+but diverge progressively at lower thrust where soft-gluon emission and
+hadronization effects are largest. The theory envelope is the dominant uncertainty
+contribution across the central measurement range, as shown in
+Figure~\ref{fig:unc_comp_theory}.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.85\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_theory.pdf}
+\caption{Signed per-bin shifts for the three theory reweighting branches
+(\texttt{pythia8}, \texttt{herwig}, \texttt{sherpa}) with the theory envelope
+(dashed black). Generator differences grow at lower thrust, reflecting parton-shower
+and hadronization modeling uncertainties. This is the dominant source across the
+central measurement range. The $y$-axis is clipped to $\pm 50\%$.}
+\label{fig:unc_comp_theory}
+\end{figure}
+
+\FloatBarrier
 
 \subsection{Hadronic event-selection correction}
 \label{sec:had_uncertainty}
@@ -38,23 +241,10 @@ defined as the envelope:
 \end{equation}
 with $\Delta_{\mathrm{had}}(j) = \max(|\delta_{\mathrm{had}}^{+}(j)|, |\delta_{\mathrm{had}}^{-}(j)|)$.
 
-In the central range $0.60 \le T < 0.95$, the mean hadronic correction uncertainty is
-approximately $3.2\%$, making it the third-largest component after theory ($6.1\%$)
-and experimental ($3.3\%$).
-
-The \texttt{no\_neutrals} branch removes all calorimeter neutral objects from the event
-and recomputes thrust using charged tracks only. It is not a physical uncertainty but
-a stress-test of the analysis sensitivity to the neutral-particle contribution.
-The observed central-range mean shift of approximately 23\% confirms that neutral
-objects are a leading input to thrust and that calorimeter modeling must be
-well-controlled. Because this variation does not correspond to the measurement
-configuration, it is excluded from $\Delta_{\mathrm{tot}}$ and treated as a
-cross-check only.
-
 \subsection{ISR correction}
 \label{sec:isr_uncertainty}
 
-An initial-state radiation (ISR) correction would remove the contribution of events
+An initial-state radiation (ISR) correction removes the contribution of events
 where the $e^+e^-$ center-of-mass energy is reduced by photon radiation before
 the hard scatter, mapping the measured distribution from the ISR-inclusive sample
 to the pure $\sqrt{s}=M_Z$ distribution:
@@ -68,14 +258,25 @@ distributions produced with and without ISR, using JETSET~7.4. The 2004
 analysis~\cite{Heister:2003aj} uses KORALZ, which provides a more accurate
 treatment of ISR, to generate the corrected distribution.
 
-The ISR correction is \textbf{not yet implemented} in the current analysis. This
-is a known systematic gap relative to the published ALEPH results. The expected
-impact is at the percent level in the bulk of the thrust distribution, with larger
-effects at high thrust (low $\tau = 1-T$) where ISR events can migrate significantly.
-Implementation of this correction is deferred to a future iteration; the current
-results should be interpreted as ISR-inclusive distributions at the generator level,
-and direct numerical comparison to the published ALEPH values should account for
-this difference.
+The ISR correction is applied bin-by-bin after the hadronic correction using
+standalone \textsc{Pythia8} samples with ISR disabled (\texttt{isr0}) and enabled
+(\texttt{isr1}), as described in Sec.~\ref{sec:corrections_and_cov}. The uncertainty on
+this correction is derived from the finite Monte Carlo statistics of the ratio
+$C_{\mathrm{ISR}}(j) = N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)/N^{\mathrm{gen}}_{\mathrm{ISR}}(j)$
+using standard error propagation:
+\begin{equation}
+\sigma_{\mathrm{rel}}(j) = \sqrt{\left(\frac{\sigma_{N_0}(j)}{N_0(j)}\right)^2
++ \left(\frac{\sigma_{N_1}(j)}{N_1(j)}\right)^2},
+\end{equation}
+where $N_0$ and $N_1$ are the ISR-OFF and ISR-ON histogram contents with their
+Poisson errors. Up and down variations
+$C_{\mathrm{ISR}}^{\pm}(j) = C_{\mathrm{ISR}}(j)\cdot(1\pm\sigma_{\mathrm{rel}}(j))$
+are applied to the unfolded spectrum and the envelope is taken as $\Delta_{\mathrm{ISR}}(j)$.
+The uncertainty is purely MC-statistical in nature; the \textsc{Pythia8} generator
+used here differs from the \textsc{KORALZ} generator used in the ALEPH 2004
+analysis~\cite{Heister:2003aj}, which provides a more accurate ISR description.
+This difference in generator is not propagated as an additional systematic in the
+current release.
 
 \subsection{Statistical covariance}
 \label{sec:stat_covariance}
@@ -85,8 +286,7 @@ analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates
 Poisson uncertainties in the data and response histograms through the IBU iteration
 chain without toy MC sampling. The resulting covariance matrix is read from the
 unfolding output and transformed to the normalized differential-thrust basis used
-in this note. The full covariance and correlation matrices are shown in
-Fig.~\ref{fig:covariance_correlation_nominal}.
+in this note.
 
 Non-statistical component covariances are built with a configurable model. The
 current nominal release uses the \texttt{template\_correlated} option, where each
@@ -100,36 +300,46 @@ shifts while avoiding a purely diagonal systematic-covariance approximation.
 For cross-check studies, \texttt{diagonal} and \texttt{block} component models
 are also available.
 
-\subsection{Combination model for the nominal uncertainty}
+\subsection{Combination model}
+\label{sec:combination_model}
 
-The individual systematic components are combined as follows. For the unfolding
-regularization:
+The total bin uncertainty combines all six components in quadrature:
 \begin{equation}
-\Delta_{\mathrm{iter}}(j)=\max\left(|\delta_{\mathrm{iter4}}(j)|,|\delta_{\mathrm{iter6}}(j)|\right).
+\Delta_{\mathrm{tot}}(j)=\sqrt{\Delta_{\mathrm{stat}}^2(j)
++ \Delta_{\mathrm{iter}}^2(j) + \Delta_{\mathrm{exp}}^2(j)
++ \Delta_{\mathrm{theory}}^2(j) + \Delta_{\mathrm{had}}^2(j)
++ \Delta_{\mathrm{ISR}}^2(j)}.
 \end{equation}
-For the experimental components:
-\begin{equation}
-\Delta_{\mathrm{track/event}}(j)=\sqrt{\sum_{v\in\{\mathrm{ntpc7,pt04,ech10,with\_met}\}} |\delta_v(j)|^2},
-\end{equation}
-\begin{equation}
-\Delta_{\mathrm{neutral}}(j)=\sqrt{\max\left(|\delta_{\mathrm{nes\_up}}(j)|,|\delta_{\mathrm{nes\_down}}(j)|\right)^2 + |\delta_{\mathrm{ner}}(j)|^2},
-\end{equation}
-\begin{equation}
-\Delta_{\mathrm{exp}}(j)=\sqrt{\Delta_{\mathrm{track/event}}^2(j)+\Delta_{\mathrm{neutral}}^2(j)}.
-\end{equation}
-For the theory component:
-\begin{equation}
-\Delta_{\mathrm{theory}}(j)=\max\left(|\delta_{\mathrm{pythia8}}(j)|,|\delta_{\mathrm{herwig}}(j)|,|\delta_{\mathrm{sherpa}}(j)|\right).
-\end{equation}
-The total bin uncertainty is
-\begin{equation}
-\Delta_{\mathrm{tot}}(j)=\sqrt{\Delta_{\mathrm{stat}}^2(j)+\Delta_{\mathrm{iter}}^2(j)+\Delta_{\mathrm{exp}}^2(j)+\Delta_{\mathrm{theory}}^2(j)+\Delta_{\mathrm{had}}^2(j)}.
-\end{equation}
+The \texttt{no\_neutrals} branch (charged-only thrust) is explicitly excluded from
+this combination. It is not a physical variation of the energy-flow measurement but
+a stress-test of the analysis sensitivity to neutral-object contributions; its role
+as a diagnostic cross-check is discussed in Sec.~\ref{sec:exp_systematics}.
 
-\subsection{Component-level uncertainty views}
+\subsection{Uncertainty breakdown}
+\label{sec:uncertainty_breakdown}
 
-The structure of each uncertainty source is shown through separate component plots
-for statistical, unfolding, experimental, and theory categories. For unfolding,
-experimental, and theory plots, the signed shifts ($\pm$) relative to nominal are
-shown. The corresponding four-panel component view is presented together with the
-final unfolded spectrum in Sec.~\ref{sec:results}.
+Figure~\ref{fig:per_bin_uncertainty_grid} shows the absolute fractional magnitudes
+of all uncertainty components as a compact 2$\times$2 overview. Theory is the
+dominant source across the central range; the experimental envelope is typically
+$5$--$15\%$ and largest at $T\lesssim 0.62$ where the steeply rising spectrum
+amplifies small absolute shifts. The statistical and iteration components remain
+sub-percent in the bulk, confirming that neither data statistics nor the
+regularization choice limits the measurement precision.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/per_bin_uncertainty_stat.pdf}%
+\hfill%
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/per_bin_uncertainty_exp.pdf}\\[2mm]
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/per_bin_uncertainty_theory.pdf}%
+\hfill%
+\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/per_bin_uncertainty_grouped.pdf}
+\caption{Absolute per-bin fractional uncertainties ($y$-axes limited to $50\%$).
+Top left: statistical and unfolding-iteration components.
+Top right: seven experimental variation branches with group envelope.
+Bottom left: theory reweighting branches with theory envelope.
+Bottom right: all groups overlaid; dashed black shows total.}
+\label{fig:per_bin_uncertainty_grid}
+\end{figure}
+
+\FloatBarrier

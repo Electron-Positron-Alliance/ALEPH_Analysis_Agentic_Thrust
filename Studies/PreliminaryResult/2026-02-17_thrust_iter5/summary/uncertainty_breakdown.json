@@ -35,48 +35,52 @@
     "sherpa"
   ],
   "mean_abs_fractional": {
-    "iteration": 0.006955403733519652,
-    "exp_track_event": 0.18948646921039014,
-    "exp_neutral": 0.02425417300153348,
-    "exp_total": 0.19529919355372047,
-    "theory": 0.15618982026217043,
-    "hadronic_correction": 0.10995577900336805,
-    "no_neutrals_crosscheck": 0.4665736983490942,
-    "stat": 0.05968132758057991,
-    "total": 0.3074891215981255
+    "iteration": 0.006954709718016789,
+    "exp_track_event": 0.18941585116134305,
+    "exp_neutral": 0.024265703038064985,
+    "exp_total": 0.1952378775119849,
+    "theory": 0.15621210829984017,
+    "hadronic_correction": 0.10997989367642658,
+    "isr_correction": 0.04021286905437549,
+    "no_neutrals_crosscheck": 0.47450879256787537,
+    "stat": 0.05968205800325402,
+    "total": 0.31228223978697006
   },
   "max_abs_fractional": {
-    "iteration": 0.0686185114861731,
-    "exp_track_event": 4.677685584893158,
-    "exp_neutral": 0.2398012970167856,
-    "exp_total": 4.678409788428129,
-    "theory": 3.4323451590005787,
-    "hadronic_correction": 1.3970949928270044,
-    "no_neutrals_crosscheck": 11.264811114165592,
-    "stat": 0.888173882970885,
-    "total": 5.009174214932831
+    "iteration": 0.06857097730012553,
+    "exp_track_event": 4.675140035080193,
+    "exp_neutral": 0.23985084363417472,
+    "exp_total": 4.675866263820229,
+    "theory": 3.4327369703152573,
+    "hadronic_correction": 1.397187105813234,
+    "isr_correction": 0.545814691297774,
+    "no_neutrals_crosscheck": 11.348236989362498,
+    "stat": 0.8881746708465433,
+    "total": 5.036482978744614
   },
   "mean_abs_fractional_central": {
-    "iteration": 0.0033954902518476804,
-    "exp_track_event": 0.02989655784826745,
-    "exp_neutral": 0.012749187781725116,
-    "exp_total": 0.03336476549073142,
-    "theory": 0.06080173691667458,
-    "hadronic_correction": 0.03225732382555143,
-    "no_neutrals_crosscheck": 0.2263881497864217,
-    "stat": 0.017089735255101345,
-    "total": 0.0843032046568416
+    "iteration": 0.0033947897484024247,
+    "exp_track_event": 0.029888412724139744,
+    "exp_neutral": 0.012759746754595458,
+    "exp_total": 0.03337119887186476,
+    "theory": 0.06082018153878266,
+    "hadronic_correction": 0.03228825729287396,
+    "isr_correction": 0.017516554204509593,
+    "no_neutrals_crosscheck": 0.2347301049763286,
+    "stat": 0.01709178804546986,
+    "total": 0.08634779112066593
   },
   "max_abs_fractional_central": {
-    "iteration": 0.008581949392855401,
-    "exp_track_event": 0.24437650868967528,
-    "exp_neutral": 0.12427389664855543,
-    "exp_total": 0.259289913968953,
-    "theory": 0.3290251809884394,
-    "hadronic_correction": 0.2553979761400056,
-    "no_neutrals_crosscheck": 0.967496923877711,
-    "stat": 0.1310085824224619,
-    "total": 0.42093184603648487
+    "iteration": 0.008549712374338526,
+    "exp_track_event": 0.24429812179889976,
+    "exp_neutral": 0.1243135776956158,
+    "exp_total": 0.2592516843023043,
+    "theory": 0.32896586802509314,
+    "hadronic_correction": 0.2554268995554451,
+    "isr_correction": 0.11588531813646051,
+    "no_neutrals_crosscheck": 0.9808799390170252,
+    "stat": 0.13100984503432953,
+    "total": 0.4303931427612505
   },
   "outputs": {
     "cov_stat": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_stat.csv",
@@ -84,6 +88,7 @@
     "cov_exp": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_exp.csv",
     "cov_theory": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_theory.csv",
     "cov_hadronic": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_hadronic.csv",
+    "cov_isr": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_isr.csv",
     "cov_total": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/cov_total.csv",
     "corr_total": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/corr_total.csv",
     "fit_mask": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/fit_mask.csv",
@@ -94,24 +99,27 @@
       "statistical": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_statistical.pdf",
       "unfolding": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_unfolding.pdf",
       "experimental": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_experimental.pdf",
-      "theory": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_theory.pdf"
+      "theory": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_theory.pdf",
+      "isr": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/uncertainty_components_isr.pdf"
     },
     "final_plot": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_uncertainty_breakdown.pdf",
     "aleph_csv": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH/HEPData-ins636645-v1-Table_54.csv",
     "ratio_mode": "aleph_over_unfolded",
     "ratio_y_min": 0.75,
-    "ratio_y_max": 1.55
+    "ratio_y_max": 1.55,
+    "of_ibu_comparison_plot": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_of_ibu_comparison.pdf",
+    "of_ibu_comparison_metrics": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/of_ibu_comparison_metrics.json"
   },
   "diagnostics": {
     "response_diagonal_fraction": 0.33169694930312915,
-    "corr_total_max_abs_offdiag": 0.888932756051039,
-    "corr_total_mean_abs_offdiag_nonzero": 0.07909243775528688,
+    "corr_total_max_abs_offdiag": 0.8868657166908023,
+    "corr_total_mean_abs_offdiag_nonzero": 0.07884887954134466,
     "corr_total_nonzero_offdiag_entries": 1980,
     "aleph_over_unfolded_ratio": {
-      "max_central": 1.3012073974263865,
-      "max_plus_error": 1.57629921499394,
-      "highest_bin_value": 1.3012073974263865,
-      "highest_bin_error": 0.2750918175675537,
+      "max_central": 1.9477110455132727,
+      "max_plus_error": 4.0152545146054734,
+      "highest_bin_value": 1.0880515475464416,
+      "highest_bin_error": 0.22948176278730478,
       "highest_bin_low_edge": 0.99,
       "highest_bin_up_edge": 1.0
     },
@@ -122,6 +130,8 @@
     "systematic_covariance_note": "Iteration, experimental, theory, and hadronic-correction covariance components use the configured systematic covariance model.",
     "hadronic_correction_uncertainty_included": true,
     "hadronic_correction_uncertainty_model": "Envelope of up/down hadronic-correction ratio uncertainty propagated through normalized differential-thrust conversion.",
+    "isr_correction_uncertainty_included": true,
+    "isr_correction_uncertainty_model": "Envelope of up/down ISR correction ratio uncertainty (mc_isr0/mc_isr1 MC-stat) propagated through normalized differential-thrust conversion.",
     "fit_mask_mode": "nonzero",
     "fit_window_selected_bins": 45,
     "fit_window_first_bin": 5,
@@ -162,19 +172,73 @@
         "weights_mapped_std": 2.0501420230402716
       }
     },
-    "of_ibu_comparison_enabled": false
+    "of_ibu_comparison_enabled": true,
+    "of_ibu_input_paths": {
+      "legacy_results_dir": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results",
+      "legacy_ibu_npz": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/ibu_results.npz",
+      "legacy_of_h5": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/unfold_thrust_ee_ZPole_ALEPH.h5"
+    },
+    "of_ibu_comparison_metrics": {
+      "ratio_mode": "curve_over_current",
+      "ratio_y_min": 0.75,
+      "ratio_y_max": 1.55,
+      "n_bins": 42,
+      "ratio_metrics": {
+        "aleph_over_current": {
+          "max_abs_deviation_from_unity": 0.9477110455132727,
+          "max_plus_error": 4.0152545146054734,
+          "highest_bin_ratio": 1.0880515475464416,
+          "highest_bin_error": 0.22948176278730478
+        },
+        "of_over_current": {
+          "max_abs_deviation_from_unity": 0.4654590010741191,
+          "max_plus_error": 2.899655578350572,
+          "highest_bin_ratio": 0.944192869776398,
+          "highest_bin_error": 0.20497287738514794
+        },
+        "ibu_over_current": {
+          "max_abs_deviation_from_unity": 2.2934085454435644,
+          "max_plus_error": 7.380979627750892,
+          "highest_bin_ratio": 0.9124724545142601,
+          "highest_bin_error": 0.4155051459538288
+        }
+      },
+      "chi2_metrics": {
+        "aleph_vs_current": {
+          "chi2": 12.195716898060615,
+          "ndf": 42,
+          "chi2_per_ndf": 0.2903742118585861
+        },
+        "of_vs_current": {
+          "chi2": 60.08126314084434,
+          "ndf": 42,
+          "chi2_per_ndf": 1.4305062652581986
+        },
+        "ibu_vs_current": {
+          "chi2": 51.08935186838482,
+          "ndf": 42,
+          "chi2_per_ndf": 1.2164131397234481
+        }
+      },
+      "input_files": {
+        "legacy_ibu_npz": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/ibu_results.npz",
+        "legacy_of_h5": "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/Results/unfold_thrust_ee_ZPole_ALEPH.h5",
+        "aleph_csv": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH/HEPData-ins636645-v1-Table_54.csv"
+      },
+      "output_pdf": "/Users/anthonybadea/Documents/Documents/ALEPH/ALEPH_Agentic_Event_Shape_Analysis/Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/final_result_of_ibu_comparison.pdf"
+    }
   },
   "provenance": {
-    "generated_at_utc": "2026-03-03T19:13:54.255546+00:00",
-    "python_executable": "/Users/anthonybadea/code/miniconda3/envs/py312/bin/python",
+    "generated_at_utc": "2026-03-05T09:53:09.034301+00:00",
+    "python_executable": "/Users/anthonybadea/code/miniconda3/envs/py312/bin/python3",
     "python_version": "3.12.12",
     "platform": "macOS-26.3-arm64-arm-64bit",
     "conda_prefix": "/Users/anthonybadea/code/miniconda3/envs/py312",
     "root_version": "6.36.06",
     "roounfold_version": "unavailable",
     "roounfold_library": "unavailable",
-    "git_commit": "c0f569a57f4e22fbc82ffb5f9eccb4d998b4811f",
+    "git_commit": "3d1faf52be0e3abd8a159495a2bfaf45135e640e",
     "git_dirty": true,
-    "env_fingerprint": "dc4c1e9d21ff7cd2e3b281addac776ce5e1d0e400181fb1c57b2fd5a5228ac49"
+    "env_fingerprint": "b1598945349d00247d4dc66de9ddfc9bb20f4397bc08357fd806746efb0a1021"
   }
 }

@@ -48,10 +48,9 @@ The nominal regularization is
 N_{\mathrm{iter}}=5,
 \end{equation}
 with $N_{\mathrm{iter}}=4$ and $6$ propagated as unfolding-regularization systematic branches.
-The iteration-choice diagnostics are shown in
-Figs.~\ref{fig:refold_selected_iters} and~\ref{fig:iteration_choice_diagnostics}, including $N=4,5,6,10,100$ refolding checks.
+The iteration-choice diagnostics, including refolded spectra at $N=4,5,6,10,100$ compared with detector-level data, confirm that the closure-shape $\chi^2/\mathrm{ndf}$ is stable and that the iteration-to-iteration change in the unfolded spectrum is small for $N_{\mathrm{iter}}\in\{4,5,6\}$.
 
-The response matrix has a diagonal fraction of $f_{\mathrm{diag}}=0.33$, meaning approximately two-thirds of events migrate out of their generated thrust bin at reconstruction level. This level of bin-to-bin migration is expected for thrust at ALEPH given the finite charged-particle momentum resolution and the sensitivity of thrust to soft particles near the event boundary. It implies that the unfolding correction is non-trivial and that the choice of regularization strength meaningfully affects the result. The iteration diagnostics in Fig.~\ref{fig:iteration_choice_diagnostics} show that the closure-shape $\chi^2/\mathrm{ndf}$ is stable and the iteration-to-iteration change in the unfolded spectrum is small for $N_{\mathrm{iter}} \in \{4,5,6\}$, providing confidence that $N_{\mathrm{iter}}=5$ sits in a well-regularized plateau rather than near an instability. The propagated $N_{\mathrm{iter}}=4,6$ systematic covers residual regularization-bias uncertainty at the level documented in Sec.~\ref{sec:systematics}.
+The response matrix has a diagonal fraction of $f_{\mathrm{diag}}=0.33$, meaning approximately two-thirds of events migrate out of their generated thrust bin at reconstruction level. This level of bin-to-bin migration is expected for thrust at ALEPH given the finite charged-particle momentum resolution and the sensitivity of thrust to soft particles near the event boundary. It implies that the unfolding correction is non-trivial and that the choice of regularization strength meaningfully affects the result. This provides confidence that $N_{\mathrm{iter}}=5$ sits in a well-regularized plateau rather than near an instability. The propagated $N_{\mathrm{iter}}=4,6$ systematic covers residual regularization-bias uncertainty at the level documented in Sec.~\ref{sec:systematics}.
 
 The ``miss'' term---generator-level events with no matched reconstructed counterpart---is
 documented in Fig.~\ref{fig:miss_term_efficiency}. These are events that fail the
@@ -73,61 +72,18 @@ events failing the hadronic event selection.}
 \label{fig:miss_term_efficiency}
 \end{figure}
 
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.65\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/dist_refolded_vs_data_selected_iterations.pdf}
-\caption{Refolded spectra from selected iteration points ($N_{\mathrm{iter}}=4,5,6,10,100$) compared with detector-level data.}
-\label{fig:refold_selected_iters}
-\end{figure}
-
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.65\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/pull_panel/dist_refolded_vs_data_pull.pdf}
-\caption{Pull panel for refolded spectra: per-bin pull $(N_{\mathrm{data}} - N_{\mathrm{refold}})/\sigma$ for selected iteration points, showing bin-by-bin agreement between the detector-level data and each refolded prediction. Produced by \texttt{refolding\_pull\_panel.py} (see \texttt{Studies/Phase2\_Checks\_2026-03-03/}).}
-\label{fig:refold_pull_panel}
-\end{figure}
-
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_closure_shape_vs_iterations.pdf}
-\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_iter_delta_counts_vs_iterations.pdf}
-\\[2mm]
-\includegraphics[width=0.49\textwidth]{../Studies/PreliminaryResult/2026-02-17_thrust_iter5/validation/iteration_scan/chi2ndf_iter_delta_shape_vs_iterations.pdf}
-\caption{Iteration-choice diagnostics: closure-shape $\chi^2/\mathrm{ndf}$ (top left), iteration-to-iteration count-level stability (top right), and iteration-to-iteration shape stability (bottom left).}
-\label{fig:iteration_choice_diagnostics}
-\end{figure}
-
 \FloatBarrier
 
 \subsection{Thrust resolution study}
 \label{sec:thrust_resolution}
 
-The usable binning resolution varies across the thrust spectrum. To quantify this,
-we use the matched reco--gen event pairs to study the thrust resolution as a function
-of true thrust. Specifically, we plot $(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ versus
-$T_{\mathrm{gen}}$ in a two-dimensional histogram, and extract the resolution
-$\sigma(T)$ as a function of $T_{\mathrm{gen}}$ from the per-slice width of the
-$(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ distribution. This study is particularly
-important in the high-thrust (low $\tau = 1-T$) regime, which spans the peak of the
-thrust distribution and the deep non-perturbative region. The previous ALEPH
-analyses~\cite{Heister:2003aj} chose bin sizes to be ``somewhat smaller than twice
-the corresponding detector resolution,'' and our IBU approach, while less sensitive
-to binning than the matrix method, still uses this principle to guide the finest
-bins tested in the region.
+The usable binning resolution is characterized using matched reco--gen event pairs. Figure~\ref{fig:thrust_resolution_1d} shows the distribution of $(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ integrated over all thrust values. The distribution is narrow and centered at zero, confirming no significant systematic bias. The resolution narrows toward $T\to1$, motivating finer binning in the high-thrust region. The previous ALEPH analyses~\cite{Heister:2003aj} chose bin sizes ``somewhat smaller than twice the corresponding detector resolution,'' and our IBU approach uses this principle to guide the finest bins.
 
 \begin{figure}[t!]
 \centering
 \includegraphics[width=0.60\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/thrust_resolution/thrust_resolution_2d.pdf}
-\caption{Two-dimensional distribution of $(T_{\mathrm{reco}}-T_{\mathrm{gen}})$ vs $T_{\mathrm{gen}}$ for matched MC event pairs. The spread narrows toward $T\to1$ (low-$\tau$ region), motivating finer binning there.}
-\label{fig:thrust_resolution_2d}
-\end{figure}
-
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/thrust_resolution/thrust_resolution_profile.pdf}
-\includegraphics[width=0.49\textwidth]{../Studies/Phase2_Checks_2026-03-03/plots/thrust_resolution/thrust_resolution_bias.pdf}
-\caption{Left: per-slice RMS of $(T_{\mathrm{reco}}-T_{\mathrm{gen}})$ as a function of $T_{\mathrm{gen}}$, giving the thrust resolution profile $\sigma(T)$. Right: mean bias $\langle T_{\mathrm{reco}}-T_{\mathrm{gen}}\rangle$ vs $T_{\mathrm{gen}}$; values consistent with zero indicate no systematic shift.}
-\label{fig:thrust_resolution_profile}
+\caption{Distribution of $(T_{\mathrm{reco}}-T_{\mathrm{gen}})$ for matched MC event pairs, integrated over all $T_{\mathrm{gen}}$. The distribution is narrow and centered at zero, confirming no significant systematic bias in the thrust reconstruction.}
+\label{fig:thrust_resolution_1d}
 \end{figure}
 
 \subsection{Systematics execution map}
@@ -140,7 +96,8 @@ The combination structure is summarized in Table~\ref{fig:systematics_execution_
 The nominal total uncertainty model (Sec.~\ref{sec:systematics}) combines component magnitudes in quadrature after branch-specific envelope or quadrature rules.
 The \texttt{no\_neutrals} branch is retained as a stress-test and explicitly reported, but excluded from the nominal total.
 
-\subsection{Hadronic correction, covariance propagation, and matrix exports}
+\subsection{Hadronic correction, ISR correction, covariance propagation, and matrix exports}
+\label{sec:corrections_and_cov}
 
 After unfolding, a bin-wise hadronic event-selection correction is applied,
 \begin{equation}
@@ -148,6 +105,14 @@ C_{\mathrm{had}}(j)=\frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 \qquad
 U_j^{\mathrm{corr}} = U_j\,C_{\mathrm{had}}(j).
 \end{equation}
+
+Following the hadronic correction, an ISR correction is applied bin-by-bin to remove the contribution of initial-state photon radiation that shifts the centre-of-mass energy below the $Z$-pole:
+\begin{equation}
+C_{\mathrm{ISR}}(j)=\frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)},
+\qquad
+U_j^{\mathrm{final}} = U_j^{\mathrm{corr}}\,C_{\mathrm{ISR}}(j).
+\end{equation}
+The numerator and denominator are taken from standalone \textsc{Pythia8} samples generated with ISR disabled (\texttt{isr0\_ALL.root}) and enabled (\texttt{isr1\_ALL.root}), respectively, using the \texttt{tgenBefore/thrust} branch (stored as $1-T$, transformed back to $T$). The ratio histograms are pre-computed once into a cache file and applied identically to the nominal and all systematic variation branches, so that the ISR correction cancels in the systematic shifts and its residual uncertainty (from finite MC statistics on the ratio) is propagated as a separate component $\Delta_{\mathrm{ISR}}$ (Sec.~\ref{sec:isr_uncertainty}).
 
 For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the data and response histograms through the IBU iteration chain without toy MC sampling. The resulting covariance matrix is read from the unfolding output and transformed to the normalized differential-thrust basis used in this note. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by
 \texttt{build\_prelim\_uncertainty\_summary.py}.

@@ -13,6 +13,11 @@ import sys
 from datetime import date, datetime, timezone
 
 
+ISR0_FILE = "/Users/anthonybadea/code/pythia8316/examples/isr0_ALL.root"
+ISR1_FILE = "/Users/anthonybadea/code/pythia8316/examples/isr1_ALL.root"
+ISR_TREE = "tgenBefore"
+ISR_BRANCH = "thrust"  # stores T directly; fill histogram with thrust expression as-is
+
 CUT_BASED_VARIATIONS = ["ntpc7", "pt04", "ech10", "no_neutrals", "with_met"]
 NEUTRAL_RESPONSE_VARIATIONS = ["nes_up", "nes_down", "ner"]
 THEORY_WEIGHT_FILES = {
@@ -228,6 +233,69 @@ def maybe_plot(py_prefix: list[str], repo_root: str, input_root: str, output_pdf
     return run_cmd(cmd, cwd=repo_root)
 
 
+def precompute_isr_correction(
+    isr0_file: str,
+    isr1_file: str,
+    outdir: str,
+    bins: int = 50,
+    xmin: float = 0.5,
+    xmax: float = 1.0,
+) -> str:
+    """
+    Build ISR correction histogram from Pythia8 ISR-OFF / ISR-ON ratio and cache to disk.
+
+    Returns the path to the written cache ROOT file.
+    """
+    import ROOT  # type: ignore
+
+    ensure_exists(isr0_file, "ISR0 sample")
+    ensure_exists(isr1_file, "ISR1 sample")
+
+    cache_path = os.path.join(outdir, "isr_correction_cache.root")
+    os.makedirs(outdir, exist_ok=True)
+
+    def _fill(path: str, hname: str) -> "ROOT.TH1D":
+        tf = ROOT.TFile.Open(path, "READ")
+        if not tf or tf.IsZombie():
+            raise RuntimeError(f"Cannot open {path}")
+        tree = tf.Get(ISR_TREE)
+        if not tree:
+            tf.Close()
+            raise KeyError(f"Tree '{ISR_TREE}' not found in {path}")
+        # Create histogram after opening the file so gDirectory is the file
+        # and TTree::Project can find it by name.
+        h = ROOT.TH1D(hname, hname, bins, xmin, xmax)
+        h.Sumw2()
+        # ROOT TTree::Project supports arithmetic expressions directly.
+        tree.Project(hname, ISR_BRANCH)
+        h.SetDirectory(0)
+        tf.Close()
+        return h
+
+    h_isr0 = _fill(isr0_file, "mc_isr0")
+    h_isr1 = _fill(isr1_file, "mc_isr1")
+
+    h_isr_corr = h_isr0.Clone("isr_corr")
+    h_isr_corr.SetDirectory(0)
+    nbins = h_isr_corr.GetNbinsX()
+    for b in range(1, nbins + 1):
+        num = float(h_isr0.GetBinContent(b))
+        den = float(h_isr1.GetBinContent(b))
+        ratio = (num / den) if den > 0.0 else 1.0
+        h_isr_corr.SetBinContent(b, ratio)
+        h_isr_corr.SetBinError(b, 0.0)  # errors intentionally zero; uncertainty
+        # computed externally via compute_isr_correction_fractional_shift
+
+    fout = ROOT.TFile(cache_path, "RECREATE")
+    h_isr0.Write()
+    h_isr1.Write()
+    h_isr_corr.Write()
+    fout.Close()
+
+    print(f"ISR correction cache written: {cache_path}")
+    return cache_path
+
+
 def main():
     args = parse_args()
     repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -257,6 +325,12 @@ def main():
     ensure_exists(nominal_data, "nominal data")
     ensure_exists(nominal_reco, "nominal reco MC")
     ensure_exists(nominal_gen, "nominal gen MC")
+
+    isr_cache_path = precompute_isr_correction(
+        isr0_file=ISR0_FILE,
+        isr1_file=ISR1_FILE,
+        outdir=os.path.join(outdir, "isr_cache"),
+    )
 
     failures: list[dict[str, object]] = []
     records: list[dict[str, object]] = []
@@ -308,6 +382,8 @@ def main():
                 "calculate_covariance": "true",
                 "apply_hadronic_event_correction": "true",
                 "apply_theory_event_weights": "false",
+                "apply_isr_correction": "true",
+                "isr_corr_file": str(isr_cache_path),
             },
         )
         if args.fail_fast and failures:
@@ -324,6 +400,8 @@ def main():
                     "calculate_covariance": "false",
                     "apply_hadronic_event_correction": "true",
                     "apply_theory_event_weights": "false",
+                    "apply_isr_correction": "true",
+                    "isr_corr_file": str(isr_cache_path),
                 },
             )
             if args.fail_fast and failures:
@@ -348,6 +426,8 @@ def main():
                     "calculate_covariance": "false",
                     "apply_hadronic_event_correction": "true",
                     "apply_theory_event_weights": "false",
+                    "apply_isr_correction": "true",
+                    "isr_corr_file": str(isr_cache_path),
                 },
             )
             if args.fail_fast and failures:
@@ -372,6 +452,8 @@ def main():
                     "theory_variation_weights_path": weight_path,
                     "strict_theory_weight_length": "true",
                     "normalize_weights_mean1": "true",
+                    "apply_isr_correction": "true",
+                    "isr_corr_file": str(isr_cache_path),
                 },
             )
             if args.fail_fast and failures:

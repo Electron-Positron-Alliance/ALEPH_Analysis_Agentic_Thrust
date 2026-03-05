@@ -52,28 +52,9 @@ The present release is robust enough for a preliminary thrust result, but severa
 \item analysis scope is currently one-dimensional (thrust only), while the future target includes the thrust-family observables and potentially multidimensional unfolding.
 \end{itemize}
 
-\subsection{Persistent analysis and communication challenge tracker}
+\subsection{Persistent analysis challenges}
 
-Table~\ref{tab:persistent_challenges} tracks recurrent issues with explicit mitigation actions. The table should be updated whenever a challenge status changes or a new recurrent issue appears.
-
-\begin{table}[t!]
-\centering
-\scriptsize
-\begin{tabularx}{0.98\textwidth}{p{0.20\textwidth}X X p{0.11\textwidth}}
-\hline
-Challenge & Impact on analysis/note & Current mitigation & Status \\
-\hline
-Plot-style drift across scripts & Inconsistent figure interpretation and repeated cosmetic rework & Centralize style choices in producer scripts and enforce figure-by-figure QA checks & In progress \\
-Method-to-code traceability gaps & Readers cannot quickly map claims to executable steps & Workflow and provenance tables in Sec.~\ref{sec:method} and Sec.~\ref{sec:results}; \path{workflow_summary.json} as canonical numeric record & Resolved \\
-High-frequency iterative edits & Risk of contradictory text/figure states between sections & Explicit script/output-path references for result figures; note recompiled and checked after each edit batch & Resolved \\
-Endpoint-bin instability & Dominates max uncertainties and can obscure central-range behavior & Report central-window metrics alongside full-range behavior & Open \\
-Hadronic-correction uncertainty & Included as independent $\Delta_{\mathrm{had}}$ component; endpoint bins remain sensitive to correction-factor extrapolation & Envelope of up/down ratio uncertainty propagated via summary builder; central-range mean $\approx 3.2\%$ & Resolved \\
-\hline
-\end{tabularx}
-\normalsize
-\caption{Persistent challenge tracker for the current internal-note cycle. Status labels: Open, In progress, Resolved.}
-\label{tab:persistent_challenges}
-\end{table}
+Several recurrent issues have been tracked through the development of this note. Plot-style consistency across scripts has been an ongoing concern, with centralized style enforcement in producer scripts now largely resolving the issue. Method-to-code traceability gaps are addressed by the workflow and provenance tables in Sec.~\ref{sec:method} and Sec.~\ref{sec:results}, with \path{workflow_summary.json} serving as the canonical numeric record. The most significant open challenge is endpoint-bin instability: the final bin ($0.99<T<1.00$) is sensitive to MC modeling, hadronic correction extrapolation, and normalization convention differences, and dominates the maximum per-bin uncertainty. This is mitigated by reporting central-window metrics ($0.60\le T<0.95$) alongside full-range figures throughout the note.
 
 \subsection{Update protocol for this section}
 

@@ -518,6 +518,34 @@ def make_hadronic_event_sel_correction(
     return h_gen_all, h_gen_before, h_corr
 
 
+def make_isr_correction(isr_corr_file, bins, xmin, xmax, axis_label):
+    """
+    Load pre-computed ISR correction histograms from cache file.
+
+    Returns (h_isr0, h_isr1, h_isr_corr) cloned so the file can be closed.
+    Raises FileNotFoundError if the cache file is missing.
+    """
+    require_file(isr_corr_file)
+    tf = ROOT.TFile.Open(isr_corr_file, "READ")
+    if not tf or tf.IsZombie():
+        raise RuntimeError(f"Failed to open ISR correction cache: {isr_corr_file}")
+
+    def _clone(name):
+        obj = tf.Get(name)
+        if not obj:
+            tf.Close()
+            raise KeyError(f"ISR cache missing histogram '{name}' in {isr_corr_file}")
+        h = obj.Clone(name)
+        h.SetDirectory(0)
+        return h
+
+    h_isr0 = _clone("mc_isr0")
+    h_isr1 = _clone("mc_isr1")
+    h_isr_corr = _clone("isr_corr")
+    tf.Close()
+    return h_isr0, h_isr1, h_isr_corr
+
+
 def main():
     args = parse_args()
     cfg = load_config(args.config, args.set)
@@ -567,6 +595,8 @@ def main():
     apply_hadronic_event_correction = bool(
         get_cfg(cfg, "apply_hadronic_event_correction", default=True)
     )
+    apply_isr_correction = bool(get_cfg(cfg, "apply_isr_correction", default=False))
+    isr_corr_file = get_cfg(cfg, "isr_corr_file", default=None)
 
     out_root = get_cfg(cfg, "out_root", default=f"unfolded_{observable_name}.root")
     if closure_check:
@@ -711,6 +741,17 @@ def main():
         # Use ROOT's bin-by-bin multiplication with propagated uncertainties.
         h_unfolded_corrected.Multiply(h_hadsel_corr)
 
+    h_isr0_hist = h_isr1_hist = h_isr_corr_hist = None
+    if apply_isr_correction:
+        if not isr_corr_file:
+            raise ValueError(
+                "apply_isr_correction=true but no isr_corr_file provided"
+            )
+        h_isr0_hist, h_isr1_hist, h_isr_corr_hist = make_isr_correction(
+            isr_corr_file, bins, xmin, xmax, axis_label
+        )
+        h_unfolded_corrected.Multiply(h_isr_corr_hist)
+
     h_eff = hist_efficiency(response, bins, xmin, xmax, axis_label=axis_label)
     h_mresp = matrix_to_th2(
         "response_prob_reco_given_gen",
@@ -740,6 +781,8 @@ def main():
         out_objects.append(h_theory_weights_gen)
     if h_theory_weight_coverage:
         out_objects.append(h_theory_weight_coverage)
+    if h_isr0_hist:
+        out_objects += [h_isr0_hist, h_isr1_hist, h_isr_corr_hist]
 
     if calculate_covariance:
         cov = unfold.Eunfold(RooUnfold.kCovariance)
@@ -804,6 +847,7 @@ def main():
         print("  applied correction: hadronic_event_sel_corr = tgenBefore/tgen (bin-by-bin)")
     else:
         print("  applied correction: disabled (apply_hadronic_event_correction=false)")
+    print(f"  ISR correction: {'enabled' if apply_isr_correction else 'disabled'}")
     print(f"  output ROOT: {out_root}")
 
 

@@ -117,9 +117,6 @@ def draw_and_save(hist, out_pdf: str):
     label.SetTextFont(42)
     # Two labels in top margin: ALEPH stamp (left) and plot title (right)
     label.DrawLatex(0.12, 0.945, "ALEPH e^{+}e^{-}, #sqrt{s}=91.2 GeV")
-    label.SetTextSize(0.034)
-    label.SetTextAlign(31)  # right-align
-    label.DrawLatex(0.84, 0.945, "Total correlation matrix (final result)")
 
     c.SaveAs(out_pdf)
     c.Close()

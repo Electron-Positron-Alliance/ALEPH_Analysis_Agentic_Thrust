@@ -36,7 +36,7 @@ import ROOT
 ROOT.gROOT.SetBatch(True)
 ROOT.TH1.AddDirectory(False)
 
-DEFAULT_RESULT_DIR = "Studies/PreliminaryResult/2026-02-17_thrust_iter5/"
+DEFAULT_RESULT_DIR = "Studies/PreliminaryResult/2026-03-05_thrust_iter5/"
 DEFAULT_OUTDIR = "Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/"
 
 T_MIN_DISPLAY = 0.55
@@ -188,6 +188,8 @@ def main():
     # ------------------------------------------------------------------
     frac_stat     = cov_to_frac(summary + "cov_stat.csv",     nom)
     frac_hadronic = cov_to_frac(summary + "cov_hadronic.csv", nom)
+    isr_csv = summary + "cov_isr.csv"
+    frac_isr = cov_to_frac(isr_csv, nom) if os.path.exists(isr_csv) else np.zeros_like(nom)
     frac_total    = cov_to_frac(summary + "cov_total.csv",    nom)
 
     iter4    = absfrac(get_hist_array(rdir + "iteration/unfolded_iter4.root"), nom)
@@ -291,6 +293,8 @@ def main():
               "#e15759", 1.7, label="Theory")
     step_plot(ax, edges_disp, m(frac_hadronic)*100,
               "#9467bd", 1.5, ls=":", label="Hadronic")
+    step_plot(ax, edges_disp, m(frac_isr)*100,
+              "#e07b39", 1.5, ls=(0, (3, 1, 1, 1)), label="ISR corr.")
     step_plot(ax, edges_disp, m(frac_total)*100,
               "black", 2.1, ls="--", label="Total", zorder=5)
 
