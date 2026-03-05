@@ -1,45 +1,7 @@
 \section{Challenges with AI-agent analysis}
 \label{sec:challenges}
 
-This section is maintained as a living record of unresolved or recurring issues encountered during the analysis and during analyst--agent collaboration. Because this document is an internal note rather than a final publication, we prioritize explicit tracking of weaknesses, mitigation status, and collaboration failure modes.
-
-\subsection{Practical Codex--physicist workflow}
-
-The working model used in this note is a constrained human-in-the-loop cycle:
-\begin{enumerate}
-\item the physicist defines the physics objective, nominal policy, and acceptance criteria (e.g. nominal IBU iterations, uncertainty definition, figure intent);
-\item the agent implements code and note changes, executes reproducible commands, and reports exact file-path and artifact updates;
-\item the physicist reviews outputs (plots, numerical consistency, physics interpretation), requests targeted corrections, and approves or rejects the iteration;
-\item accepted changes are propagated to the note with explicit script provenance and residual-risk statements.
-\end{enumerate}
-
-In this model, authority is intentionally asymmetric: the physicist owns physics choices and release signoff, while the agent owns implementation throughput, consistency checks, and traceability.
-
-\subsection{How interaction is carried out in practice}
-
-The interaction pattern in this project is not free-form chat; it is a specification--execution loop with explicit control points:
-\begin{itemize}
-\item requests are usually concrete and executable (script, figure, table, section);
-\item each iteration requires path-level traceability to scripts, outputs, and note sections;
-\item plotting/layout feedback is treated as analysis-relevant, since figure readability affects interpretation;
-\item corrections are applied incrementally and revalidated, rather than batching large unreviewed changes;
-\item unresolved issues are converted into tracked follow-up tasks rather than hidden in narrative text.
-\end{itemize}
-
-This interaction discipline reduced turnaround for code and note updates, but it also exposed repeated bottlenecks in formatting consistency, evolving scope, and ambiguity in implicit expert expectations.
-
-\subsection{Agent-perspective challenges with expert collaboration}
-
-From the agent side, the main recurring challenges are:
-\begin{itemize}
-\item \textbf{Implicit physics priors}: expert expectations on acceptable binning, regularization behavior, or uncertainty presentation are often assumed rather than initially stated;
-\item \textbf{Precision formatting constraints}: small figure-layout details (label offsets, legend placement, pad geometry) require many short feedback loops;
-\item \textbf{Method-vs-presentation coupling}: apparent cosmetic changes can alter interpretability and therefore physics conclusions;
-\item \textbf{State synchronization risk}: when scripts, outputs, and note text evolve quickly, stale references can appear unless provenance is continuously refreshed;
-\item \textbf{Boundary management}: the agent can execute and refactor reliably, but interpretation authority and final scientific claims must remain analyst-owned.
-\end{itemize}
-
-These challenge classes are expected in future observable expansions and motivate stricter templating for figures, stronger configuration contracts, and checklists for note updates.
+This section is maintained as a living record of unresolved or recurring issues encountered during the analysis. Because this document is an internal note rather than a final publication, we prioritize explicit tracking of weaknesses, mitigation status, and open analysis challenges. Practical lessons from AI--physicist collaboration are discussed in Sec.~\ref{sec:context}.
 
 \subsection{Current limitations of the thrust-only baseline}
 

@@ -8,16 +8,7 @@ developed by major AI laboratories, including
 Anthropic~\cite{Anthropic:2025accelerating}, OpenAI~\cite{OpenAI:2025gpt5science},
 Google DeepMind~\cite{GoogleDeepMind:2025geminiscience}, and others, that can now
 assist directly with scientific reasoning, mathematical proof, and code generation.
-A striking asymmetry persists in fundamental physics: nearly all current
-AI-assisted scientific workflows operate on the theoretical or computational side.
-Recent examples include AI-assisted derivations of new results in
-theoretical particle physics~\cite{OpenAI:2025newresult}, design of novel protein
-structures for biology and health research~\cite{GoogleDeepMind:2025alphaproteo},
-and assistance with complex mathematical simplifications in high-energy physics
-calculations. The experimental side of the AI-assisted fundamental physics research loop remains
-largely absent. To realize a future where AI rapidly accelerates the discovery of
-new physics, AI-assisted scientific workflows must be developed and validated
-across \textit{both} precision theory \textit{and} precision experiment.
+A striking asymmetry persists: AI has transformed the theoretical and computational side of fundamental physics research---assisting derivations of new results in theoretical particle physics~\cite{OpenAI:2025newresult}, designing novel protein structures for biology and health research~\cite{GoogleDeepMind:2025alphaproteo}, and simplifying complex calculations. Yet the experimental side of the AI-assisted research loop remains largely absent. To realize a future where AI rapidly accelerates the discovery of new physics, AI-assisted scientific workflows must be developed and validated across \textit{both} precision theory \textit{and} precision experiment.
 
 A logical first step toward closing this gap is an agentic analysis of real
 experimental data with expert physicist oversight. This is precisely the approach
@@ -54,8 +45,7 @@ precision experimental measurement becomes validation infrastructure for AI mode
 When percent-level uncertainties are coupled to rigorous covariance quantification and
 end-to-end reproducibility, high-precision measurements define the testing ground where
 AI predictions are made quantitative, falsifiable, and subject to rigorous scientific
-accountability. Although there is currently no active high-energy lepton collider,
-archived LEP data now provide an unprecedented open-data opportunity for precision studies with excellent uncertainty control~\cite{EEAlliance:website,Badea:2019vey,Chen:2021uws}.
+accountability. Although there is currently no active high-energy lepton collider operating at LEP energies or above---while lower-energy $e^+e^-$ colliders such as BEPCII operate at $\sqrt{s} \lesssim 5$~GeV---archived LEP data now provide an unprecedented open-data opportunity for precision studies with excellent uncertainty control~\cite{EEAlliance:website,Badea:2019vey,Chen:2021uws}.
 Relative to hadron- and nuclear-collision open-data settings, the LEP $e^{+}e^{-}$ environment is considerably simpler experimentally and theoretically, making it a uniquely clean testing ground for new research in precision Physics+AI development.
 
 From both an AI and precision physics perspective, thrust is an ideal first variable for this program.
@@ -88,8 +78,9 @@ computed from selected charged and neutral particles, the note also includes det
 \texttt{pwflag}-resolved kinematic comparisons between data and simulation before the
 unfolding stage.
 
-The remainder of the document is structured as follows: Sec.~\ref{sec:ai_agent}
-defines the AI-agent operating model used in this internal analysis cycle;
+The remainder of the document is structured as follows: Sec.~\ref{sec:context}
+provides context of the $e^+e^-$ alliance program, including lessons from AI--physicist collaboration;
+Sec.~\ref{sec:ai_agent} defines the AI-agent operating model used in this internal analysis cycle;
 Sec.~\ref{sec:aleph} summarizes detector elements most relevant for event-shape
 reconstruction; Sec.~\ref{sec:datasets} describes data and simulation samples;
 Sec.~\ref{sec:event_selection} details reconstruction and selections, including
@@ -97,5 +88,4 @@ particle-category and event-level validation; Sec.~\ref{sec:method} presents
 thrust construction and the executable unfolding workflow;
 Sec.~\ref{sec:systematics} and Sec.~\ref{sec:results} document uncertainty
 propagation and the final thrust baseline outputs; Sec.~\ref{sec:conclusion} reports our conclusions from the study; Sec.~\ref{sec:challenges}
-closes the note with practical collaboration protocol, persistent analysis
-challenges, and mitigation tracking.
+closes the note with persistent analysis challenges and mitigation tracking.
