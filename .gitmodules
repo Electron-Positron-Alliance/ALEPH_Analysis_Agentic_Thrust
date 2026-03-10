@@ -1,0 +1,5 @@
+[submodule ".claude/skills/ALEPH_Agent_Skills"]
+	path = .claude/skills/ALEPH_Agent_Skills
+	url = git@github.com:badeaa3/ALEPH_Agent_Skills.git
+	branch = main
+	update = merge
