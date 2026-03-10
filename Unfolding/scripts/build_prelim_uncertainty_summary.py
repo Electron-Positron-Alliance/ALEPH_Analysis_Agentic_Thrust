@@ -987,6 +987,7 @@ def make_final_plot(
     theory_abs: np.ndarray,
     hadronic_abs: np.ndarray | None = None,
     isr_abs: np.ndarray | None = None,
+    raw_data=None,
 ):
     from PlotConfig import plotConfig
     from style import ALEPHLegend, apply_style, myText, style_ratio
@@ -1023,6 +1024,8 @@ def make_final_plot(
         float(h_nom.GetMaximum()),
         float(np.max(nominal_to_array(nominal) + total_abs)),
     )
+    if raw_data is not None:
+        max_y = max(max_y, float(raw_data.GetMaximum()))
 
     c = ROOT.TCanvas("c_final_result", "", 50, 50, 700, 700)
     pad1 = ROOT.TPad("pad1", "", 0.0, 0.30, 1.0, 1.0)
@@ -1063,15 +1066,25 @@ def make_final_plot(
         aleph["values"],
         aleph["total"],
     )
-    apply_style(h_aleph, color=ROOT.kRed + 1, marker=24, line_style=1, is_data=True)
+    apply_style(h_aleph, color=ROOT.kBlue + 1, marker=24, line_style=1, is_data=True)
     h_aleph.SetLineWidth(2)
     h_aleph.SetMarkerSize(0.9)
     h_aleph.Draw("PE1 SAME")
+
+    if raw_data is not None:
+        h_raw = raw_data.Clone("h_raw_data_for_plot")
+        h_raw.SetDirectory(0)
+        apply_style(h_raw, color=ROOT.kOrange + 1, marker=25, line_style=1, is_data=True)
+        h_raw.SetLineWidth(2)
+        h_raw.SetMarkerSize(0.8)
+        h_raw.Draw("PE1 SAME")
 
     leg = ALEPHLegend(loc=cfg.get("legloc", [0.53, 0.58, 0.94, 0.92]), textsize=0.032)
     leg.AddEntry(h_nom, "Unfolded nominal (N_{iter}=5)", "pl")
     leg.AddEntry(h_total, "Total uncertainty", "f")
     leg.AddEntry(h_aleph, "ALEPH 2004", "pl")
+    if raw_data is not None:
+        leg.AddEntry(h_raw, "Raw data (detector level)", "pl")
     leg.Draw()
     myText(0.2, 0.925, "ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV", size=0.045)
 
@@ -1138,7 +1151,7 @@ def make_final_plot(
     unity.Draw("SAME")
     h_ratio_band.Draw("E2 SAME")
 
-    apply_style(h_ratio, color=ROOT.kRed + 1, marker=24, line_style=1, is_data=True)
+    apply_style(h_ratio, color=ROOT.kBlue + 1, marker=24, line_style=1, is_data=True)
     style_ratio(h_ratio, "Thrust")
     h_ratio.GetYaxis().SetTitle("Ratio")
     h_ratio.GetYaxis().SetRangeUser(0.75, 1.55)
@@ -1169,6 +1182,356 @@ def make_final_plot(
     c.SaveAs(out_path)
     c.Close()
     return ratio_stats
+
+
+def make_correction_stages_plot(
+    out_path: str,
+    nominal_root: str,
+    nominal,
+    aleph_csv_path: str,
+    stat_abs: np.ndarray,
+    iter_abs: np.ndarray,
+    exp_abs: np.ndarray,
+    theory_abs: np.ndarray,
+    hadronic_abs: np.ndarray | None,
+    isr_abs: np.ndarray | None,
+    isr_cache_file: str | None = None,
+):
+    from PlotConfig import plotConfig
+    from style import ALEPHLegend, apply_style, myText, style_ratio
+
+    if hadronic_abs is None:
+        hadronic_abs = np.zeros_like(stat_abs)
+    if isr_abs is None:
+        isr_abs = np.zeros_like(stat_abs)
+
+    # --- Load intermediate histograms from nominal ROOT ---
+    h_unf_raw = None
+    h_had_corr = None
+    h_isr_corr = None
+    try:
+        h_unf_raw = load_hist(nominal_root, "unfolded")
+    except (KeyError, OSError):
+        pass
+    try:
+        h_had_corr = load_hist(nominal_root, "hadronic_event_sel_corr")
+    except (KeyError, OSError):
+        pass
+    # Try ISR correction from cache file first, then nominal root.
+    for src in ([isr_cache_file] if isr_cache_file else []) + [nominal_root]:
+        if src is None:
+            continue
+        try:
+            h_isr_corr = load_hist(src, "isr_corr")
+            break
+        except (KeyError, OSError):
+            pass
+
+    # Compute IBU + hadronic intermediate stage.
+    h_ibu_had = None
+    if h_unf_raw is not None and h_had_corr is not None:
+        h_ibu_had = h_unf_raw.Clone("h_ibu_had_intermediate")
+        h_ibu_had.SetDirectory(0)
+        h_ibu_had.Multiply(h_had_corr)
+
+    # Normalize intermediate stages to differential cross section.
+    ibu = to_diff_xsec(h_unf_raw) if h_unf_raw is not None else None
+    ibu_had = to_diff_xsec(h_ibu_had) if h_ibu_had is not None else None
+
+    # Load data_reco and mc_gen for display.
+    h_data_reco = None
+    h_mc_gen = None
+    try:
+        h_data_reco = load_hist(nominal_root, "data_reco")
+        h_data_reco = to_diff_xsec(h_data_reco)
+    except (KeyError, OSError):
+        pass
+    try:
+        h_mc_gen = load_hist(nominal_root, "mc_gen")
+        h_mc_gen = to_diff_xsec(h_mc_gen)
+    except (KeyError, OSError):
+        pass
+
+    # Derive x-axis title from the nominal histogram axis.
+    x_title = str(nominal.GetXaxis().GetTitle()) or "Thrust"
+
+    # Try to look up a plotConfig entry; default to thrust config.
+    cfg = plotConfig.get("c_parameter", plotConfig["thrust"])
+
+    # --- Uncertainty bands via fractional-scaling approximation ---
+    nom_arr = hist_to_array(nominal)
+    safe_nom = np.where(nom_arr > 0, nom_arr, 1.0)
+
+    frac_stat = stat_abs / safe_nom
+    frac_iter = iter_abs / safe_nom
+    frac_exp = exp_abs / safe_nom
+    frac_theory = theory_abs / safe_nom
+    frac_had = hadronic_abs / safe_nom
+    frac_isr = isr_abs / safe_nom
+
+    # Stage 2: IBU unfolded (stat+iter+exp+theory).
+    stage2_abs = np.zeros_like(nom_arr)
+    if ibu is not None:
+        ibu_arr = hist_to_array(ibu)
+        safe_ibu = np.where(ibu_arr > 0, ibu_arr, 1.0)
+        stage2_abs = safe_ibu * np.sqrt(frac_stat**2 + frac_iter**2 + frac_exp**2 + frac_theory**2)
+
+    # Stage 3: IBU + hadronic (adds hadronic component).
+    stage3_abs = np.zeros_like(nom_arr)
+    if ibu_had is not None:
+        ibu_had_arr = hist_to_array(ibu_had)
+        safe_ibu_had = np.where(ibu_had_arr > 0, ibu_had_arr, 1.0)
+        stage3_abs = safe_ibu_had * np.sqrt(
+            frac_stat**2 + frac_iter**2 + frac_exp**2 + frac_theory**2 + frac_had**2
+        )
+
+    # Stage 4: final result (all components).
+    stage4_abs = np.sqrt(
+        stat_abs**2 + iter_abs**2 + exp_abs**2 + theory_abs**2 + hadronic_abs**2 + isr_abs**2
+    )
+
+    # Helper: build an E2 uncertainty band clone of a histogram.
+    def make_band(src_hist, name, err_arr, color, alpha):
+        h = src_hist.Clone(name)
+        h.SetDirectory(0)
+        for i, e in enumerate(err_arr, start=1):
+            h.SetBinError(i, float(e))
+        h.SetFillColorAlpha(color, alpha)
+        h.SetLineColorAlpha(color, alpha)
+        h.SetMarkerSize(0.0)
+        return h
+
+    # Uncertainty bands (back-to-front draw order).
+    h_band4 = make_band(nominal, "h_cs_band_final", stage4_abs, ROOT.kGray + 1, 0.45)
+    h_band3 = None
+    if ibu_had is not None:
+        h_band3 = make_band(ibu_had, "h_cs_band_ibu_had", stage3_abs, ROOT.kOrange + 1, 0.35)
+    h_band2 = None
+    if ibu is not None:
+        h_band2 = make_band(ibu, "h_cs_band_ibu", stage2_abs, ROOT.kAzure + 2, 0.35)
+
+    # ALEPH 2004 reference.
+    aleph = load_aleph_2004_result(aleph_csv_path)
+    h_aleph = make_hist_from_binned_values(
+        "h_cs_aleph_2004",
+        aleph["edges"],
+        aleph["values"],
+        aleph["total"],
+    )
+    apply_style(h_aleph, color=ROOT.kBlue + 1, marker=27, line_style=1, is_data=True)
+    h_aleph.SetLineWidth(2)
+    h_aleph.SetMarkerSize(1.0)
+
+    # MC gen.
+    if h_mc_gen is not None:
+        apply_style(h_mc_gen, color=ROOT.kGreen + 2, marker=25, line_style=1, is_data=False)
+        h_mc_gen.SetLineWidth(2)
+        h_mc_gen.SetMarkerSize(0.8)
+
+    # Data reco.
+    if h_data_reco is not None:
+        apply_style(h_data_reco, color=ROOT.kGray + 1, marker=20, line_style=1, is_data=True)
+        h_data_reco.SetLineWidth(2)
+        h_data_reco.SetMarkerSize(0.8)
+
+    # IBU stage.
+    h_ibu_draw = None
+    if ibu is not None:
+        h_ibu_draw = ibu.Clone("h_cs_ibu_draw")
+        h_ibu_draw.SetDirectory(0)
+        apply_style(h_ibu_draw, color=ROOT.kAzure + 2, marker=24, line_style=1, is_data=True)
+        h_ibu_draw.SetLineWidth(2)
+        h_ibu_draw.SetMarkerSize(0.8)
+
+    # IBU + had stage.
+    h_ibu_had_draw = None
+    if ibu_had is not None:
+        h_ibu_had_draw = ibu_had.Clone("h_cs_ibu_had_draw")
+        h_ibu_had_draw.SetDirectory(0)
+        apply_style(h_ibu_had_draw, color=ROOT.kOrange + 1, marker=26, line_style=1, is_data=True)
+        h_ibu_had_draw.SetLineWidth(2)
+        h_ibu_had_draw.SetMarkerSize(0.8)
+
+    # Final nominal points.
+    h_nom_draw = nominal.Clone("h_cs_nom_draw")
+    h_nom_draw.SetDirectory(0)
+    apply_style(h_nom_draw, color=ROOT.kBlack, marker=21, line_style=1, is_data=True)
+    h_nom_draw.SetLineWidth(2)
+    h_nom_draw.SetMarkerSize(0.8)
+
+    # Determine y-axis range.
+    max_candidates = [float(h_nom_draw.GetMaximum())]
+    if h_data_reco is not None:
+        max_candidates.append(float(h_data_reco.GetMaximum()))
+    if h_mc_gen is not None:
+        max_candidates.append(float(h_mc_gen.GetMaximum()))
+    if h_ibu_draw is not None:
+        max_candidates.append(float(h_ibu_draw.GetMaximum()))
+    if h_ibu_had_draw is not None:
+        max_candidates.append(float(h_ibu_had_draw.GetMaximum()))
+    max_y = max(max_candidates)
+    # Lower y bound: lowest positive value in the nominal band.
+    lower_vals = np.clip(nom_arr - stage4_abs, 0.0, None)
+    pos = lower_vals[lower_vals > 0.0]
+    if pos.size == 0:
+        pos = nom_arr[nom_arr > 0.0]
+    y_min = max(1e-6, float(np.min(pos)) * 0.8) if pos.size > 0 else 1e-6
+
+    c = ROOT.TCanvas("c_correction_stages", "", 50, 50, 700, 700)
+    pad1 = ROOT.TPad("pad1_cs", "", 0.0, 0.30, 1.0, 1.0)
+    pad1.SetBottomMargin(0.0)
+    pad1.SetTopMargin(0.10)
+    pad1.SetLeftMargin(0.20)
+    pad1.SetRightMargin(0.05)
+    pad1.Draw()
+    pad1.cd()
+    pad1.SetLogy()
+
+    frame = h_nom_draw.Clone("frame_cs_top")
+    frame.Reset("ICESM")
+    frame.SetTitle("")
+    frame.GetXaxis().SetTitle(x_title)
+    frame.GetYaxis().SetTitle(cfg.get("YTitleDifferential", "1/#sigma d#sigma/dT"))
+    frame.SetMinimum(y_min)
+    frame.SetMaximum(1.6 * max_y)
+    apply_style(frame, color=ROOT.kBlack, marker=20, line_style=1, is_data=True)
+    frame.GetYaxis().SetTitleOffset(1.6)
+    frame.GetXaxis().SetLabelSize(0.0)
+    frame.GetXaxis().SetNdivisions(505)
+    frame.Draw("AXIS")
+
+    # Draw bands back-to-front.
+    h_band4.Draw("E2 SAME")
+    if h_band3 is not None:
+        h_band3.Draw("E2 SAME")
+    if h_band2 is not None:
+        h_band2.Draw("E2 SAME")
+
+    # Draw point series.
+    h_aleph.Draw("PE1 SAME")
+    if h_mc_gen is not None:
+        h_mc_gen.Draw("PE1 SAME")
+    if h_data_reco is not None:
+        h_data_reco.Draw("PE1 SAME")
+    if h_ibu_draw is not None:
+        h_ibu_draw.Draw("PE1 SAME")
+    if h_ibu_had_draw is not None:
+        h_ibu_had_draw.Draw("PE1 SAME")
+    h_nom_draw.Draw("PE1 SAME")
+
+    leg = ALEPHLegend(loc=[0.24, 0.48, 0.59, 0.88], textsize=0.030)
+    if h_data_reco is not None:
+        leg.AddEntry(h_data_reco, "Raw data (detector level)", "pl")
+    if h_mc_gen is not None:
+        leg.AddEntry(h_mc_gen, "MC gen (particle level)", "pl")
+    leg.AddEntry(h_aleph, "ALEPH 2004", "pl")
+    if h_ibu_draw is not None:
+        leg.AddEntry(h_ibu_draw, "IBU unfolded", "pl")
+        leg.AddEntry(h_band2, "IBU unc. band", "f")
+    if h_ibu_had_draw is not None:
+        leg.AddEntry(h_ibu_had_draw, "IBU + had. corr.", "pl")
+        leg.AddEntry(h_band3, "IBU + had. unc. band", "f")
+    leg.AddEntry(h_nom_draw, "IBU + had. + ISR (final)", "pl")
+    leg.AddEntry(h_band4, "Final unc. band", "f")
+    leg.Draw()
+    myText(0.2, 0.925, "ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV", size=0.045)
+
+    # --- Ratio pad: all curves / ALEPH 2004 ---
+    c.cd()
+    pad2 = ROOT.TPad("pad2_cs", "", 0.0, 0.05, 1.0, 0.30)
+    pad2.SetTopMargin(0.00)
+    pad2.SetBottomMargin(0.42)
+    pad2.SetLeftMargin(0.20)
+    pad2.SetRightMargin(0.05)
+    pad2.Draw()
+    pad2.cd()
+
+    # Rebin everything to ALEPH bins for ratio.
+    n_aleph = len(aleph["values"])
+    aleph_edges_arr = array("d", [float(x) for x in aleph["edges"]])
+
+    def rebin_to_aleph(h, rname):
+        hr = h.Rebin(n_aleph, rname, aleph_edges_arr)
+        hr.SetDirectory(0)
+        return hr
+
+    h_nom_aleph = rebin_to_aleph(nominal, "h_cs_nom_aleph")
+    for ibin in range(1, h_nom_aleph.GetNbinsX() + 1):
+        h_nom_aleph.SetBinError(ibin, 0.0)
+
+    # Unity band based on final total uncertainty on the nominal rebinned.
+    h_nom_total_aleph = nominal.Clone("h_cs_nom_total_for_ratio")
+    h_nom_total_aleph.SetDirectory(0)
+    for i, e in enumerate(stage4_abs, start=1):
+        h_nom_total_aleph.SetBinError(i, float(e))
+    h_nom_total_aleph_rb = rebin_to_aleph(h_nom_total_aleph, "h_cs_nom_total_aleph_rb")
+
+    h_ratio_band = h_nom_total_aleph_rb.Clone("h_cs_ratio_unity_band")
+    h_ratio_band.SetDirectory(0)
+    for ibin in range(1, h_ratio_band.GetNbinsX() + 1):
+        c_nom = float(h_nom_total_aleph_rb.GetBinContent(ibin))
+        e_nom = float(h_nom_total_aleph_rb.GetBinError(ibin))
+        rel = (e_nom / c_nom) if c_nom > 0.0 else 0.0
+        h_ratio_band.SetBinContent(ibin, 1.0)
+        h_ratio_band.SetBinError(ibin, rel)
+    h_ratio_band.SetFillColorAlpha(ROOT.kGray + 1, 0.45)
+    h_ratio_band.SetLineColor(ROOT.kGray + 2)
+    h_ratio_band.SetMarkerSize(0.0)
+
+    frame2 = h_aleph.Clone("frame_cs_ratio")
+    frame2.Reset("ICESM")
+    style_ratio(frame2, x_title)
+    frame2.GetYaxis().SetTitleOffset(1.6)
+    frame2.GetXaxis().SetTitleOffset(1.2)
+    frame2.GetYaxis().SetLabelSize(0.10)
+    frame2.GetXaxis().SetLabelSize(0.12)
+    frame2.GetYaxis().SetTitleSize(0.10)
+    frame2.GetXaxis().SetTitleSize(0.12)
+    frame2.GetYaxis().SetTitle("Ratio to ALEPH")
+    frame2.GetYaxis().SetRangeUser(0.75, 1.55)
+    frame2.SetMinimum(0.75)
+    frame2.SetMaximum(1.55)
+    frame2.GetXaxis().SetNdivisions(505)
+    frame2.Draw("AXIS")
+
+    unity = ROOT.TLine(frame2.GetXaxis().GetXmin(), 1.0, frame2.GetXaxis().GetXmax(), 1.0)
+    unity.SetLineStyle(2)
+    unity.SetLineColor(ROOT.kGray + 2)
+    unity.Draw("SAME")
+    h_ratio_band.Draw("E2 SAME")
+
+    ratio_hists_cs = []
+
+    def draw_ratio_over_aleph(h_num, rname, color, marker):
+        h_rb = rebin_to_aleph(h_num, rname + "_rb")
+        h_rb.SetDirectory(0)
+        h_r = h_aleph.Clone(rname + "_ratio")
+        h_r.SetDirectory(0)
+        h_r.Divide(h_rb, h_aleph)
+        apply_style(h_r, color=color, marker=marker, line_style=1, is_data=True)
+        style_ratio(h_r, x_title)
+        h_r.GetYaxis().SetTitle("Ratio to ALEPH")
+        h_r.GetYaxis().SetRangeUser(0.75, 1.55)
+        h_r.GetXaxis().SetNdivisions(505)
+        h_r.SetMarkerSize(0.85)
+        h_r.Draw("PE1 SAME")
+        ratio_hists_cs.append(h_r)
+
+    if h_data_reco is not None:
+        draw_ratio_over_aleph(h_data_reco, "h_cs_ratio_data", ROOT.kGray + 1, 20)
+    if h_mc_gen is not None:
+        draw_ratio_over_aleph(h_mc_gen, "h_cs_ratio_mcgen", ROOT.kGreen + 2, 25)
+    if h_ibu_draw is not None:
+        draw_ratio_over_aleph(h_ibu_draw, "h_cs_ratio_ibu", ROOT.kAzure + 2, 24)
+    if h_ibu_had_draw is not None:
+        draw_ratio_over_aleph(h_ibu_had_draw, "h_cs_ratio_ibu_had", ROOT.kOrange + 1, 26)
+    draw_ratio_over_aleph(h_nom_draw, "h_cs_ratio_final", ROOT.kBlack, 21)
+
+    outdir_cs = os.path.dirname(out_path)
+    if outdir_cs:
+        os.makedirs(outdir_cs, exist_ok=True)
+    c.SaveAs(out_path)
+    c.Close()
 
 
 def make_of_ibu_comparison_plot(
@@ -1235,10 +1598,10 @@ def make_of_ibu_comparison_plot(
     apply_style(h_of, color=ROOT.kAzure + 2, marker=24, line_style=1, is_data=True)
     h_of.SetLineWidth(2)
     h_of.SetMarkerSize(0.90)
-    apply_style(h_ibu, color=ROOT.kBlue + 1, marker=25, line_style=1, is_data=True)
+    apply_style(h_ibu, color=ROOT.kMagenta, marker=25, line_style=1, is_data=True)
     h_ibu.SetLineWidth(2)
     h_ibu.SetMarkerSize(0.90)
-    apply_style(h_aleph, color=ROOT.kRed + 1, marker=26, line_style=1, is_data=True)
+    apply_style(h_aleph, color=ROOT.kBlue + 1, marker=26, line_style=1, is_data=True)
     h_aleph.SetLineWidth(2)
     h_aleph.SetMarkerSize(0.90)
 
@@ -1338,9 +1701,9 @@ def make_of_ibu_comparison_plot(
 
     ratio_hists = {}
     for key, hist, color, marker in [
-        ("aleph_over_current", h_aleph, ROOT.kRed + 1, 26),
+        ("aleph_over_current", h_aleph, ROOT.kBlue + 1, 26),
         ("of_over_current", h_of, ROOT.kAzure + 2, 24),
-        ("ibu_over_current", h_ibu, ROOT.kBlue + 1, 25),
+        ("ibu_over_current", h_ibu, ROOT.kMagenta, 25),
     ]:
         h_ratio = hist.Clone(f"h_ratio_{key}")
         h_ratio.SetDirectory(0)
@@ -1906,6 +2269,12 @@ def main():
         legend_margin=0.14,
         signed=False,
     )
+    raw_data_diffxsec = None
+    try:
+        h_data_reco = load_hist(nominal_root, "data_reco")
+        raw_data_diffxsec = to_diff_xsec(h_data_reco)
+    except KeyError:
+        print("Warning: 'data_reco' not found in nominal ROOT file; raw data will not be shown.")
     ratio_stats = make_final_plot(
         out_path=os.path.join(outdir, "final_result_uncertainty_breakdown.pdf"),
         nominal=nominal,
@@ -1916,6 +2285,21 @@ def main():
         theory_abs=theory_abs,
         hadronic_abs=hadronic_abs,
         isr_abs=isr_abs,
+        raw_data=raw_data_diffxsec,
+    )
+    correction_stages_plot_path = os.path.join(outdir, "final_result_correction_stages.pdf")
+    make_correction_stages_plot(
+        out_path=correction_stages_plot_path,
+        nominal_root=nominal_root,
+        nominal=nominal,
+        aleph_csv_path=aleph_csv_path,
+        stat_abs=stat_abs,
+        iter_abs=iter_abs,
+        exp_abs=exp_abs,
+        theory_abs=theory_abs,
+        hadronic_abs=hadronic_abs,
+        isr_abs=isr_abs,
+        isr_cache_file=isr_cache_file,
     )
     comparison_plot_path = None
     comparison_metrics_path = None
@@ -2010,6 +2394,7 @@ def main():
             "binning": os.path.join(outdir, "binning.csv"),
             "component_plots": component_plots,
             "final_plot": os.path.join(outdir, "final_result_uncertainty_breakdown.pdf"),
+            "correction_stages_plot": correction_stages_plot_path,
             "aleph_csv": aleph_csv_path,
             "ratio_mode": "aleph_over_unfolded",
             "ratio_y_min": 0.75,

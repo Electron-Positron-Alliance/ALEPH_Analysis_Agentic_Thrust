@@ -31,6 +31,9 @@ def parse_args():
         "--unfolded-hist", default="unfolded", help="Unfolded histogram name"
     )
     parser.add_argument(
+        "--corrected-hist", default="unfolded_corrected", help="Corrected unfolded histogram name"
+    )
+    parser.add_argument(
         "--no-normalize",
         action="store_true",
         help="Disable unit-area normalization for shape comparison",
@@ -88,6 +91,15 @@ def get_hist(tf, name):
     return h
 
 
+def try_get_hist(tf, name):
+    obj = tf.Get(name)
+    if not obj:
+        return None
+    h = obj.Clone(f"{name}_plot")
+    h.SetDirectory(0)
+    return h
+
+
 def main():
     args = parse_args()
     add_plotting_path()
@@ -106,44 +118,60 @@ def main():
     h_reco = get_hist(tf, args.reco_hist)
     h_gen = get_hist(tf, args.gen_hist)
     h_unf = get_hist(tf, args.unfolded_hist)
+
+    # Optional correction-stage histograms — silently skip if absent.
+    h_had_corr = try_get_hist(tf, "hadronic_event_sel_corr")
+    h_corrected = try_get_hist(tf, args.corrected_hist)
+
     tf.Close()
 
+    # Compute intermediate stage: IBU + hadronic correction.
+    h_unf_had = None
+    if h_had_corr is not None:
+        h_unf_had = h_unf.Clone("unfolded_had_plot")
+        h_unf_had.SetDirectory(0)
+        h_unf_had.Multiply(h_had_corr)
+
     cfg = plotConfig["thrust"]
-    cfg["legloc"] = [0.24, 0.58, 0.49, 0.88]
+    cfg["legloc"] = [0.24, 0.50, 0.49, 0.88]
     rebin = int(cfg.get("rebin", 1))
     if rebin > 1:
         h_data.Rebin(rebin)
         h_reco.Rebin(rebin)
         h_gen.Rebin(rebin)
         h_unf.Rebin(rebin)
+        if h_unf_had is not None:
+            h_unf_had.Rebin(rebin)
+        if h_corrected is not None:
+            h_corrected.Rebin(rebin)
 
     if not args.no_normalize:
         normalize(h_data)
         normalize(h_reco)
         normalize(h_gen)
         normalize(h_unf)
+        if h_unf_had is not None:
+            normalize(h_unf_had)
+        if h_corrected is not None:
+            normalize(h_corrected)
         ytitle = cfg.get("YTitleDifferential", "Fraction of events")
     else:
         normalize(h_data, unit_area=False)
         normalize(h_reco, unit_area=False)
         normalize(h_gen, unit_area=False)
         normalize(h_unf, unit_area=False)
+        if h_unf_had is not None:
+            normalize(h_unf_had, unit_area=False)
+        if h_corrected is not None:
+            normalize(h_corrected, unit_area=False)
         ytitle = "Events / #DeltaThrust"
 
+    # Build sample list: 5 correction-stage entries + mc_reco in background.
     samples = [
         {
             "hist": h_data,
-            "label": "Data",
-            "color": ROOT.kBlack,
-            "marker": 20,
-            "line_style": 1,
-            "is_data": True,
-            "legend_opt": "pl",
-        },
-        {
-            "hist": h_reco,
-            "label": "MC Reco",
-            "color": ROOT.kRed + 1,
+            "label": "Raw data",
+            "color": ROOT.kGray + 1,
             "marker": 20,
             "line_style": 1,
             "is_data": True,
@@ -151,23 +179,58 @@ def main():
         },
         {
             "hist": h_gen,
-            "label": "MC Gen",
+            "label": "MC gen (particle level)",
             "color": ROOT.kGreen + 2,
-            "marker": 20,
+            "marker": 25,
             "line_style": 1,
             "is_data": False,
             "legend_opt": "pl",
         },
         {
             "hist": h_unf,
-            "label": "Unfolded",
-            "color": ROOT.kBlue + 1,
-            "marker": 20,
+            "label": "IBU unfolded",
+            "color": ROOT.kAzure + 2,
+            "marker": 24,
             "line_style": 1,
             "is_data": True,
             "legend_opt": "pl",
         },
+        {
+            "hist": h_reco,
+            "label": "MC reco",
+            "color": ROOT.kGray + 2,
+            "marker": 24,
+            "line_style": 2,
+            "is_data": False,
+            "legend_opt": "pl",
+        },
     ]
+
+    if h_unf_had is not None:
+        samples.append(
+            {
+                "hist": h_unf_had,
+                "label": "IBU + had. corr.",
+                "color": ROOT.kOrange + 1,
+                "marker": 26,
+                "line_style": 1,
+                "is_data": True,
+                "legend_opt": "pl",
+            }
+        )
+
+    if h_corrected is not None:
+        samples.append(
+            {
+                "hist": h_corrected,
+                "label": "IBU + had. + ISR (final)",
+                "color": ROOT.kBlack,
+                "marker": 21,
+                "line_style": 1,
+                "is_data": True,
+                "legend_opt": "pl",
+            }
+        )
 
     for sample in samples:
         h = sample["hist"]
@@ -176,7 +239,6 @@ def main():
             color=sample["color"],
             marker=sample["marker"],
             line_style=sample["line_style"],
-            # is_data=sample["is_data"],
         )
         h.GetXaxis().SetTitle("Thrust")
         h.GetYaxis().SetTitle(ytitle)
@@ -199,17 +261,33 @@ def main():
     if cfg.get("SetLogy", False):
         pad1.SetLogy()
 
-    legend = ALEPHLegend(loc=cfg.get("legloc", [0.23, 0.7, 0.48, 0.9]), textsize=0.05)
+    legend = ALEPHLegend(loc=cfg.get("legloc", [0.23, 0.7, 0.48, 0.9]), textsize=0.045)
 
-    draw_order = [samples[1], samples[2], samples[3], samples[0]]
+    # Draw order: mc_reco (background/dashed) first, then foreground stages.
+    # Identify reco sample for background draw.
+    reco_sample = next((s for s in samples if s["label"] == "MC reco"), None)
+    fg_samples = [s for s in samples if s["label"] != "MC reco"]
+
+    # Draw order back-to-front: reco (dashed, background), then foreground.
+    draw_order = []
+    if reco_sample is not None:
+        draw_order.append(reco_sample)
+    draw_order.extend(fg_samples)
+
     for idx, sample in enumerate(draw_order):
         draw_opt = "PE1"
         if idx > 0:
             draw_opt += " SAME"
         sample["hist"].Draw(draw_opt)
 
-    for sample in samples:
-        legend.AddEntry(sample["hist"], sample["label"], sample["legend_opt"])
+    # Legend in logical order: data_reco, mc_gen, IBU, IBU+had, final, mc_reco.
+    legend_order = ["Raw data", "MC gen (particle level)", "IBU unfolded",
+                    "IBU + had. corr.", "IBU + had. + ISR (final)", "MC reco"]
+    label_to_sample = {s["label"]: s for s in samples}
+    for label in legend_order:
+        if label in label_to_sample:
+            s = label_to_sample[label]
+            legend.AddEntry(s["hist"], s["label"], s["legend_opt"])
     legend.Draw()
     myText(0.2, 0.925, "ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV", size=0.045)
 
@@ -228,13 +306,9 @@ def main():
     ratio_frame.GetYaxis().SetTitle("Ratio")
     ratio_frame.Draw("AXIS")
 
-    ratio_styles = [
-        (h_data, ROOT.kBlack, 20, 1),
-        (h_reco, ROOT.kRed + 1, 20, 1),
-        (h_gen, ROOT.kGreen + 2, 20, 1),
-        (h_unf, ROOT.kBlue + 1, 20, 1)
-    ]
+    # Ratio denominator is mc_gen.
     ratio_denom = h_gen
+    ratio_styles = [(s["hist"], s["color"], s["marker"], s["line_style"]) for s in samples]
     ratio_hists = []
     unity_line = ROOT.TLine(h_data.GetXaxis().GetXmin(), 1.0, h_data.GetXaxis().GetXmax(), 1.0)
     unity_line.SetLineStyle(2)
