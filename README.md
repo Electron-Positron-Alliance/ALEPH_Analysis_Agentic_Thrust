@@ -2,6 +2,13 @@
 
 Proof-of-concept AI-agentic measurement of event-shape observables (thrust) using archived ALEPH $e^+e^-$ data at $\sqrt{s} = 91.2$ GeV. The full analysis chain — particle selection, hadronic event filtering, detector-level response construction, iterative Bayesian unfolding (IBU), and systematic uncertainty propagation — is driven by an AI agent under physicist supervision. Results are documented in `AnalysisNote/`.
 
+### Setup
+
+Initialize the submodules to be on main branch rather than detached heads
+```
+source setup.sh
+```
+
 ---
 
 ## Table of Contents
