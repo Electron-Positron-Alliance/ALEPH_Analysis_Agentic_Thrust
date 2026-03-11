@@ -14,6 +14,13 @@ import sys
 
 import numpy as np
 import ROOT
+
+_ROOUNFOLD_LIB = os.path.join(
+    os.path.expanduser("~"), "code/RooUnfold/build/libRooUnfold.dylib")
+if not os.path.exists(_ROOUNFOLD_LIB):
+    raise FileNotFoundError(f"RooUnfold library not found: {_ROOUNFOLD_LIB}")
+ROOT.gSystem.Load(_ROOUNFOLD_LIB)
+
 from ROOT import RooUnfoldResponse
 from ROOT import RooUnfold
 from ROOT import RooUnfoldBayes

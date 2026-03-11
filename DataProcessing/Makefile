@@ -1,3 +1,6 @@
+# Include shared tools build fragment
+include tools/Makefile.inc
+
 # Compiler
 CXX = g++
 
@@ -6,7 +9,7 @@ ROOTCFLAGS  = $(shell root-config --cflags)
 ROOTLIBS    = $(shell root-config --libs)
 
 # Compilation Flags
-CXXFLAGS = -Wall -Wextra -O2 -std=c++17 -I./include $(ROOTCFLAGS)
+CXXFLAGS = -Wall -Wextra -O2 -std=c++17 -I./include $(TOOLS_CXXFLAGS) $(ROOTCFLAGS)
 LDFLAGS  = $(ROOTLIBS)
 
 # Target Executable
@@ -16,15 +19,7 @@ SRC = src/Analyze.cxx
 # Build Rule
 all: $(TARGET)
 
-$(TARGET): $(SRC) \
-	include/analysisCompute.h \
-	include/analysisConfig.h \
-	include/analysisEvent.h \
-	include/analysisIO.h \
-	include/analysisTypes.h \
-	include/rivetThrust.h \
-	include/sphericityTools.h \
-	include/thrustTools.h
+$(TARGET): $(SRC) include/thrustCompute.h
 	@mkdir -p bin
 	$(CXX) $(CXXFLAGS) $(SRC) -o $@ $(LDFLAGS)
 
