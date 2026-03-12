@@ -1,27 +1,21 @@
-# Include shared tools build fragment
-include tools/Makefile.inc
-
 # Compiler
 CXX = g++
 
 # ROOT Flags
-ROOTCFLAGS  = $(shell root-config --cflags)
-ROOTLIBS    = $(shell root-config --libs)
+ROOTCFLAGS = $(shell root-config --cflags)
+ROOTLIBS   = $(shell root-config --libs)
 
 # Compilation Flags
-CXXFLAGS = -Wall -Wextra -O2 -std=c++17 -I./include $(TOOLS_CXXFLAGS) $(ROOTCFLAGS)
-LDFLAGS  = $(ROOTLIBS)
+CXXFLAGS = -Wall -Wextra -O2 $(ROOTCFLAGS)
 
 # Target Executable
-TARGET = bin/Analyze.exe
-SRC = src/Analyze.cxx
+TARGET = Analyze.exe
 
 # Build Rule
 all: $(TARGET)
 
-$(TARGET): $(SRC) include/thrustCompute.h
-	@mkdir -p bin
-	$(CXX) $(CXXFLAGS) $(SRC) -o $@ $(LDFLAGS)
+$(TARGET): Analyze.cxx
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(ROOTLIBS)
 
 # Clean Rule
 clean:
