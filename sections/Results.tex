@@ -1,0 +1,206 @@
+\section{Results}
+\label{sec:results}
+
+The thrust baseline result is obtained from the 1994 workflow with Iterative Bayesian
+Unfolding at nominal $N_{\mathrm{iter}}=5$, including the hadronic event correction,
+ISR correction, and all configured systematic reruns.
+All 14 nominal and systematic unfolding jobs completed successfully.
+The response matrix diagonal fraction is 0.332, indicating substantial migration between
+reconstructed and generated thrust bins.
+
+\subsection{Final unfolded thrust distribution}
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.49\textwidth]{figures/final_result_ratio_ours.pdf}%
+\hfill%
+\includegraphics[width=0.49\textwidth]{figures/final_result_ratio_aleph.pdf}
+\caption{Left: final unfolded thrust distribution showing all correction stages
+(raw reco, MC reco, MC gen, IBU unfolded, after hadronic correction, after ISR correction)
+compared to ALEPH 2004. The ratio panel is normalised to the fully corrected result of
+this work; the gray band shows the total uncertainty envelope. Right: same stages with
+the ratio panel normalised to the published ALEPH 2004 result. Agreement is good across
+the bulk of the spectrum ($0.62\le T<0.99$); the elevated endpoint ratio ($1.30\pm0.27$)
+is physically expected (soft-hadron sensitivity, hadronic/ISR correction growth,
+normalisation convention differences).}
+\label{fig:final_thrust_result}
+\end{figure}
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.48\textwidth]{figures/final_result_uncertainty_breakdown.pdf}%
+\hfill%
+\includegraphics[width=0.48\textwidth]{figures/final_result_of_ibu_comparison.pdf}
+\caption{Left: total uncertainty band for the final thrust result versus ALEPH 2004.
+Right: comparison with OmniFold and prior IBU spectra; the ratio panel shows each
+method relative to the current unfolded nominal. Compatibility metrics are
+$\chi^2/\mathrm{ndf}=0.663$ (OmniFold), $0.421$ (prior IBU), and $0.361$ (ALEPH 2004),
+evaluated over 42 bins using the diagonal of the total covariance.}
+\label{fig:final_thrust_result_legacy}
+\end{figure}
+
+Figure~\ref{fig:final_thrust_result} (left) shows the unfolded spectrum with the total
+uncertainty band and comparison to the published ALEPH 2004 result. Agreement is good
+across the bulk of the spectrum ($0.62\le T<0.99$), with the largest discrepancy at
+the endpoint ($0.99<T<1.00$, ratio $1.30\pm0.27$). This is physically expected: the
+dijet limit is sensitive to MC modeling of soft hadrons, and the hadronic correction
+$C_{\mathrm{had}}(j)$ and ISR correction $C_{\mathrm{ISR}}(j)$ carry growing
+uncertainties there. Normalization convention differences between the current analysis
+and the 2004 ALEPH publication also contribute at the endpoint.
+
+Figure~\ref{fig:final_thrust_result} (right) shows direct comparison with OmniFold and
+prior IBU spectra from the archived-data analysis program. Sub-unity $\chi^2/\mathrm{ndf}$
+values reflect the conservative uncertainty model and positive off-diagonal correlations,
+not overestimation. Differences are localized to the endpoint region.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.49\textwidth]{figures/final_result_correction_stages.pdf}%
+\hfill%
+\includegraphics[width=0.49\textwidth]{figures/uncertainty_breakdown.pdf}
+\caption{Left: all correction stages compared to ALEPH 2004, with ratio panel showing
+each stage divided by the ALEPH 2004 result. The progression from IBU-only through
+hadronic and ISR corrections is visible in the ratio panel. Right: fractional
+per-component uncertainty as a function of thrust $T$. Theory dominates in the central
+range; statistical and experimental components are sub-leading; ISR is small and nearly
+flat.}
+\label{fig:correction_stages_and_unc}
+\end{figure}
+
+The total correlation matrix for the combined result is shown in
+Fig.~\ref{fig:final_total_correlation_matrix_sys}. The off-diagonal structure is
+non-trivial: strong positive correlations appear in the high-thrust region where the
+theory and hadronic-correction components dominate and their shifts are coherent across
+bins. The maximum off-diagonal correlation is $|\rho_{ij}|=0.889$, confirming that the
+full covariance matrix --- rather than diagonal uncertainties alone --- must be used in
+any downstream fit or comparison.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=\textwidth]{figures/matrix_total_correlation_final.pdf}
+\caption{Total bin-to-bin correlation matrix for the final result, combining
+statistical, unfolding-iteration, experimental, theory, hadronic-correction, and
+ISR-correction components using the \texttt{template\_correlated} covariance model.
+The maximum off-diagonal correlation is $|\rho_{ij}|=0.889$.}
+\label{fig:final_total_correlation_matrix_sys}
+\end{figure}
+
+The numerical per-bin uncertainty breakdown is given in
+Tables~\ref{tab:per_bin_uncertainty}--\ref{tab:per_bin_uncertainty_breakdown_comparison},
+listing all component contributions and the total for each thrust bin.
+
+\input{tables/per_bin_uncertainty_table}
+
+\input{tables/per_bin_uncertainty_table_aleph}
+
+\input{tables/per_bin_uncertainty_table_comparison}
+
+\FloatBarrier
+
+\subsection{Per-source correlation matrices}
+\label{sec:correlation_matrix}
+
+The per-component correlation matrices are derived from the individual component
+covariance matrices $\mathrm{Cov}^{(c)}_{ij}$ described in
+Sec.~\ref{sec:stat_covariance}. For each component $c$, the correlation is
+\begin{equation}
+\rho^{(c)}_{ij} = \frac{\mathrm{Cov}^{(c)}_{ij}}{\sqrt{\mathrm{Cov}^{(c)}_{ii}\,\mathrm{Cov}^{(c)}_{jj}}}.
+\end{equation}
+Figure~\ref{fig:corr_matrices_per_source} shows all six components simultaneously,
+enabling direct comparison of their correlation structures.
+
+The statistical component (top left) shows the narrow-band correlation pattern
+characteristic of IBU: neighboring bins are positively correlated through the
+unfolding propagation, but correlations fall off quickly with bin separation. The
+iteration component (top center) shows a similar but slightly broader structure,
+reflecting the coherent response of the unfolding regularization to low-frequency
+spectral features. The experimental component (top right) has a more extended
+positive-correlation band, driven by the coherent neutral-energy-response shifts
+(\texttt{nes\_up}, \texttt{nes\_down}) which move the thrust distribution in the
+same direction across a wide range of bins.
+
+The theory component (bottom left) shows the strongest and most extended off-diagonal
+correlations of all six components. Generator-reweighting shifts are coherent across
+large thrust ranges because the parton-shower and hadronization changes affect the
+whole spectral shape rather than individual bins, making the theory covariance the
+dominant driver of off-diagonal structure in the total matrix. The hadronic correction
+(bottom center) shows modest correlations commensurate with its ${\sim}3\%$ magnitude
+in the central range. The ISR correction (bottom right) is nearly diagonal, consistent
+with its sub-percent contribution and the bin-local nature of the MC-statistical
+uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=\textwidth]{figures/corr_matrices_per_source.pdf}
+\caption{Per-source correlation matrices for the six independent uncertainty
+components: statistical (top left), unfolding-iteration (top center), experimental
+(top right), theory (bottom left), hadronic correction (bottom center), and ISR
+correction (bottom right). All matrices use the same color scale ($-1$ to $+1$,
+red/blue). The theory component shows the strongest and most extended off-diagonal
+structure, dominating the total correlation matrix.}
+\label{fig:corr_matrices_per_source}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Per-source covariance matrices}
+\label{sec:covariance_matrix}
+
+The covariance matrices encode both the per-bin uncertainty magnitudes and the
+bin-to-bin correlations for each source. The total covariance is the sum of all
+six component covariances:
+\begin{equation}
+\mathrm{Cov}^{(\mathrm{tot})}_{ij} =
+  \mathrm{Cov}^{(\mathrm{stat})}_{ij}
++ \mathrm{Cov}^{(\mathrm{iter})}_{ij}
++ \mathrm{Cov}^{(\mathrm{exp})}_{ij}
++ \mathrm{Cov}^{(\mathrm{theory})}_{ij}
++ \mathrm{Cov}^{(\mathrm{had})}_{ij}
++ \mathrm{Cov}^{(\mathrm{ISR})}_{ij}.
+\end{equation}
+Figure~\ref{fig:cov_matrices_per_source} shows the per-component covariance matrices;
+Fig.~\ref{fig:cov_matrix_total} shows the total.
+
+The component covariance magnitudes directly reflect the per-bin uncertainty sizes
+shown in the breakdown plots of Sec.~\ref{sec:uncertainty_breakdown}. The theory
+covariance (bottom left in Fig.~\ref{fig:cov_matrices_per_source}) has the largest
+absolute values and the most extended off-diagonal structure, as expected from the
+dominant and spectrally coherent theory shifts. The experimental covariance has
+sub-leading magnitude but non-trivial off-diagonal entries driven by the coherent
+neutral-response variations. The statistical and iteration covariances are comparatively
+small; the ISR correction produces a near-diagonal covariance consistent with its
+bin-local MC-statistical origin.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=\textwidth]{figures/cov_matrices_per_source.pdf}
+\caption{Per-source covariance matrices for the six independent uncertainty
+components: statistical (top left), unfolding-iteration (top center), experimental
+(top right), theory (bottom left), hadronic correction (bottom center), and ISR
+correction (bottom right). Each panel uses a symmetric color scale centered on zero
+(red: positive, blue: negative). The theory component dominates the total covariance
+in both magnitude and off-diagonal extent.}
+\label{fig:cov_matrices_per_source}
+\end{figure}
+
+The total covariance matrix (Fig.~\ref{fig:cov_matrix_total}) is the primary product
+exported for theory use. Its off-diagonal structure is dominated by the theory
+covariance across the central thrust range, with additional contributions from the
+experimental component. Theory consumers are encouraged to use the fit-window total
+covariance (covering $0.505\le T<1.00$, 45 bins) for $\alpha_s$ extractions rather
+than the full-range matrix, to avoid the regions of large uncertainty and poor
+MC-model control near the kinematic boundaries.
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.72\textwidth]{figures/cov_matrix_total.pdf}
+\caption{Total covariance matrix, combining all six uncertainty components.
+The off-diagonal structure is dominated by theory correlations across the central
+thrust range. The full covariance matrix must be used in any downstream fit;
+diagonal uncertainties alone would underestimate the true statistical power of
+the result. The fit-window version ($0.505\le T<1.00$) is recommended for
+$\alpha_s$ extractions.}
+\label{fig:cov_matrix_total}
+\end{figure}
+
+\FloatBarrier

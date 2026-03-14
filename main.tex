@@ -1,0 +1,85 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{jheppub}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{xspace}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tabularx}
+% multirow not available; define minimal stub
+\makeatletter\newcommand{\multirow}[3]{#3}\makeatother
+\usepackage{defs}
+\usetikzlibrary{arrows.meta,positioning}
+\setcounter{topnumber}{1}
+\setcounter{bottomnumber}{1}
+\setcounter{totalnumber}{2}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.45}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.85}
+% \usepackage{lineno}  % not available on this system
+% \linenumbers
+
+% \title{Analysis note: LEP open data and precision physics as a testing ground for precision AI systems, an agentic measurement of thrust with ALEPH archived data}
+
+% \title{LLM agents as experimental and theoretical physicists: a proof-of-concept measurement of thrust from LEP archived data}
+% \title{Testing LLM Agents under Expert Supervision for Experimental Particle Physics using LEP Open Data} in Experimental Particle Physics with LEP Open Data: a proof of concept measurement }
+\title{Agentic AI – Physicist Collaboration in Experimental Particle Physics: A Proof-of-Concept Measurement with LEP Open Data}
+
+% Previous title candidates:
+% Proof of concept measurement of LEP archived data with LLM AI agents
+% LLM agents as experimental physicists: a proof-of-concept measurement of thrust from LEP archived data
+% LEP open data and precision physics as a testing ground for precision AI systems, an agentic measurement of thrust with ALEPH archived data
+
+\author[a]{Anthony Badea}
+% \author[b]{Hannah Bossi} % add?
+ \author[b]{Yi Chen} % add?
+\author[c]{Yen-Jie Lee} 
+% \author[c]{Jingyu Zhang} % add?
+
+
+
+\affiliation[a]{University of Chicago, Enrico Fermi Institute, 60637 IL, USA}
+\emailAdd{anthony.badea@cern.ch}
+\affiliation[b]{Vanderbilt University, Nashville, Tennessee, USA}
+\affiliation[c]{Laboratory for Nuclear Science, Massachusetts Institute of Technology, Cambridge, MA 02139, USA}%
+
+\abstract{
+We present an AI agentic measurement of the thrust distribution in $e^{+}e^{-}$ collisions at $\sqrt{s}=91.2$~GeV using archived ALEPH data. The analysis and all note writing is carried out entirely by AI agents (OpenAI Codex 5.2/5.3 and Anthropic Claude Opus 4.6 / Sonnet 4.6) under expert physicist direction. 
+A fully corrected spectrum is obtained via Iterative Bayesian Unfolding and Monte Carlo based corrections. 
+This work represents a step toward a theory--experiment loop in which AI agents assist with experimental measurements and theoretical calculations, and synthesize insights by comparing the results, thereby accelerating the cycle that drives discovery in fundamental physics.
+Our work suggests that precision physics, leveraging the open LEP data and advanced theoretical landscape, provides an ideal testing ground for developing advanced AI systems for scientific applications.
+}
+
+\keywords{QCD, event shapes, electron-positron collisions, unfolding, artificial intelligence, large language models}
+
+\begin{document}
+\maketitle
+
+\input{sections/ContextAndMotivation}
+\input{sections/Introduction}
+\input{sections/AIAgentUsage}
+\input{sections/ALEPHDetector}
+\input{sections/Datasets}
+\input{sections/EventReconstructionAndSelection}
+\input{sections/AnalysisMethod}
+\input{sections/SystematicUncertainties}
+\input{sections/Results}
+\input{sections/Conclusion}
+\input{sections/ChallengesAndLimitations}
+
+\FloatBarrier
+\section*{Acknowledgments}
+
+The authors would like to thank Roberto Tenchini and Guenther Dissertori from the ALEPH Collaboration for their useful comments and suggestions on the use of ALEPH data. This work has been supported by Schmidt Sciences Foundation (to A.B.) and Department of Energy, Office of Science, under Grant No. DE-SC0011088 (to Y.-J.L.).
+
+\bibliographystyle{JHEP}
+\bibliography{biblio}
+
+\appendix
+\input{appendix/App_ValidationAndCrossChecks}
+\input{appendix/App_CommunicationSummary}
+
+\end{document}
