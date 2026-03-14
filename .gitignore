@@ -45,6 +45,9 @@ dist/
 *.svg
 *.eps
 
+# Track analysis note figure PDFs
+!figures/*.pdf
+
 # Track analysis note figure PDFs (Studies/ plots referenced by AnalysisNote/)
 !Studies/PreliminaryResult/2026-02-17_thrust_iter5/pwflag_kinematics/*.pdf
 !Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/*.pdf
