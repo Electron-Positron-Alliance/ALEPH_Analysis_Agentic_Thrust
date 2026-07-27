@@ -288,17 +288,29 @@ chain without toy MC sampling. The resulting covariance matrix is read from the
 unfolding output and transformed to the normalized differential-thrust basis used
 in this note.
 
-Non-statistical component covariances are built with a configurable model. The
-current nominal release uses the \texttt{template\_correlated} option, where each
-non-statistical component covariance is built as
+Non-statistical component covariances are built with a configurable model. The theory
+component is treated separately from the other systematics. Because the theory
+uncertainty is a bin-wise generator envelope (the maximum absolute shift across
+generators, Sec.~\ref{sec:theory_systematics}), which carries no assumed bin-to-bin
+correlation, the nominal theory covariance is \emph{diagonal},
+\begin{equation}
+\mathrm{Cov}^{(\mathrm{theory})}_{ij}=\Delta_{\mathrm{theory}}^2(i)\,\delta_{ij}.
+\end{equation}
+A correlation-preserving variant, in which the theory covariance is instead built from
+the statistical correlation template, is retained only as a comparison alternative and
+is not used in the nominal result.
+
+The remaining non-statistical components (experimental, hadronic, iteration, and ISR)
+use the \texttt{template\_correlated} model, where each such component covariance is
+built as
 \begin{equation}
 \mathrm{Cov}^{(c)}_{ij}=\Delta_c(i)\,\Delta_c(j)\,\rho^{\mathrm{stat}}_{ij},
 \end{equation}
 with $\rho^{\mathrm{stat}}_{ij}$ taken from the statistical unfolding covariance
 correlation template. This keeps component magnitudes tied to the measured per-bin
-shifts while avoiding a purely diagonal systematic-covariance approximation.
-For cross-check studies, \texttt{diagonal} and \texttt{block} component models
-are also available.
+shifts while retaining the bin-to-bin correlation induced by the unfolding of
+detector-level migration. For cross-check studies, \texttt{diagonal} and \texttt{block}
+component models are also available.
 
 \subsection{Combination model}
 \label{sec:combination_model}

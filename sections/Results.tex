@@ -69,19 +69,23 @@ flat.}
 
 The total correlation matrix for the combined result is shown in
 Fig.~\ref{fig:final_total_correlation_matrix_sys}. The off-diagonal structure is
-non-trivial: strong positive correlations appear in the high-thrust region where the
-theory and hadronic-correction components dominate and their shifts are coherent across
-bins. The maximum off-diagonal correlation is $|\rho_{ij}|=0.889$, confirming that the
-full covariance matrix --- rather than diagonal uncertainties alone --- must be used in
-any downstream fit or comparison.
+non-trivial and arises mainly from the unfolding of detector-level migration: it is
+carried by the statistical (RooUnfold) covariance and by the systematic components that
+inherit its correlation template. Under the nominal model the theory component enters as
+a diagonal covariance (Sec.~\ref{sec:stat_covariance}) and therefore contributes only to
+the per-bin variances, not to the bin-to-bin correlations. The off-diagonal correlations
+remain non-negligible, so the full covariance matrix, rather than diagonal uncertainties
+alone, must be used in any downstream fit or comparison.
 
 \begin{figure}[t!]
 \centering
 \includegraphics[width=\textwidth]{figures/matrix_total_correlation_final.pdf}
 \caption{Total bin-to-bin correlation matrix for the final result, combining
 statistical, unfolding-iteration, experimental, theory, hadronic-correction, and
-ISR-correction components using the \texttt{template\_correlated} covariance model.
-The maximum off-diagonal correlation is $|\rho_{ij}|=0.889$.}
+ISR-correction components. The theory component enters as a diagonal covariance under
+the nominal model, so it adds no off-diagonal correlation; the off-diagonal structure
+is driven by the unfolding/response migration carried by the statistical covariance and
+the components that inherit its correlation template.}
 \label{fig:final_total_correlation_matrix_sys}
 \end{figure}
 
@@ -119,15 +123,17 @@ positive-correlation band, driven by the coherent neutral-energy-response shifts
 (\texttt{nes\_up}, \texttt{nes\_down}) which move the thrust distribution in the
 same direction across a wide range of bins.
 
-The theory component (bottom left) shows the strongest and most extended off-diagonal
-correlations of all six components. Generator-reweighting shifts are coherent across
-large thrust ranges because the parton-shower and hadronization changes affect the
-whole spectral shape rather than individual bins, making the theory covariance the
-dominant driver of off-diagonal structure in the total matrix. The hadronic correction
-(bottom center) shows modest correlations commensurate with its ${\sim}3\%$ magnitude
-in the central range. The ISR correction (bottom right) is nearly diagonal, consistent
-with its sub-percent contribution and the bin-local nature of the MC-statistical
-uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio.
+The theory component (bottom left) is diagonal under the nominal model: its per-bin
+uncertainty is the generator envelope (Sec.~\ref{sec:theory_systematics}), a bin-wise
+maximum that carries no assumed bin-to-bin correlation, so its correlation panel is the
+identity. Theory therefore does not drive the off-diagonal structure of the total matrix;
+the extended off-diagonal correlations instead reside in the statistical, iteration, and
+experimental panels described above, all of which trace back to the unfolding of
+detector-level migration. The hadronic correction (bottom center) shows modest
+correlations commensurate with its ${\sim}3\%$ magnitude in the central range. The ISR
+correction (bottom right) is nearly diagonal, consistent with its sub-percent
+contribution and the bin-local nature of the MC-statistical uncertainty on the
+$C_{\mathrm{ISR}}(j)$ ratio.
 
 \begin{figure}[t!]
 \centering
@@ -136,8 +142,10 @@ uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio.
 components: statistical (top left), unfolding-iteration (top center), experimental
 (top right), theory (bottom left), hadronic correction (bottom center), and ISR
 correction (bottom right). All matrices use the same color scale ($-1$ to $+1$,
-red/blue). The theory component shows the strongest and most extended off-diagonal
-structure, dominating the total correlation matrix.}
+red/blue). Under the nominal model the theory panel is diagonal (the identity), since
+the theory uncertainty is a bin-wise generator envelope; the extended off-diagonal
+structure resides in the statistical, iteration, and experimental panels and originates
+from the unfolding of detector-level migration.}
 \label{fig:corr_matrices_per_source}
 \end{figure}
 
@@ -164,12 +172,12 @@ Fig.~\ref{fig:cov_matrix_total} shows the total.
 The component covariance magnitudes directly reflect the per-bin uncertainty sizes
 shown in the breakdown plots of Sec.~\ref{sec:uncertainty_breakdown}. The theory
 covariance (bottom left in Fig.~\ref{fig:cov_matrices_per_source}) has the largest
-absolute values and the most extended off-diagonal structure, as expected from the
-dominant and spectrally coherent theory shifts. The experimental covariance has
-sub-leading magnitude but non-trivial off-diagonal entries driven by the coherent
-neutral-response variations. The statistical and iteration covariances are comparatively
-small; the ISR correction produces a near-diagonal covariance consistent with its
-bin-local MC-statistical origin.
+diagonal magnitude, reflecting the dominant theory envelope, but is diagonal by
+construction under the nominal model and so has no off-diagonal structure. The most
+extended off-diagonal structure is carried by the experimental covariance, whose
+non-trivial off-diagonal entries are driven by the coherent neutral-response variations.
+The statistical and iteration covariances are comparatively small; the ISR correction
+produces a near-diagonal covariance consistent with its bin-local MC-statistical origin.
 
 \begin{figure}[t!]
 \centering
@@ -179,13 +187,17 @@ components: statistical (top left), unfolding-iteration (top center), experiment
 (top right), theory (bottom left), hadronic correction (bottom center), and ISR
 correction (bottom right). Each panel uses a symmetric color scale centered on zero
 (red: positive, blue: negative). The theory component dominates the total covariance
-in both magnitude and off-diagonal extent.}
+in diagonal magnitude but is diagonal by construction under the nominal model; the
+off-diagonal structure is carried by the experimental and statistical/unfolding
+components.}
 \label{fig:cov_matrices_per_source}
 \end{figure}
 
 The total covariance matrix (Fig.~\ref{fig:cov_matrix_total}) is the primary product
-exported for theory use. Its off-diagonal structure is dominated by the theory
-covariance across the central thrust range, with additional contributions from the
+exported for theory use. Theory contributes the largest diagonal magnitude across the
+central thrust range but, being diagonal under the nominal model, adds no off-diagonal
+structure; the off-diagonal correlations come from the unfolding/response migration
+(statistical covariance and the components that inherit its template) and from the
 experimental component. Theory consumers are encouraged to use the fit-window total
 covariance (covering $0.505\le T<1.00$, 45 bins) for $\alpha_s$ extractions rather
 than the full-range matrix, to avoid the regions of large uncertainty and poor
@@ -195,11 +207,12 @@ MC-model control near the kinematic boundaries.
 \centering
 \includegraphics[width=0.72\textwidth]{figures/cov_matrix_total.pdf}
 \caption{Total covariance matrix, combining all six uncertainty components.
-The off-diagonal structure is dominated by theory correlations across the central
-thrust range. The full covariance matrix must be used in any downstream fit;
-diagonal uncertainties alone would underestimate the true statistical power of
-the result. The fit-window version ($0.505\le T<1.00$) is recommended for
-$\alpha_s$ extractions.}
+Theory dominates the diagonal across the central thrust range but is diagonal under
+the nominal model and adds no off-diagonal correlation; the off-diagonal structure
+comes from the unfolding/response migration and the experimental component. The full
+covariance matrix must be used in any downstream fit; diagonal uncertainties alone
+would underestimate the true statistical power of the result. The fit-window version
+($0.505\le T<1.00$) is recommended for $\alpha_s$ extractions.}
 \label{fig:cov_matrix_total}
 \end{figure}
 
