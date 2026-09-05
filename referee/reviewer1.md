@@ -6,6 +6,14 @@ Here are some comments about the text itself:
 - page 2 how the physicists brainstormed the AI Agent ? In English ?
 - page 5 lines 13-14 Section 1 was before, not in the remainder of the document
 - page 5 start of Section 3 “This internal note” if you wish to publish it is a paper (this error is recurring)
+  - **Response.** Fixed. Sixteen occurrences of "this note", "this internal note" and
+    "the note" are reworded to "this paper", "this work" or "this analysis", across the
+    Introduction, Sec. 3, Sec. 5, Sec. 7, Sec. 8, Sec. 11, Appendix B and the workflow
+    figure caption. Three self-references remain: one in Sec. 11 ("Because this document
+    is an internal note rather than a final publication...") and two in Appendix C. All
+    three are load-bearing for sections that your final comment identifies as unsuitable
+    for publication, so we address them together with that comment rather than reword
+    text we expect to remove.
 - page 6 lines 4 - 5 this is a repetition of page 3
 - page 8 line 5 I did not catch the proof of concept, where is it ?
 - page 9 line 2, quote table 2 here

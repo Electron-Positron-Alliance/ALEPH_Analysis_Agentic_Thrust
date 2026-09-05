@@ -57,7 +57,7 @@ $\alpha_s(m_Z)=0.1180\pm 0.0009$~\cite{Benitez:2024nav,ParticleDataGroup:2022pth
 This persistent tension, often referred to as the $e^{+}e^{-}$ $\alpha_{s}$ puzzle, is of great interest because $\alpha_{s}$ is the least precisely measured fundamental constant of nature. The associated uncertainties propagate to all measurements involving QCD, and the effective field theory tools used to extract $\alpha_{s}$ are widely employed throughout the field. Put differently, if something is missed in the simplest case of $e^{+}e^{-}$ collisions, it is likely that similar effects will also be missed in precision studies of more complex systems such as $pp$ collisions. 
 
 
-The immediate objective of this note is to establish a robust detector-corrected
+The immediate objective of this work is to establish a robust detector-corrected
 thrust baseline using Iterative Bayesian Unfolding (IBU) implemented in RooUnfold,
 with complete validation and systematic propagation. The agent was asked to execute
 the full analysis loop: data and simulation processing, unfolding orchestration,
@@ -71,13 +71,13 @@ are produced for downstream phenomenology use. We envision using our work to pur
 will be extended to additional event-shape observables (C-parameter and heavy-jet
 mass), and the approach of using AI-assisted scientific workflows for both theoretical
 and experimental analysis will be pursued in a loop between them. Since thrust is
-computed from selected charged and neutral particles, the note also includes detailed
+computed from selected charged and neutral particles, this paper also includes detailed
 \texttt{pwflag}-resolved kinematic comparisons between data and simulation before the
 unfolding stage.
 
 The remainder of the document is structured as follows: Sec.~\ref{sec:context}
 provides context of the $e^+e^-$ alliance program, including lessons from AI--physicist collaboration;
-Sec.~\ref{sec:ai_agent} defines the AI-agent operating model used in this internal analysis cycle;
+Sec.~\ref{sec:ai_agent} defines the AI-agent operating model used in this analysis;
 Sec.~\ref{sec:aleph} summarizes detector elements most relevant for event-shape
 reconstruction; Sec.~\ref{sec:datasets} describes data and simulation samples;
 Sec.~\ref{sec:event_selection} details reconstruction and selections, including
@@ -85,4 +85,4 @@ particle-category and event-level validation; Sec.~\ref{sec:method} presents
 thrust construction and the executable unfolding workflow;
 Sec.~\ref{sec:systematics} and Sec.~\ref{sec:results} document uncertainty
 propagation and the final thrust baseline outputs; Sec.~\ref{sec:conclusion} reports our conclusions from the study; Sec.~\ref{sec:challenges}
-closes the note with persistent analysis challenges and mitigation tracking.
+closes the paper with persistent analysis challenges and mitigation tracking.
