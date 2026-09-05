@@ -3,7 +3,7 @@
 # Rebuild the manuscript and a marked-up diff against a reference version.
 #
 #   tools/make_pdfs.sh                        # HEAD vs the HiHEP submission
-#   tools/make_pdfs.sh HEAD hihep-submission-2026-06
+#   tools/make_pdfs.sh HEAD hihep-submission-2026-06-exact
 #   tools/make_pdfs.sh fix/table-clarity      # one PR vs the submission
 #   tools/make_pdfs.sh HEAD sync/arxiv-2603.05735v2   # vs the bare arXiv v2
 #
@@ -21,7 +21,7 @@
 set -euo pipefail
 
 NEW_REF="${1:-HEAD}"
-OLD_REF="${2:-hihep-submission-2026-06}"
+OLD_REF="${2:-hihep-submission-2026-06-exact}"
 
 REPO="$(git rev-parse --show-toplevel)"
 HERE="$REPO/tools"
