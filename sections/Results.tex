@@ -12,31 +12,11 @@ reconstructed and generated thrust bins.
 
 \begin{figure}[t!]
 \centering
-\includegraphics[width=0.49\textwidth]{figures/final_result_ratio_ours.pdf}%
-\hfill%
-\includegraphics[width=0.49\textwidth]{figures/final_result_ratio_aleph.pdf}
-\caption{Left: final unfolded thrust distribution showing all correction stages
-(raw reco, MC reco, MC gen, IBU unfolded, after hadronic correction, after ISR correction)
-compared to ALEPH 2004. The ratio panel is normalised to the fully corrected result of
-this work; the gray band shows the total uncertainty envelope. Right: same stages with
-the ratio panel normalised to the published ALEPH 2004 result. Agreement is good across
-the bulk of the spectrum ($0.62\le T<0.99$); the elevated endpoint ratio ($1.30\pm0.27$)
-is physically expected (soft-hadron sensitivity, hadronic/ISR correction growth,
-normalisation convention differences).}
-\label{fig:final_thrust_result}
-\end{figure}
-
-\begin{figure}[t!]
-\centering
 \includegraphics[width=0.48\textwidth]{figures/final_result_uncertainty_breakdown.pdf}%
 \hfill%
 \includegraphics[width=0.48\textwidth]{figures/final_result_of_ibu_comparison.pdf}
-\caption{Left: total uncertainty band for the final thrust result versus ALEPH 2004.
-Right: comparison with OmniFold and prior IBU spectra; the ratio panel shows each
-method relative to the current unfolded nominal. Compatibility metrics are
-$\chi^2/\mathrm{ndf}=0.663$ (OmniFold), $0.421$ (prior IBU), and $0.361$ (ALEPH 2004),
-evaluated over 42 bins using the diagonal of the total covariance.}
-\label{fig:final_thrust_result_legacy}
+\caption{Left: final unfolded thrust distribution with total uncertainty band compared to the published ALEPH 2004 result. The ratio panel shows bin-by-bin agreement across the full measurement range, with the gray band representing the total uncertainty envelope. Right: comparison with OmniFold and prior IBU spectra; the ratio panel shows each method relative to the current unfolded nominal. Compatibility metrics are $\chi^2/\mathrm{ndf}=0.663$ (OmniFold), $0.421$ (prior IBU), and $0.361$ (ALEPH 2004), evaluated over 42 bins using the diagonal of the total covariance.}
+\label{fig:final_thrust_result}
 \end{figure}
 
 Figure~\ref{fig:final_thrust_result} (left) shows the unfolded spectrum with the total
@@ -52,20 +32,6 @@ Figure~\ref{fig:final_thrust_result} (right) shows direct comparison with OmniFo
 prior IBU spectra from the archived-data analysis program. Sub-unity $\chi^2/\mathrm{ndf}$
 values reflect the conservative uncertainty model and positive off-diagonal correlations,
 not overestimation. Differences are localized to the endpoint region.
-
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.49\textwidth]{figures/final_result_correction_stages.pdf}%
-\hfill%
-\includegraphics[width=0.49\textwidth]{figures/uncertainty_breakdown.pdf}
-\caption{Left: all correction stages compared to ALEPH 2004, with ratio panel showing
-each stage divided by the ALEPH 2004 result. The progression from IBU-only through
-hadronic and ISR corrections is visible in the ratio panel. Right: fractional
-per-component uncertainty as a function of thrust $T$. Theory dominates in the central
-range; statistical and experimental components are sub-leading; ISR is small and nearly
-flat.}
-\label{fig:correction_stages_and_unc}
-\end{figure}
 
 The total correlation matrix for the combined result is shown in
 Fig.~\ref{fig:final_total_correlation_matrix_sys}. The off-diagonal structure is
