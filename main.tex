@@ -8,8 +8,7 @@
 \usepackage{placeins}
 \usepackage{tikz}
 \usepackage{tabularx}
-% multirow not available; define minimal stub
-\makeatletter\newcommand{\multirow}[3]{#3}\makeatother
+\usepackage{multirow}
 \usepackage{defs}
 \usetikzlibrary{arrows.meta,positioning}
 \setcounter{topnumber}{1}
@@ -19,7 +18,7 @@
 \renewcommand{\bottomfraction}{0.45}
 \renewcommand{\textfraction}{0.08}
 \renewcommand{\floatpagefraction}{0.85}
-% \usepackage{lineno}  % not available on this system
+\usepackage{lineno}
 % \linenumbers
 
 % \title{Analysis note: LEP open data and precision physics as a testing ground for precision AI systems, an agentic measurement of thrust with ALEPH archived data}
@@ -33,21 +32,30 @@
 % LLM agents as experimental physicists: a proof-of-concept measurement of thrust from LEP archived data
 % LEP open data and precision physics as a testing ground for precision AI systems, an agentic measurement of thrust with ALEPH archived data
 
-\author[a]{Anthony Badea}
-% \author[b]{Hannah Bossi} % add?
- \author[b]{Yi Chen} % add?
-\author[c]{Yen-Jie Lee} 
-% \author[c]{Jingyu Zhang} % add?
-
+\author[a]{Anthony Badea,}
+\author[b]{Yen-Jie Lee,}
+\author[c]{Marcello Maggi,}
+\author[b]{Chris McGinn,}
+\author[d]{Austin Baty,}
+\author[e]{Luna Chen,}
+\author[b]{Hannah Bossi,}
+\author[b]{Gian Michele Innocenti,}
+\author[e]{Jingyu Zhang,}
+\author[b]{Michael Peters,}
+\author[b]{Yu-Chen Chen,}
+\author[b]{Tzu-An Sheng,}
+\author[]{Electron-Positron Alliance}
 
 
 \affiliation[a]{University of Chicago, Enrico Fermi Institute, 60637 IL, USA}
-\emailAdd{anthony.badea@cern.ch}
-\affiliation[b]{Vanderbilt University, Nashville, Tennessee, USA}
-\affiliation[c]{Laboratory for Nuclear Science, Massachusetts Institute of Technology, Cambridge, MA 02139, USA}%
+\emailAdd{badea@uchicago.edu}
+\affiliation[b]{Laboratory for Nuclear Science, Massachusetts Institute of Technology, Cambridge, MA 02139, USA}
+\affiliation[c]{Istituto Nazionale di Fisica Nucleare, Bari Division, BA 70126, Italy}
+\affiliation[d]{University of Illinois Chicago, Chicago, IL, USA}
+\affiliation[e]{Vanderbilt University, Nashville, Tennessee, USA}%
 
 \abstract{
-We present an AI agentic measurement of the thrust distribution in $e^{+}e^{-}$ collisions at $\sqrt{s}=91.2$~GeV using archived ALEPH data. The analysis and all note writing is carried out entirely by AI agents (OpenAI Codex 5.2/5.3 and Anthropic Claude Opus 4.6 / Sonnet 4.6) under expert physicist direction. 
+We present an AI agentic measurement of the thrust distribution in $e^{+}e^{-}$ collisions at $\sqrt{s}=91.2$~GeV using archived ALEPH data. The analysis and all note writing is carried out entirely by AI agents (OpenAI Codex and Anthropic Claude) under expert physicist direction. 
 A fully corrected spectrum is obtained via Iterative Bayesian Unfolding and Monte Carlo based corrections. 
 This work represents a step toward a theory--experiment loop in which AI agents assist with experimental measurements and theoretical calculations, and synthesize insights by comparing the results, thereby accelerating the cycle that drives discovery in fundamental physics.
 Our work suggests that precision physics, leveraging the open LEP data and advanced theoretical landscape, provides an ideal testing ground for developing advanced AI systems for scientific applications.
