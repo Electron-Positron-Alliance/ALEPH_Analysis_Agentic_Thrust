@@ -36,13 +36,15 @@ This matched-response construction enforces a consistent phase-space definition 
 
 \subsection{Iterative Bayesian Unfolding setup and iteration choice}
 
-Detector correction is performed with RooUnfold Bayesian unfolding,
+Detector correction is performed with the iterative Bayesian method of
+D'Agostini~\cite{dagostini2010improvediterativebayesianunfolding}, as implemented
+in RooUnfold~\cite{Adye:2011gm},
 \begin{equation}
 U_j^{(n+1)} = \frac{1}{\epsilon_j}\sum_i M_i\,\frac{R_{ij}\,\pi_j^{(n)}}{\sum_k R_{ik}\,\pi_k^{(n)}},
 \end{equation}
 where $M_i$ is the measured detector-level spectrum, $R_{ij}$ is the response, and $\pi_j^{(n)}$ is the iteration prior.
 
-The prior for the first iteration is taken as the generator-level MC truth distribution $\pi_j^{(0)} = N_{\mathrm{gen}}(j)$, the standard RooUnfold default. This choice initializes the unfolding close to the expected truth shape and avoids any flat-prior amplification of high-frequency fluctuations in the first iteration.
+The prior for the first iteration is taken as the generator-level MC truth distribution $\pi_j^{(0)} = N_{\mathrm{gen}}(j)$, the standard RooUnfold~\cite{Adye:2011gm} default. This choice initializes the unfolding close to the expected truth shape and avoids any flat-prior amplification of high-frequency fluctuations in the first iteration.
 
 The nominal regularization is
 \begin{equation}

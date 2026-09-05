@@ -26,6 +26,9 @@ Section 3
 - Would be good to define pwflag and/or to point to sec 6.1
   - **Response.** Added a pointer to Sec. 6.1 and Table 2 at the first use, in Sec. 2. Sec. 6.1 had no label, so it could not previously be referenced; one has been added.
 - A reference for miniDST would be good to add.
+  - **NEEDS AUTHOR INPUT.** There is no miniDST or DST entry anywhere in `biblio.bib`, and we are
+    not able to pick the right one: it is either an ALEPH internal note or the open-data record
+    DOI. miniDST is used in Sec. 2 and Sec. 3.2 and remains uncited.
 
 Sec 3.2
 - Would be nicer to have the four categorie in a enumerated list, or on a table.
@@ -109,6 +112,9 @@ Sec 7
 
 Sec 7.3
 - Would be good to add some references for the unfolding procedure
+  - **Response.** Sec. 7.3 previously contained no citations. It now cites D'Agostini for the
+    iterative Bayesian method and Adye for RooUnfold. OmniFold is also cited at first use in
+    Sec. 3.3 and at the comparisons in Sec. 9.1 and App. B.
 - Can you quantify better how small is the iteration-to-iteration change ?
 - Can you quantify how much is the migration driven separately by the charged particle momentum resolution, and by the soft particles acceptance ?
   I would guess the latter is dominant.
