@@ -4,6 +4,7 @@
 This section describes particle selection, hadronic event definition, and particle-category data/MC validation before unfolding. This validation is essential because the selected particles are the direct inputs to the thrust algorithm.
 
 \subsection{Particle categories and \texttt{pwflag} mapping}
+\label{sec:particle_categories}
 
 ALEPH reconstructed particles are categorized with an integer label \texttt{pwflag}. Table~\ref{tab:pwflag_definition} summarizes the categories used in this analysis.
 
@@ -35,7 +36,7 @@ All selected charged and neutral categories contribute to the thrust numerator a
 
 \subsection{Object-level and event-level selections}
 
-Table~\ref{tab:particle_selection_summary} lists the object-level nominal selection with one requirement per row. These criteria define which reconstructed particles are propagated into thrust and therefore which detector effects enter the response model.
+Table~\ref{tab:particle_selection_summary} lists the object-level nominal selection with one requirement per row. These criteria define which reconstructed particles are propagated into thrust and therefore which detector effects enter the response model. Here $d_0$ and $z_0$ are the transverse and longitudinal track impact parameters, defined as the distance of closest approach of the reconstructed track helix to the nominal $e^+e^-$ interaction point, measured in the plane transverse to the beam and along the beam axis respectively; both are taken directly from the archived ALEPH track reconstruction. $N_{\mathrm{TPC}}$ is the number of TPC coordinates associated with the track.
 
 \begin{table}[t!]
 \centering
