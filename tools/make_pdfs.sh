@@ -49,23 +49,42 @@ git archive "$OLD_REF" | tar -x -C "$OLD"
 # Diff .tex only. Figures always come from NEW so that a figure added since the
 # reference cannot break the diff build.
 find "$OLD" -name '*.pdf' -delete 2>/dev/null || true
-cp -r "$NEW/figures" "$OLD/figures" 2>/dev/null || true
+if [ -d "$NEW/figures" ]; then
+  mkdir -p "$OLD/figures"
+  # trailing /. copies the CONTENTS; "cp -r src dst" with dst existing would
+  # nest them at $OLD/figures/figures instead
+  cp -r "$NEW/figures/." "$OLD/figures/"
+fi
+
+# Set if any build reported errors or undefined references. Only the first
+# pdflatex pass uses -halt-on-error; passes 2-3 run to completion so that
+# cross-references resolve, which means problems they introduce show up only
+# in the log. Those must still fail the script, or a wrapper checking the exit
+# code treats a broken manuscript as a successful build.
+BUILD_UNCLEAN=0
 
 compile() {  # compile <dir> <label>
-  local d="$1" label="$2"
+  local d="$1" label="$2" stat="$WORK/$2.status"
   ( cd "$d"
     rm -f main.aux main.bbl main.blg main.log main.out main.toc main.pdf
     pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null 2>&1 || {
-      echo "!! $label: pdflatex failed"; grep -m5 '^! ' main.log || true; return 1; }
+      echo "!! $label: pdflatex failed"; grep -m5 '^! ' main.log || true; exit 1; }
     bibtex main >/dev/null 2>&1 || true
     pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1 || true
     pdflatex -interaction=nonstopmode main.tex >/dev/null 2>&1 || true
+    pages="$(pdfinfo main.pdf | awk '/^Pages/{print $2}')"
+    errs="$(grep -c '^! ' main.log || true)"
+    undef="$(grep -ci undefined main.log || true)"
     printf "    %s: %s pages, %s errors, %s undefined-reference warnings\n" \
-      "$label" \
-      "$(pdfinfo main.pdf | awk '/^Pages/{print $2}')" \
-      "$(grep -c '^! ' main.log || true)" \
-      "$(grep -ci undefined main.log || true)"
-  )
+      "$label" "$pages" "$errs" "$undef"
+    printf '%s %s\n' "$errs" "$undef" > "$stat"
+  ) || return 1
+  local errs undef
+  read -r errs undef < "$stat"
+  if [ "$errs" -ne 0 ] || [ "$undef" -ne 0 ]; then
+    echo "!! $label: build is NOT clean -- $errs errors, $undef undefined-reference warnings"
+    BUILD_UNCLEAN=1
+  fi
 }
 
 echo "==> building current"
@@ -135,3 +154,10 @@ echo
 echo "==> done"
 echo "    build/current.pdf"
 echo "    build/diff.pdf"
+
+if [ "$BUILD_UNCLEAN" -ne 0 ]; then
+  echo
+  echo "!! one or more builds reported errors or undefined references (see above)." >&2
+  echo "   The PDFs were still written so you can inspect them." >&2
+  exit 1
+fi

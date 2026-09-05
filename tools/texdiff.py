@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 Minimal latexdiff replacement: word-level LaTeX markup diff.
 
 latexdiff is not installed in this environment and cannot be fetched, so this
@@ -373,28 +373,60 @@ def main():
         shutil.rmtree(out_dir)
     shutil.copytree(new_dir, out_dir)
 
-    changed, skipped = [], []
-    for root, _dirs, files in os.walk(new_dir):
-        for fn in sorted(files):
-            if not fn.endswith(".tex"):
-                continue
-            rel = os.path.relpath(os.path.join(root, fn), new_dir)
-            o, n = os.path.join(old_dir, rel), os.path.join(new_dir, rel)
-            if not os.path.exists(o):
-                skipped.append((rel, "new file - marked entirely as added"))
-                t = open(n, encoding="utf-8").read()
-                open(os.path.join(out_dir, rel), "w", encoding="utf-8").write(t)
-                continue
+    def tex_files(root_dir):
+        found = []
+        for root, _dirs, files in os.walk(root_dir):
+            for fn in sorted(files):
+                if fn.endswith(".tex"):
+                    found.append(os.path.relpath(os.path.join(root, fn), root_dir))
+        return sorted(found)
+
+    new_rel = tex_files(new_dir)
+    old_rel = tex_files(old_dir)
+
+    changed, added, removed = [], [], []
+    for rel in new_rel:
+        o, n = os.path.join(old_dir, rel), os.path.join(new_dir, rel)
+        nt = open(n, encoding="utf-8").read()
+        if os.path.exists(o):
             ot = open(o, encoding="utf-8").read()
-            nt = open(n, encoding="utf-8").read()
-            if ot == nt:
-                continue
-            marked = diff_file(ot, nt)
-            marked, nrep = repair_singletons(marked)
-            open(os.path.join(out_dir, rel), "w", encoding="utf-8").write(marked)
-            na = marked.count("\\DIFadd{")
-            nd = marked.count("\\DIFdel{")
-            changed.append((rel, na, nd, nrep))
+        else:
+            # A file with no counterpart in OLD is entirely new. Diffing it
+            # against the empty string routes it through the same line-level
+            # logic as any other change, so every line lands in \DIFadd and
+            # tabular rows are still emitted unmarked rather than struck.
+            ot = ""
+            added.append(rel)
+        if ot == nt:
+            continue
+        marked = diff_file(ot, nt)
+        marked, nrep = repair_singletons(marked)
+        open(os.path.join(out_dir, rel), "w", encoding="utf-8").write(marked)
+        na = marked.count("\\DIFadd{")
+        nd = marked.count("\\DIFdel{")
+        changed.append((rel, na, nd, nrep))
+
+    # Files deleted since OLD. out_dir is a copy of new_dir, so they are absent
+    # from it and their removal would otherwise never appear anywhere in the
+    # markup. Write the old body marked as deleted; it renders only if NEW's
+    # main.tex still \input's the path, so say which case each one is.
+    main_new = ""
+    mp = os.path.join(new_dir, "main.tex")
+    if os.path.exists(mp):
+        main_new = open(mp, encoding="utf-8").read()
+    for rel in old_rel:
+        if rel in new_rel:
+            continue
+        stem = re.sub(r"\.tex$", "", rel)
+        still_input = bool(re.search(
+            r"\\(?:input|include)\s*\{\s*" + re.escape(stem) + r"(?:\.tex)?\s*\}", main_new))
+        ot = open(os.path.join(old_dir, rel), encoding="utf-8").read()
+        marked = diff_file(ot, "")
+        marked, _ = repair_singletons(marked)
+        dest = os.path.join(out_dir, rel)
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        open(dest, "w", encoding="utf-8").write(marked)
+        removed.append((rel, len(ot.splitlines()), still_input))
 
     mainp = os.path.join(out_dir, "main.tex")
     t = open(mainp, encoding="utf-8").read()
@@ -409,8 +441,16 @@ def main():
         tot_d += nd
         tot_r += nrep
     print(f"  {'TOTAL':48s} +{tot_a:<4d} -{tot_d}   singleton repairs: {tot_r}")
-    for rel, why in skipped:
-        print(f"  NOTE {rel}: {why}")
+    for rel in added:
+        print(f"  NOTE {rel}: new file - every line marked as added")
+    for rel, nlines, still_input in removed:
+        if still_input:
+            print(f"  NOTE {rel}: deleted ({nlines} lines) - body marked as deleted "
+                  f"and still \\input, so it renders struck through")
+        else:
+            print(f"  WARN {rel}: deleted ({nlines} lines) and no longer \\input by "
+                  f"main.tex, so its body CANNOT appear in the diff PDF; "
+                  f"see `git diff` for what was cut")
     return 0
 
 
