@@ -5,6 +5,10 @@ Here are some comments about the text itself:
 - page 1 precision QCD is not where theoretical uncertainties become limiting.
 - page 2 how the physicists brainstormed the AI Agent ? In English ?
 - page 5 lines 13-14 Section 1 was before, not in the remainder of the document
+  - **Response.** Fixed. The structure paragraph sits in Sec. 2, and its list opened by
+    pointing at Sec. 1, which precedes it. The Sec. 1 entry is removed; the list now
+    starts at Sec. 3, the first section after the Introduction. Sec. 1 is still
+    introduced, in the opening paragraph of Sec. 2.
 - page 5 start of Section 3 “This internal note” if you wish to publish it is a paper (this error is recurring)
   - **Response.** Fixed. Sixteen occurrences of "this note", "this internal note" and
     "the note" are reworded uniformly to "this work", across the
