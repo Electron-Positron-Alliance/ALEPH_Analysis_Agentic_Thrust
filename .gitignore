@@ -92,3 +92,6 @@ DataProcessing/plotting/plots/
 *.vrb
 *.xdv
 TObject.C
+
+# Local PDF builds from tools/make_pdfs.sh
+/build/
