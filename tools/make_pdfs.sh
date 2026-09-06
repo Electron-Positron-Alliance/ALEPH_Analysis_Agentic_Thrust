@@ -129,7 +129,12 @@ def norm(s):
     s = re.sub(r"\s+", " ", s)
     # whitespace after a tie is not a content difference: emitting a never-mark
     # command bare can turn "Sec.~\ref{x}" into "Sec.~ \ref{x}", same rendering
-    return re.sub(r"~\s+", "~", s).strip()
+    s = re.sub(r"~\s+", "~", s)
+    # nor is whitespace against a brace: deleting the tail of a group leaves the
+    # deleted run's leading space behind, turning "nominal.}" into "nominal. }".
+    # TeX collapses both to the same output.
+    s = re.sub(r"\s+([{}])", r"\1", s)
+    return re.sub(r"([{}])\s+", r"\1", s).strip()
 dif, new = sys.argv[1], sys.argv[2]
 ok = bad = 0
 for root, _, files in os.walk(dif):
