@@ -187,8 +187,9 @@ def draw_efficiency(h_num, h_den, outpath):
     # Binomial errors: the numerator is a SUBSET of the denominator (matched gen
     # events out of all gen events), so the two are correlated and TH1::Divide's
     # default uncorrelated propagation is wrong. Without "B" the error is
-    # overstated by roughly a factor 5-7 at ~1e5 events/bin, which is what makes
-    # the efficiency panel appear to span the full 0-1 range.
+    # overstated by a factor 7 at the largest and 11 on average at ~1e5
+    # events/bin, which is what makes the efficiency panel appear to span the
+    # full 0-1 range.
     h_eff.Divide(h_num, h_den, 1.0, 1.0, "B")
     h_eff.SetTitle(";T_{gen};Reco efficiency (matched / all gen)")
     h_eff.SetLineColor(int(ROOT.kBlue + 1))
