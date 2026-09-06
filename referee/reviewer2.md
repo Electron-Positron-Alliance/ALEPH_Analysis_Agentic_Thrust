@@ -58,7 +58,8 @@ Sec 6
   1 electrons (tracker + ECAL category)
   2 muons (tracker + muon category)
 - Would be good to explain what are the tracks d0 and z0 and how they are evaluated (wrt to which vertex)
-  - **Response.** Both are now defined in Sec. 6.2 as the distance of closest approach of the track helix to the nominal $e^+e^-$ interaction point, transverse and longitudinal respectively, taken from the archived ALEPH reconstruction. Not a per-event reconstructed vertex. $N_{\mathrm{TPC}}$ is defined alongside, and Sec. 4, where they first appear, now points there.
+  - **Response.** Both are now defined in Sec. 6.2 as the transverse and longitudinal distance of closest approach of the track helix to the per-event reconstructed primary vertex, taken from the archived ALEPH reconstruction. $N_{\mathrm{TPC}}$ is defined alongside, and Sec. 4, where they first appear, now points there.
+  - **TO VERIFY before submission.** The reference point is stated from expert recollection, not confirmed against code -- the analysis sources are not in this repository. Check `runAnalyze.py` / `analysisCompute.h` or the ALEPH miniDST spec for whether $d_0$/$z_0$ are stored relative to the per-event reconstructed primary vertex or the nominal interaction point. The same claim appears in `sections/EventReconstructionAndSelection.tex` in the Sec. 6.2 prose.
 - Table 3 maybe should clarify if and how these criteria are applied at gen level
 - Table 4 : why are inactive cuts listed ? Explain their role.
 
