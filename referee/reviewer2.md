@@ -92,11 +92,9 @@ Sec 6
   - **Response.** Defined in Sec. 6.2 as the transverse and longitudinal distance of closest approach of the track helix to the per-event reconstructed primary vertex. Both are read as stored in the archived ALEPH reconstruction and are not recomputed here. $N_{\mathrm{TPC}}$, the number of TPC coordinates on the track, is defined alongside, and Sec. 4, where they first appear, now points there.
   - **NEEDS DATA MACHINE before submission.** The reference point is stated from expert recollection, not confirmed. Our analysis code only reads the stored $d_0$/$z_0$ and carries no information about what they are measured against, so this has to come from the original ALEPH data processing (miniDST production / reconstruction documentation). Mirrored as a comment above the claim in `sections/EventReconstructionAndSelection.tex`.
 - Table 3 maybe should clarify if and how these criteria are applied at gen level
-  - **Response.** They are not. The object-level criteria of Table 3 and the event-level ones of
-    Table 4 are applied at detector level only; generator-level particles are retained without
-    them, so the particle-level target is set by the stable-hadron criterion alone. Now stated
-    with Table 3. Verified in the reconstruction code, where the object selections sit inside a
-    reco-only branch and the event selection is bypassed for the generator trees.
+  - **Response.** They are not. The Table 3 criteria are imposed on the reconstructed collection
+    only; the generator-level particles of the same events are retained without them, so the
+    particle-level target is set by the stable-hadron criterion alone. Now stated with Table 3.
 - Table 4 : why are inactive cuts listed ? Explain their role.
   - **Response.** The caption now states that the last two rows reject no events in the nominal configuration, are listed so the nominal setup is fully specified, and are the hooks used by the missing-momentum variation in Table 7.
 
