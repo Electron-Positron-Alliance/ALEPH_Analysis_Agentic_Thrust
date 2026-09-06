@@ -2,6 +2,7 @@ Dear Authors, Thanks for this very interesting work.
 
 - In general it seems to me the text has similar statements repeated across the paper,
 - Some aspects and elements are discussed in the initial sections before being introduced and defined.
+  - **Response.** Partly addressed. MC, pwflag, $N_{\mathrm{iter}}$, $d_0$/$z_0$/$N_{\mathrm{TPC}}$ and the stable-hadron lifetime cut are now defined at or before first use, with forward pointers where the term first appears earlier than its definition. The remaining instances are covered by your specific comments below.
 
 Abstract
 - "entirely" seems in contrast with "under expert physicist direction"
@@ -17,11 +18,13 @@ Lessons from AI–Physicist Collaboration
 
 Section 3
 - define "MC" here
+  - **Response.** Expanded to "Monte Carlo (MC)" at first use, in Sec. 3.
 - It is not clear what are the elements, for example in the item list of 3.1,
   that are not already currently used routinely by many analyst in the HEP community.
   It is important to emphasise what is new and distinctive in this work.
 - Again some repetition of previous statements, like the graduate student analogy.
 - Would be good to define pwflag and/or to point to sec 6.1
+  - **Response.** Added a pointer to Sec. 6.1 and Table 2 at the first use, in Sec. 2. Sec. 6.1 had no label, so it could not previously be referenced; one has been added.
 - A reference for miniDST would be good to add.
 
 Sec 3.2
@@ -46,6 +49,7 @@ Sec 5
   Add information on the size of the simulated sample
 - Clarify if the contributions from background sources (as tau pair productions) have been considered.
 - Specify the lifetime definition for the "stable-hadron level" definition (lifetime > ? )
+  - **Response.** Sec. 5 now states the criterion, proper decay length $c\tau > 10$~mm. It was previously given only as a row in Table 5.
 - Would it be better to distinguish the detector-level data and MC with different labels (like tdata and tmc)  ?
 
 Sec 6
@@ -54,6 +58,7 @@ Sec 6
   1 electrons (tracker + ECAL category)
   2 muons (tracker + muon category)
 - Would be good to explain what are the tracks d0 and z0 and how they are evaluated (wrt to which vertex)
+  - **Response.** Both are now defined in Sec. 6.2 as the distance of closest approach of the track helix to the nominal $e^+e^-$ interaction point, transverse and longitudinal respectively, taken from the archived ALEPH reconstruction. Not a per-event reconstructed vertex. $N_{\mathrm{TPC}}$ is defined alongside, and Sec. 4, where they first appear, now points there.
 - Table 3 maybe should clarify if and how these criteria are applied at gen level
 - Table 4 : why are inactive cuts listed ? Explain their role.
 
@@ -81,10 +86,12 @@ Sec 6.4
   The GenBefore distributions should have larger particle multiplicities and total energy.
 - What is also strange is the up-down oscillating pattern in the MC/Data for the (upper-left) Ntrk plot : how is that happening ?
 - define "IBU" on page 20
+  - **Response.** IBU is already defined, at first use in Sec. 2: "Iterative Bayesian Unfolding (IBU) implemented in RooUnfold". No change made.
 
 Sec 7
 - explain better  what is  "systematic execution" and "the correction" ?
 - define "Niter "
+  - **Response.** Defined at first use in Sec. 7.1 as the number of Iterative Bayesian Unfolding iterations.
 
 Sec 7.3
 - Would be good to add some references for the unfolding procedure
