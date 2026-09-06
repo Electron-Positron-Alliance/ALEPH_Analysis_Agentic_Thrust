@@ -58,8 +58,8 @@ Sec 6
   1 electrons (tracker + ECAL category)
   2 muons (tracker + muon category)
 - Would be good to explain what are the tracks d0 and z0 and how they are evaluated (wrt to which vertex)
-  - **Response.** Defined in Sec. 6.2 as the transverse and longitudinal track impact parameters, used only as track-quality requirements. They are read as stored in the archived ALEPH reconstruction and are not recomputed here, so the reference point follows the convention of the original ALEPH data processing. $N_{\mathrm{TPC}}$, the number of TPC coordinates on the track, is defined alongside, and Sec. 4, where they first appear, now points there.
-  - **TO VERIFY before submission.** This comment asks which vertex, so the answer needs the reference point named explicitly. Our analysis code carries no such information -- it only reads the stored $d_0$/$z_0$ -- so this has to come from how the original ALEPH data processing defined them (miniDST production / reconstruction documentation). Once confirmed, name it here and in the Sec. 6.2 prose in `sections/EventReconstructionAndSelection.tex`.
+  - **Response.** Defined in Sec. 6.2 as the transverse and longitudinal distance of closest approach of the track helix to the per-event reconstructed primary vertex. Both are read as stored in the archived ALEPH reconstruction and are not recomputed here. $N_{\mathrm{TPC}}$, the number of TPC coordinates on the track, is defined alongside, and Sec. 4, where they first appear, now points there.
+  - **TO CHECK before submission.** The reference point is stated from expert recollection, not confirmed. Our analysis code only reads the stored $d_0$/$z_0$ and carries no information about what they are measured against, so this has to come from the original ALEPH data processing (miniDST production / reconstruction documentation). Mirrored as a comment above the claim in `sections/EventReconstructionAndSelection.tex`.
 - Table 3 maybe should clarify if and how these criteria are applied at gen level
 - Table 4 : why are inactive cuts listed ? Explain their role.
 
