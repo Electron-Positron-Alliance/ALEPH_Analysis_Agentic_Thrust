@@ -47,13 +47,20 @@ Sec 4
 Sec 5
 - "corresponds to an integrated luminosity of"
   Add information on the size of the simulated sample
-  - **Response.** Both are already given: the integrated luminosity in Sec. 5, and the per-sample
-    event counts in Table 1. While checking this we found Sec. 5 quoted the MC total as if it were
-    the selected count; corrected to 752k, matching Table 1.
+  - **Response.** Both are already given: Sec. 5 states approximately 40~pb$^{-1}$ and
+    approximately 1.33 million selected hadronic events, and Table 1 gives the per-sample counts.
+    While checking this we found Sec. 5 quoted the MC total as if it were the selected count;
+    corrected to 752k, matching Table 1.
+  - **NEEDS DATA MACHINE.** The counts were checked only for internal consistency against Table 1,
+    not against the production. No source was found for 40~pb$^{-1}$, and the data-side counts
+    (1,365,440 / 1,326,312) and MC reco counts (771,597 / 751,861) are not in
+    `workflow_summary.json`, which carries only the two generator-level trees (771,597 and
+    973,769). Verify all of them against the production once on the analysis machine. Mirrored as a
+    comment above the sentence in `sections/Datasets.tex`.
 - Clarify if the contributions from background sources (as tau pair productions) have been considered.
 - Specify the lifetime definition for the "stable-hadron level" definition (lifetime > ? )
   - **Response.** Sec. 5 now states the criterion in the prose, proper decay length $c\tau > 10$~mm, where the particle-level definition is introduced. It was previously given only as a row in Table 5.
-  - **TO CHECK before submission.** The $c\tau > 10$~mm value is pre-existing repo content, relocated rather than established here, and has no citation or in-repo code backing it. Confirm (a) that the generator-level selection really applies it, and (b) whether it is our choice or inherited from ALEPH's published particle-level definition, and cite accordingly. Batches with the $d_0$/$z_0$ check above -- both need the analysis code. Mirrored as a comment above the sentence in `sections/Datasets.tex`.
+  - **NEEDS DATA MACHINE before submission.** The $c\tau > 10$~mm value is pre-existing repo content, relocated rather than established here, and has no citation or in-repo code backing it. Confirm (a) that the generator-level selection really applies it, and (b) whether it is our choice or inherited from ALEPH's published particle-level definition, and cite accordingly. Batches with the $d_0$/$z_0$ check above -- both need the analysis code. Mirrored as a comment above the sentence in `sections/Datasets.tex`.
 - Would it be better to distinguish the detector-level data and MC with different labels (like tdata and tmc)  ?
 
 Sec 6
@@ -63,7 +70,7 @@ Sec 6
   2 muons (tracker + muon category)
 - Would be good to explain what are the tracks d0 and z0 and how they are evaluated (wrt to which vertex)
   - **Response.** Defined in Sec. 6.2 as the transverse and longitudinal distance of closest approach of the track helix to the per-event reconstructed primary vertex. Both are read as stored in the archived ALEPH reconstruction and are not recomputed here. $N_{\mathrm{TPC}}$, the number of TPC coordinates on the track, is defined alongside, and Sec. 4, where they first appear, now points there.
-  - **TO CHECK before submission.** The reference point is stated from expert recollection, not confirmed. Our analysis code only reads the stored $d_0$/$z_0$ and carries no information about what they are measured against, so this has to come from the original ALEPH data processing (miniDST production / reconstruction documentation). Mirrored as a comment above the claim in `sections/EventReconstructionAndSelection.tex`.
+  - **NEEDS DATA MACHINE before submission.** The reference point is stated from expert recollection, not confirmed. Our analysis code only reads the stored $d_0$/$z_0$ and carries no information about what they are measured against, so this has to come from the original ALEPH data processing (miniDST production / reconstruction documentation). Mirrored as a comment above the claim in `sections/EventReconstructionAndSelection.tex`.
 - Table 3 maybe should clarify if and how these criteria are applied at gen level
 - Table 4 : why are inactive cuts listed ? Explain their role.
 
@@ -131,10 +138,38 @@ Sec 8.
 
 Sec 9.1
 - "largest discrepancy at the endpoint"  reported to be 1.30+-0.27, but on the plot appear to be at a lower value.
-  - **TO CHECK before submission.** You are right, and the text is what is wrong. The run summary
-    that generated the figure gives 1.088 +- 0.229 for that bin; 1.30 +- 0.27 traces to an internal
-    note that misquotes it. The three chi2/ndf values in the same caption disagree with the same
-    source in the same way. Being corrected in a dedicated PR.
+  - **Response.** You are right, and the text is what is wrong rather than your reading of the
+    plot. The run that generated the figure gives 1.088 +- 0.229 for that bin.
+  - **NEEDS DATA MACHINE.** Root cause traced. Four numbers in the Fig. 20 block disagree with the
+    run that generated the figure, and the manuscript's tables and figure come from different
+    vintages, so this is a re-derivation rather than a wording fix.
+
+    | claim | paper | run output |
+    |---|---|---|
+    | chi2/ndf OmniFold | 0.663 | 1.4305 |
+    | chi2/ndf prior IBU | 0.421 | 1.2164 |
+    | chi2/ndf ALEPH 2004 | 0.361 | 0.2904 |
+    | endpoint ratio | 1.30 +- 0.27 | 1.088 +- 0.229 |
+
+    Verified: the chi2 convention in `build_prelim_uncertainty_summary.py` is
+    `sigma2 = yerr1^2 + yerr2^2`, diagonal only, ndf = valid bins -- exactly what the caption
+    claims, so the run values are computed as described and the paper's are not from that code.
+    The paper's four values trace to `Plans/2026-02-19_thrust_difference_checks.md`, which cites
+    `of_ibu_comparison_metrics.json` and misquotes it.
+
+    The endpoint bin is a three-way conflict: Table 9 has ours 1.01 / ALEPH 1.31 (ratio 1.297,
+    matching the text), while the run's `binning.csv` bin 50 has ours 1.2057 (ratio 1.087,
+    matching the JSON). So the text and Table 9 agree with each other, the run outputs agree with
+    each other, and the two groups disagree.
+
+    Two knock-on effects: `Results.tex:32` "Sub-unity chi2/ndf values reflect the conservative
+    uncertainty model" is false against the run output, where two of three exceed unity and the
+    reading inverts to tension with the prior results; and Table 9's endpoint value needs
+    regenerating, not editing.
+
+    Fix requires one run regenerating tables, figure and metrics together. Deliberately not
+    corrected in text, which would leave Table 9 contradicting it.
+
 - Fig 19. How is it that the ALEPH measurements seem to have larger uncertainties over most of the bins ?  Can you comment on that ?
 - Table 9 : Are the ALEPH uncertainties the same as plotted in Fig 19 ?
   Just looking at the endpoint bin the table quotes 15% but the plot seems to show 20-25%

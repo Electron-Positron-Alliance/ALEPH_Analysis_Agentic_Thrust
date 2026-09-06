@@ -10,6 +10,31 @@ reconstructed and generated thrust bins.
 
 \subsection{Final unfolded thrust distribution}
 
+% NEEDS DATA MACHINE before submission: four numbers in the figure group and text that
+% follow disagree with the run that generated the figure,
+% Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/of_ibu_comparison_metrics.json
+% (its output_pdf field is this figure):
+%   chi2/ndf in the caption below  OmniFold  0.663 here vs 1.4305 in run
+%                                  prior IBU 0.421 here vs 1.2164 in run
+%                                  ALEPH2004 0.361 here vs 0.2904 in run
+%   endpoint ratio, first paragraph after this figure: 1.30 +- 0.27 here
+%                                                     vs 1.088 +- 0.229 in run
+% The chi2 convention was checked: build_prelim_uncertainty_summary.py uses
+% sigma2 = yerr1^2 + yerr2^2, diagonal only, ndf = valid bins -- exactly what the caption
+% claims. So the run values are computed as described and these are not from that code.
+% They trace to Plans/2026-02-19_thrust_difference_checks.md, which cites that JSON and
+% misquotes it.
+% The endpoint bin is a three-way conflict: Table 9 has ours 1.01 / ALEPH 1.31 -> 1.297,
+% matching the text, while the run binning.csv bin 50 has ours 1.2057 -> 1.087, matching
+% the JSON. Tables and figure are therefore different vintages.
+% Knock-on: the "Sub-unity chi2/ndf" sentence, second paragraph after this figure, is false
+% against the run output, where two of three exceed unity, inverting it into tension with
+% the prior results.
+% NOT corrected in text on purpose -- that would leave Table 9 contradicting it. Needs one
+% run regenerating tables, figure and metrics together. Mirrored in referee/reviewer2.md.
+% Does NOT apply to the max off-diagonal correlation 0.887 further down: that one is
+% independently confirmed from corr_total.csv (0.8868657167 at bin 15,16).
+
 \begin{figure}[t!]
 \centering
 \includegraphics[width=0.48\textwidth]{figures/final_result_uncertainty_breakdown.pdf}%
@@ -33,17 +58,6 @@ prior IBU spectra from the archived-data analysis program. Sub-unity $\chi^2/\ma
 values reflect the conservative uncertainty model and positive off-diagonal correlations,
 not overestimation. Differences are localized to the endpoint region.
 
-% TO CHECK before submission: four numbers in this figure block disagree with the run
-% summary that generated the figure, Studies/PreliminaryResult/2026-02-17_thrust_iter5/
-% summary/of_ibu_comparison_metrics.json (its own output_pdf field is this figure):
-%   chi2/ndf  OmniFold  0.663 here vs 1.4305 in source
-%             prior IBU 0.421 here vs 1.2164 in source
-%             ALEPH2004 0.361 here vs 0.2904 in source
-%   endpoint ratio 1.30 +- 0.27 here vs 1.088 +- 0.229 in source
-% The paper values trace to Plans/2026-02-19_thrust_difference_checks.md, which cites
-% that JSON and misquotes it. Two source chi2/ndf exceed unity, which falsifies the
-% "Sub-unity chi2/ndf" sentence below. Referee 2 raised the endpoint ratio directly.
-% Being handled in a dedicated PR; not resolved here. Mirrored in referee/reviewer2.md.
 The total correlation matrix for the combined result is shown in
 Fig.~\ref{fig:final_total_correlation_matrix_sys}. The off-diagonal structure is
 non-trivial: strong positive correlations appear in the high-thrust region where the
