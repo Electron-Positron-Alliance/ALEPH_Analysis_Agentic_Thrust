@@ -5,11 +5,9 @@
 % this section against the production, not against each other.
 %   40 pb^-1 "after quality requirements" -- no source found in the analysis repo or the
 %     workspace; the manuscript is the only place it appears.
-%   Table 1 data reco 1,365,440 total / 1,326,312 selected, and MC reco 771,597 /
-%     751,861 -- not present in workflow_summary.json, which carries only 771,597 and
-%     973,769 (the two generator-level trees).
-%   1.33M selected and 752k MC selected in the prose are read off Table 1, so they are
-%     consistent with it but inherit whatever it is wrong about.
+%   Every Table 1 count is now VERIFIED against the raw open data and matches:
+%     1,365,440 / 1,326,312 data, 771,597 / 751,861 MC reco, 771,597 tgen,
+%     973,769 tgenBefore. Reproduce with analysis/verify_inputs.py.
 % Referee 2 asked for the simulated-sample size, so these are referee-facing numbers.
 % Mirrored in referee/reviewer2.md.
 The nominal measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$~GeV. This period is used because matched detector-level and generator-level archived MC inputs required for unfolding are available in this configuration. The 1994 sample corresponds to approximately 40~pb$^{-1}$ after quality requirements, yielding approximately 1.33 million selected hadronic events, and provides the largest fully synchronized archived data/MC configuration for this workflow.

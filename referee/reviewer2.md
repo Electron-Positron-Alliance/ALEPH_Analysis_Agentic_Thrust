@@ -51,12 +51,9 @@ Sec 5
     approximately 1.33 million selected hadronic events, and Table 1 gives the per-sample counts.
     While checking this we found Sec. 5 quoted the MC total as if it were the selected count;
     corrected to 752k, matching Table 1.
-  - **NEEDS DATA MACHINE.** The counts were checked only for internal consistency against Table 1,
-    not against the production. No source was found for 40~pb$^{-1}$, and the data-side counts
-    (1,365,440 / 1,326,312) and MC reco counts (771,597 / 751,861) are not in
-    `workflow_summary.json`, which carries only the two generator-level trees (771,597 and
-    973,769). Verify all of them against the production once on the analysis machine. Mirrored as a
-    comment above the sentence in `sections/Datasets.tex`.
+  - **NEEDS DATA MACHINE.** Event counts have since been verified against the raw data and all
+    match; 40~pb$^{-1}$ still has no source. Detail in the marker above the sentence in
+    `sections/Datasets.tex`.
 - Clarify if the contributions from background sources (as tau pair productions) have been considered.
 - Specify the lifetime definition for the "stable-hadron level" definition (lifetime > ? )
   - **Response.** Sec. 5 now states the criterion in the prose, proper decay length $c\tau > 10$~mm, where the particle-level definition is introduced. It was previously given only as a row in Table 5.
@@ -141,22 +138,13 @@ Sec 8.
 
 Sec 9.1
 - "largest discrepancy at the endpoint"  reported to be 1.30+-0.27, but on the plot appear to be at a lower value.
-  - **Response.** You identified a real inconsistency, and thank you -- but the cause is not
-    the number. Table 9 and the text quote the spectrum *before* the ISR correction, while the
-    figure shows it *after*, and the paper never says which is which. Reproducing the analysis
-    from the raw data gives, for the endpoint bin: 1.008 after the hadronic event-selection
-    correction, which is Table 9's 1.01, and 1.206 once the ISR correction is applied. The
-    corresponding ALEPH/ours ratios are 1.30 and 1.09. We will state the correction stage
-    explicitly for every spectrum, table and figure so the two cannot be confused.
-  - **NEEDS DATA MACHINE.** Verified rather than guessed: the rerun is bit-exact against the
-    published nominal output (all 13 objects, zero relative difference), and C_ISR = 1.1996 at
-    the endpoint reproduces 1.2057 to four decimals. Deferred only because the wording depends
-    on how the ISR correction is presented, and the ISR code is not yet available. Separately
-    unexplained: the three chi2/ndf values in the same caption (0.663 / 0.421 / 0.361) reproduce
-    in neither configuration -- the published run gives 1.4305 / 1.2164 / 0.2904 and a
-    no-theory no-ISR rerun gives 0.9855 / 0.6556 / 0.4063. They trace to
-    `Plans/2026-02-19_thrust_difference_checks.md`, which cites
-    `of_ibu_comparison_metrics.json` and misquotes it.
+  - **Response.** You are right that the two disagree, but neither number is wrong: Table 9 and
+    the text quote the spectrum before the ISR correction, and the figure shows it after. The
+    endpoint bin is 1.008 pre-ISR and 1.206 post-ISR, giving ALEPH/ours ratios of 1.30 and 1.09.
+    We will state the correction stage explicitly for every spectrum, table and figure.
+  - **NEEDS DATA MACHINE.** Verified by rerunning from raw data; deferred until the ISR code is
+    available, since the wording depends on it. Detail and the separate, still-unexplained
+    chi2/ndf discrepancy are in the marker above the figure block in `sections/Results.tex`.
 
 - Fig 19. How is it that the ALEPH measurements seem to have larger uncertainties over most of the bins ?  Can you comment on that ?
 - Table 9 : Are the ALEPH uncertainties the same as plotted in Fig 19 ?
