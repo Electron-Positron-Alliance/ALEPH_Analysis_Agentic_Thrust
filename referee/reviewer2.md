@@ -73,6 +73,7 @@ Sec 6.3
   "The ϕ spectrum (Fig. 5) shows a modulation in the generator-level distribution"
   I'm guessing all this discussion on generators across pages 18-19-20 refers to some other figures.
 - The comment "(see Sec. 6.3)" is awkward as it is written inside Sec 6.3
+  - **Response.** The reference pointed at a label inside the same subsection. Retargeted to the figure that shows the investigation.
 - Fig 7 :  It would be interesting to see the MC (no-sel) prediction to justify the cut.
 
 Sec 6.4
