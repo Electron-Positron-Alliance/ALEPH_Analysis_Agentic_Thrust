@@ -122,12 +122,9 @@ Sec 7.3
 - Can you quantify how much is the migration driven separately by the charged particle momentum resolution, and by the soft particles acceptance ?
   I would guess the latter is dominant.
 - Fig 10. What are the (huge) error bars on the efficiency plot ?
-  - **Response.** A bug, now fixed. The efficiency is a ratio of a subset (matched generator
-    events) to its parent sample (all generator events), so the two are correlated, but the
-    uncertainty was propagated as if they were independent. That overstated it by about an order
-    of magnitude -- a factor 7 at the largest and 11 on average. With binomial uncertainties the
-    plateau reads 0.931 +/- 0.003 rather than spanning much of the range, and the figure has been
-    regenerated.
+  - **Response.** The uncertainty was propagated as if numerator and denominator were
+    independent, but the numerator is a subset of the denominator. Using binomial uncertainties,
+    the efficiency plateau is $0.931 \pm 0.003$. The figure has been regenerated.
 - Fig 11. The distribution seems in fact to peak above zero, as if there is a bias.
   can you comment on that ?
   - **Response.** You are right on both counts, and there was also a mismatch: the figure is the
