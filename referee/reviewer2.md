@@ -47,9 +47,16 @@ Sec 4
 Sec 5
 - "corresponds to an integrated luminosity of"
   Add information on the size of the simulated sample
-  - **Response.** Both are already given: the integrated luminosity in Sec. 5, and the per-sample
-    event counts in Table 1. While checking this we found Sec. 5 quoted the MC total as if it were
-    the selected count; corrected to 752k, matching Table 1.
+  - **Response.** Both are already given: Sec. 5 states approximately 40~pb$^{-1}$ and
+    approximately 1.33 million selected hadronic events, and Table 1 gives the per-sample counts.
+    While checking this we found Sec. 5 quoted the MC total as if it were the selected count;
+    corrected to 752k, matching Table 1.
+  - **NEEDS DATA MACHINE.** The counts were checked only for internal consistency against Table 1,
+    not against the production. No source was found for 40~pb$^{-1}$, and the data-side counts
+    (1,365,440 / 1,326,312) and MC reco counts (771,597 / 751,861) are not in
+    `workflow_summary.json`, which carries only the two generator-level trees (771,597 and
+    973,769). Verify all of them against the production once on the analysis machine. Mirrored as a
+    comment above the sentence in `sections/Datasets.tex`.
 - Clarify if the contributions from background sources (as tau pair productions) have been considered.
 - Specify the lifetime definition for the "stable-hadron level" definition (lifetime > ? )
   - **Response.** Sec. 5 now states the criterion in the prose, proper decay length $c\tau > 10$~mm, where the particle-level definition is introduced. It was previously given only as a row in Table 5.
