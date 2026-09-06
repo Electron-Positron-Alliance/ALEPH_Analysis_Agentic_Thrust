@@ -79,6 +79,36 @@ correctly (`build-root638/`), which confirms the ROOT install is the problem
 rather than RooUnfold. Fixing it needs ROOT 6.38 rebuilt against the current
 toolchain; the 6.36.06 install is fully functional in the meantime.
 
+## Running on open data alone
+
+The theory variations and the ISR correction need samples that are not in the
+open dataset, so both stages must be skipped explicitly:
+
+```
+source env.sh
+python Unfolding/scripts/run_thrust_prelim_workflow.py \
+  --config <run>/unfold_config.json --outdir <run> \
+  --python "$(which python)" --conda-env "" \
+  --nominal-iter 5 --iter-down 4 --iter-up 6 \
+  --skip-theory --skip-isr
+python Unfolding/scripts/build_prelim_uncertainty_summary.py \
+  --base-dir <run> --outdir <run>/summary \
+  --aleph-csv <ALEPH>/HEPData-ins636645-v1-Table_54.csv \
+  --skip-theory --include-of-ibu-comparison \
+  --legacy-results-dir <unfold-ee-logtau>/Results
+```
+
+`--conda-env ""` is required when `--python` already points at a working
+interpreter; the default is `py312`, which otherwise wraps every step in
+`conda run`.
+
+**A `--skip-theory` summary is not comparable to a full run.** Theory dominates
+the off-diagonal correlation structure, so with it zeroed the totals shift
+substantially -- `corr_total_max_abs_offdiag` reads 0.975 instead of 0.887. The
+output JSON records this: `diagnostics.theory_uncertainty_included` is `false`,
+`theory_definition` is empty, and `theory_uncertainty_note` says so. Check those
+before quoting any number out of a summary.
+
 ## Not reproducible from open data alone
 
 - **theory uncertainty** and **ISR correction** — need the PYTHIA 8.3 / Herwig 7.3 /

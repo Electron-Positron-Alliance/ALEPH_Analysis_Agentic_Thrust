@@ -2406,7 +2406,7 @@ def main():
             },
             "crosscheck_only": ["no_neutrals"],
         },
-        "theory_definition": THEORY_VARS,
+        "theory_definition": [] if args.skip_theory else THEORY_VARS,
         "mean_abs_fractional": mean_abs_fractional,
         "max_abs_fractional": max_abs_fractional,
         "mean_abs_fractional_central": mean_abs_fractional_central,
@@ -2450,6 +2450,15 @@ def main():
             "hadronic_correction_uncertainty_model": (
                 "Envelope of up/down hadronic-correction ratio uncertainty propagated through "
                 "normalized differential-thrust conversion."
+            ),
+            "theory_uncertainty_included": not args.skip_theory,
+            "theory_uncertainty_note": (
+                "Theory uncertainty is ZERO in this summary: --skip-theory was passed, "
+                "so the PYTHIA8/Herwig/Sherpa variations were not read. Theory dominates "
+                "the total off-diagonal correlation structure, so corr_total_* and the "
+                "totals here are NOT comparable to a full run."
+            ) if args.skip_theory else (
+                "Max envelope of the three generator-reweighting fractional shifts."
             ),
             "isr_correction_uncertainty_included": isr_hists_available,
             "isr_correction_uncertainty_model": (

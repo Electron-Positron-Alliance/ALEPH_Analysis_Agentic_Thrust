@@ -38,7 +38,7 @@ def parse_args():
     p.add_argument("--python", default="python3")
     p.add_argument(
         "--conda-env",
-        default="",
+        default="py312",
         help="If non-empty, run each python command through conda run -n <env> --no-capture-output",
     )
     p.add_argument("--outdir", default=None)
