@@ -208,8 +208,13 @@ def diff_segment(old, new):
                         if so and sn:
                             out.append(sn[0] + diff_segment(so[1], sn[1]) + sn[2])
                             continue
-            out.append(wrap("DIFdel", a[i1:i2]))
-            out.append(wrap("DIFadd", b[j1:j2]))
+            # mark_run, not wrap: a replaced run can contain a never-mark
+            # command. Wrapping a deleted \\ref inside \\DIFdel leaves the diff
+            # citing a label that the new version removed -- an undefined
+            # reference in the diff build -- and a wrapped \\label would collide
+            # with the same label in the added text.
+            out.append(mark_run("DIFdel", a[i1:i2]))
+            out.append(mark_run("DIFadd", b[j1:j2]))
     return "".join(out)
 
 
