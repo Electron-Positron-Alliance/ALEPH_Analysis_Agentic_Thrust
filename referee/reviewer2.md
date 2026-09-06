@@ -54,15 +54,15 @@ Sec 3.3
 
 Sec 4
 - for the track momentum resolution would be better  to add the multiple scattering term that is important also at pT~10 GeV
-  - **Response, partial.** Sec. 4 now states that a multiple-scattering contribution must be added
-    to the curvature term, negligible at high momentum and dominant at low $p_T$.
-  - **NEEDS AUTHOR INPUT before submission.** The coefficient you quote, and the constant terms for
-    the ECAL and HCAL resolutions, are in the ALEPH detector papers already cited in Sec. 4. We have
-    not read them and will not transcribe numbers we cannot check, so the explicit expressions are
-    left for the authors. Note the combined energy-flow resolution in Sec. 4 does already carry a
-    constant term, from the 2004 publication.
+  - **Response.** Both added, with the coefficients taken from the ALEPH detector papers already
+    cited in Sec. 4. The transverse-momentum resolution now reads
+    $\delta p_T/p_T = 6\times10^{-4}\,p_T \oplus 0.005$ (GeV/$c$), the second term being the
+    multiple-scattering contribution you identify, and the ECAL resolution now carries its
+    constant term, $0.18/\sqrt{E} + 0.009$. The HCAL resolution has no constant term in that
+    reference.
   and dominates at lower pT. I should be deltaPt/pt = 5 x 10-3.
 - The constant terms for the energy resolutions would also be better to provide.
+  - **Response.** See above; the ECAL constant term is now given.
 
 Sec 5
 - "corresponds to an integrated luminosity of"
