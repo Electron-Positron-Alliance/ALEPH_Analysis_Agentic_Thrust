@@ -1,0 +1,21 @@
+[project]
+name = "aleph-agentic-thrust-reproduction"
+version = "0.1.0"
+description = "Analysis code needed to reproduce the ALEPH agentic thrust measurement"
+requires-python = "==3.11.*"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "pandas",
+    "h5py",
+]
+
+[tool.uv]
+# ROOT is NOT a pip dependency. PyROOT comes from the local ROOT build and is
+# picked up via `source $ROOTSYS/bin/thisroot.sh`, which prepends
+# $ROOTSYS/lib to PYTHONPATH.
+#
+# Python 3.11 is pinned deliberately: the ROOT build on this workstation
+# (6.38.00) is compiled against Python 3.11.0. Importing PyROOT from 3.12+
+# fails with
+#   ImportError: symbol not found in flat namespace '__Py_HashPointer'
