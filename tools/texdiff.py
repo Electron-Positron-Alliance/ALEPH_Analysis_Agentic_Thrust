@@ -45,7 +45,11 @@ PREAMBLE = r"""
 # \multicolumn, ...) are deliberately NOT listed. Splitting there would sever a
 # command from its own argument and emit e.g. a bare \caption.
 SEPARATOR_RE = re.compile(
-    r"(\\\\|&|\\begin\b|\\end\b|\\item\b|\\hline\b|\\cline\b|\n\s*\n)"
+    # \begin and \end take their {env} argument with them: matching the bare
+    # command would let the {env} group become a separate atom, and wrapping it
+    # yields \begin\DIFadd{itemize}, which is a "Missing \endcsname" error.
+    r"(\\\\|&|\\begin\s*\{[^}]*\}|\\end\s*\{[^}]*\}"
+    r"|\\begin\b|\\end\b|\\item\b|\\hline\b|\\cline\b|\n\s*\n)"
 )
 
 # Environments whose bodies we diff only at segment granularity.
@@ -69,6 +73,8 @@ NEVER_MARK_CMDS = {
     # tabular primitives: these must be the first token in a cell and cannot
     # appear inside another command's argument
     "multicolumn", "multirow", "multispan", "hline", "cline",
+    # environment delimiters: wrapping one detaches it from its {env} argument
+    "begin", "end", "item",
 }
 
 # A line containing any of these is structural: it cannot be struck through as
