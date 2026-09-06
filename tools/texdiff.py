@@ -83,6 +83,11 @@ def cmd_name(atom):
     return m.group(1) if m else None
 
 
+def is_comment(atom):
+    """A % comment atom. Wrapping one in markup comments out the closing brace."""
+    return atom.lstrip().startswith("%")
+
+
 def split_cmd_arg(atom):
     """Split '\\name[opt]{body}' into ('\\name[opt]{', body, '}'). None if not that shape."""
     if not atom.startswith("\\") or not atom.endswith("}"):
@@ -144,6 +149,10 @@ def wrap(macro, atoms):
     lead = s[: len(s) - len(s.lstrip())]
     trail = s[len(s.rstrip()):]
     core = s.strip()
+    if re.search(r"(?<!\\)%", core):
+        # Defensive: some other path handed us a comment. Put the closing brace
+        # on its own line so the % cannot comment it out.
+        return f"{lead}\\{macro}{{{core}\n}}{trail}"
     return f"{lead}\\{macro}{{{core}}}{trail}"
 
 
@@ -153,11 +162,21 @@ def mark_run(macro, atoms):
     A deleted \\label or \\includegraphics must not end up inside \\DIFdel: for
     deletions we drop them, for insertions we keep them unmarked.
     """
-    if not any(cmd_name(t) in NEVER_MARK_CMDS for t in atoms if t.startswith("\\")):
+    if not any(is_comment(t) or (t.startswith("\\") and cmd_name(t) in NEVER_MARK_CMDS)
+               for t in atoms):
         return wrap(macro, atoms)
     out = []
     buf = []
     for t in atoms:
+        if is_comment(t):
+            # A comment can never be wrapped: the % would swallow the closing
+            # brace. Keep added comments verbatim, drop deleted ones.
+            if buf:
+                out.append(wrap(macro, buf))
+                buf = []
+            if macro == "DIFadd":
+                out.append(t)
+            continue
         if t.startswith("\\") and cmd_name(t) in NEVER_MARK_CMDS:
             if buf:
                 out.append(wrap(macro, buf))
