@@ -49,7 +49,8 @@ Sec 5
   Add information on the size of the simulated sample
 - Clarify if the contributions from background sources (as tau pair productions) have been considered.
 - Specify the lifetime definition for the "stable-hadron level" definition (lifetime > ? )
-  - **Response.** Sec. 5 now states the criterion, proper decay length $c\tau > 10$~mm. It was previously given only as a row in Table 5.
+  - **Response.** Sec. 5 now states the criterion in the prose, proper decay length $c\tau > 10$~mm, where the particle-level definition is introduced. It was previously given only as a row in Table 5.
+  - **TO CHECK before submission.** The $c\tau > 10$~mm value is pre-existing repo content, relocated rather than established here, and has no citation or in-repo code backing it. Confirm (a) that the generator-level selection really applies it, and (b) whether it is our choice or inherited from ALEPH's published particle-level definition, and cite accordingly. Batches with the $d_0$/$z_0$ check above -- both need the analysis code. Mirrored as a comment above the sentence in `sections/Datasets.tex`.
 - Would it be better to distinguish the detector-level data and MC with different labels (like tdata and tmc)  ?
 
 Sec 6
