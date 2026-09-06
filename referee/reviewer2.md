@@ -37,11 +37,16 @@ Section 3
 
 Sec 3.2
 - Would be nicer to have the four categorie in a enumerated list, or on a table.
+  - **Response.** Done; Sec. 3.2 now uses a list, matching Sec. 3.1 and Sec. 3.3.
 
 Sec 3.3
 - Not clear what the chi2 is and what the "iterations 4–6." are.  Some more informations would be useful.
 - clarify what  "pathological bins" are
+  - **Response.** Defined at that point as bins whose total uncertainty exceeds the spectrum
+    itself.
 - clarify what are the  "checksums of key outputs"
+  - **Response.** Defined as hashes of the exported spectra and covariance files, used to confirm
+    that a rerun reproduces a previous result byte for byte.
 - "discrepancies between expected and observed outputs are flagged before any result is promoted" :
   this is repeated several times, but it is not very clear how it is implemented.
   It also seems a procedure that would have a worrisome strong  bias to produce "expected" results.
@@ -49,8 +54,15 @@ Sec 3.3
 
 Sec 4
 - for the track momentum resolution would be better  to add the multiple scattering term that is important also at pT~10 GeV
+  - **Response.** Both added, with the coefficients taken from the ALEPH detector papers already
+    cited in Sec. 4. The transverse-momentum resolution now reads
+    $\delta p_T/p_T = 6\times10^{-4}\,p_T \oplus 0.005$ (GeV/$c$), the second term being the
+    multiple-scattering contribution you identify, and the ECAL resolution now carries its
+    constant term, $0.18/\sqrt{E} + 0.009$. The HCAL resolution has no constant term in that
+    reference.
   and dominates at lower pT. I should be deltaPt/pt = 5 x 10-3.
 - The constant terms for the energy resolutions would also be better to provide.
+  - **Response.** See above; the ECAL constant term is now given.
 
 Sec 5
 - "corresponds to an integrated luminosity of"
@@ -67,6 +79,8 @@ Sec 5
   - **Response.** Sec. 5 now states the criterion in the prose, proper decay length $c\tau > 10$~mm, where the particle-level definition is introduced. It was previously given only as a row in Table 5.
   - **NEEDS DATA MACHINE before submission.** The $c\tau > 10$~mm value is pre-existing repo content, relocated rather than established here, and has no citation or in-repo code backing it. Confirm (a) that the generator-level selection really applies it, and (b) whether it is our choice or inherited from ALEPH's published particle-level definition, and cite accordingly. Batches with the $d_0$/$z_0$ check above -- both need the analysis code. Mirrored as a comment above the sentence in `sections/Datasets.tex`.
 - Would it be better to distinguish the detector-level data and MC with different labels (like tdata and tmc)  ?
+  - **Response.** Both detector-level samples are stored in trees named `t`, so rather than invent
+    tree names we state that and label the curves *Data reco* and *MC reco* throughout.
 
 Sec 6
 - Table 2 . Suggest to modify the text in :
@@ -78,6 +92,9 @@ Sec 6
   - **Response.** Defined in Sec. 6.2 as the transverse and longitudinal distance of closest approach of the track helix to the per-event reconstructed primary vertex. Both are read as stored in the archived ALEPH reconstruction and are not recomputed here. $N_{\mathrm{TPC}}$, the number of TPC coordinates on the track, is defined alongside, and Sec. 4, where they first appear, now points there.
   - **NEEDS DATA MACHINE before submission.** The reference point is stated from expert recollection, not confirmed. Our analysis code only reads the stored $d_0$/$z_0$ and carries no information about what they are measured against, so this has to come from the original ALEPH data processing (miniDST production / reconstruction documentation). Mirrored as a comment above the claim in `sections/EventReconstructionAndSelection.tex`.
 - Table 3 maybe should clarify if and how these criteria are applied at gen level
+  - **Response.** They are not. The Table 3 criteria are imposed on the reconstructed collection
+    only; the generator-level particles of the same events are retained without them, so the
+    particle-level target is set by the stable-hadron criterion alone. Now stated with Table 3.
 - Table 4 : why are inactive cuts listed ? Explain their role.
   - **Response.** The caption now states that the last two rows reject no events in the nominal configuration, are listed so the nominal setup is fully specified, and are the hooks used by the missing-momentum variation in Table 7.
 
@@ -109,6 +126,8 @@ Sec 6.4
 
 Sec 7
 - explain better  what is  "systematic execution" and "the correction" ?
+  - **Response.** The Sec. 7 lead-in now names them: the execution of the systematic variation
+    branches, and the post-unfolding hadronic and ISR corrections with the covariance assembly.
 - define "Niter "
   - **Response.** Defined at first use in Sec. 7.1 as the number of Iterative Bayesian Unfolding iterations.
 
