@@ -13,8 +13,13 @@ import sys
 from datetime import date, datetime, timezone
 
 
-ISR0_FILE = "/Users/anthonybadea/code/pythia8316/examples/isr0_ALL.root"
-ISR1_FILE = "/Users/anthonybadea/code/pythia8316/examples/isr1_ALL.root"
+# The ISR samples are PYTHIA-generated and are not part of the ALEPH open data,
+# so they only exist on the workstation. Overridable, and skippable entirely with
+# --skip-isr, which is what makes an open-data-only reproduction possible.
+ISR0_FILE = os.environ.get(
+    "ISR0_FILE", "/Users/anthonybadea/code/pythia8316/examples/isr0_ALL.root")
+ISR1_FILE = os.environ.get(
+    "ISR1_FILE", "/Users/anthonybadea/code/pythia8316/examples/isr1_ALL.root")
 ISR_TREE = "tgenBefore"
 ISR_BRANCH = "thrust"  # stores T directly; fill histogram with thrust expression as-is
 
@@ -33,7 +38,7 @@ def parse_args():
     p.add_argument("--python", default="python3")
     p.add_argument(
         "--conda-env",
-        default="py312",
+        default="",
         help="If non-empty, run each python command through conda run -n <env> --no-capture-output",
     )
     p.add_argument("--outdir", default=None)
@@ -44,6 +49,14 @@ def parse_args():
     p.add_argument("--skip-iteration", action="store_true")
     p.add_argument("--skip-experimental", action="store_true")
     p.add_argument("--skip-theory", action="store_true")
+    p.add_argument(
+        "--skip-isr",
+        action="store_true",
+        help="Skip the ISR correction precompute and drop isr_corr_file from "
+             "every unfolding step. Required for an open-data-only run: the ISR "
+             "samples are PYTHIA-generated and not part of the open dataset. "
+             "Note --skip-theory alone does NOT skip ISR.",
+    )
     p.add_argument("--skip-plots", action="store_true")
     p.add_argument("--fail-fast", action="store_true")
     p.add_argument(
@@ -326,11 +339,15 @@ def main():
     ensure_exists(nominal_reco, "nominal reco MC")
     ensure_exists(nominal_gen, "nominal gen MC")
 
-    isr_cache_path = precompute_isr_correction(
-        isr0_file=ISR0_FILE,
-        isr1_file=ISR1_FILE,
-        outdir=os.path.join(outdir, "isr_cache"),
-    )
+    if args.skip_isr:
+        print("==> --skip-isr: no ISR correction will be applied")
+        isr_cache_path = None
+    else:
+        isr_cache_path = precompute_isr_correction(
+            isr0_file=ISR0_FILE,
+            isr1_file=ISR1_FILE,
+            outdir=os.path.join(outdir, "isr_cache"),
+        )
 
     failures: list[dict[str, object]] = []
     records: list[dict[str, object]] = []
@@ -382,8 +399,8 @@ def main():
                 "calculate_covariance": "true",
                 "apply_hadronic_event_correction": "true",
                 "apply_theory_event_weights": "false",
-                "apply_isr_correction": "true",
-                "isr_corr_file": str(isr_cache_path),
+                "apply_isr_correction": "false" if args.skip_isr else "true",
+                **({} if isr_cache_path is None else {"isr_corr_file": str(isr_cache_path)}),
             },
         )
         if args.fail_fast and failures:
@@ -400,8 +417,8 @@ def main():
                     "calculate_covariance": "false",
                     "apply_hadronic_event_correction": "true",
                     "apply_theory_event_weights": "false",
-                    "apply_isr_correction": "true",
-                    "isr_corr_file": str(isr_cache_path),
+                    "apply_isr_correction": "false" if args.skip_isr else "true",
+                    **({} if isr_cache_path is None else {"isr_corr_file": str(isr_cache_path)}),
                 },
             )
             if args.fail_fast and failures:
@@ -426,8 +443,8 @@ def main():
                     "calculate_covariance": "false",
                     "apply_hadronic_event_correction": "true",
                     "apply_theory_event_weights": "false",
-                    "apply_isr_correction": "true",
-                    "isr_corr_file": str(isr_cache_path),
+                    "apply_isr_correction": "false" if args.skip_isr else "true",
+                    **({} if isr_cache_path is None else {"isr_corr_file": str(isr_cache_path)}),
                 },
             )
             if args.fail_fast and failures:
@@ -452,8 +469,8 @@ def main():
                     "theory_variation_weights_path": weight_path,
                     "strict_theory_weight_length": "true",
                     "normalize_weights_mean1": "true",
-                    "apply_isr_correction": "true",
-                    "isr_corr_file": str(isr_cache_path),
+                    "apply_isr_correction": "false" if args.skip_isr else "true",
+                    **({} if isr_cache_path is None else {"isr_corr_file": str(isr_cache_path)}),
                 },
             )
             if args.fail_fast and failures:

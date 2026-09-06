@@ -67,6 +67,15 @@ def parse_args():
     p.add_argument("--hist-name", default="unfolded_corrected")
     p.add_argument("--outdir", default=None)
     p.add_argument(
+        "--skip-theory",
+        action="store_true",
+        help=(
+            "Continue with a zero theory uncertainty when the theory ROOTs are "
+            "absent. Needed for an open-data-only run: the theory variations "
+            "require the modern-generator samples."
+        ),
+    )
+    p.add_argument(
         "--aleph-csv",
         default=None,
         help=(
@@ -1921,7 +1930,24 @@ def main():
     # delta_theory = max envelope of the three fractional shifts relative to nominal.
     theory_arrays = {}
     theory_weight_diagnostics = {}
-    for var in THEORY_VARS:
+    # The theory variations need the modern-generator samples, which are not part
+    # of the ALEPH open data. With --skip-theory the theory uncertainty degrades to
+    # zero with a loud warning, matching how a missing ISR cache is handled above,
+    # rather than aborting the whole summary.
+    _theory_missing = [
+        v for v in THEORY_VARS
+        if not os.path.exists(os.path.join(base_dir, "theory", f"unfolded_theory_{v}.root"))
+    ]
+    if _theory_missing and not args.skip_theory:
+        raise SystemExit(
+            "ERROR: missing theory ROOT(s): " + ", ".join(_theory_missing)
+            + "\n       These require the PYTHIA8/Herwig/Sherpa samples, which are"
+            + "\n       not part of the open data. Pass --skip-theory to continue"
+            + "\n       with a zero theory uncertainty."
+        )
+    if args.skip_theory:
+        print("WARNING: --skip-theory; theory uncertainty will be zero.", file=sys.stderr)
+    for var in ([] if args.skip_theory else THEORY_VARS):
         path = os.path.join(base_dir, "theory", f"unfolded_theory_{var}.root")
         ensure_exists(path, f"theory ROOT ({var})")
         h_th = load_hist(path, args.hist_name)
@@ -1935,8 +1961,12 @@ def main():
                 "available": False,
                 "error": str(exc),
             }
-    theory_shifts = {var: frac_shift(theory_arrays[var], nom) for var in THEORY_VARS}
-    delta_theory = abs_env([theory_shifts[v] for v in THEORY_VARS])
+    if args.skip_theory:
+        theory_shifts = {}
+        delta_theory = np.zeros_like(np.asarray(nom, dtype=float))
+    else:
+        theory_shifts = {var: frac_shift(theory_arrays[var], nom) for var in THEORY_VARS}
+        delta_theory = abs_env([theory_shifts[v] for v in THEORY_VARS])
 
     # --- Statistical covariance from RooUnfold ---
     # The raw covariance is stored in counts space by RooUnfold. It is transformed to the
@@ -2223,9 +2253,11 @@ def main():
         out_path=component_plots["theory"],
         template_hist=nominal,
         components={
-            "pythia8": 100.0 * theory_shifts["pythia8"],
-            "herwig": 100.0 * theory_shifts["herwig"],
-            "sherpa": 100.0 * theory_shifts["sherpa"],
+            **{
+                v: (100.0 * theory_shifts[v] if v in theory_shifts
+                    else np.zeros_like(np.asarray(nom, dtype=float)))
+                for v in THEORY_VARS
+            },
         },
         labels={
             "pythia8": "PYTHIA8",
