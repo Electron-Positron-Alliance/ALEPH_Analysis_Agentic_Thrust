@@ -42,6 +42,17 @@ files in it are required.
 
 Verify all of them with `python verify_inputs.py`.
 
+To check that a rerun reproduces a stored result rather than asserting it:
+
+```
+python compare_runs.py <reference>/nominal/unfolded_nominal_iter5.root \
+                       <rerun>/nominal/unfolded_nominal_iter5.root
+```
+
+Reports the largest relative bin difference per object and exits non-zero if
+any exceeds `--tol` (default 0). Against the published nominal output all 13
+objects match at zero relative difference.
+
 | input | location |
 |---|---|
 | raw data (8.4 G) | `ALEPH/LEP1Data1994_recons_aftercut-MERGED.root` |
