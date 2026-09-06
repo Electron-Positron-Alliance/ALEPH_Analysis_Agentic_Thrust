@@ -41,27 +41,43 @@ re-reading 36 G.
 ## Environment
 
 ```
-source env.sh          # uv venv (python 3.11) + local ROOT
+source env.sh
 python verify_inputs.py
 ```
 
-`env.sh` pins **Python 3.11** because the ROOT build at `~/code/root` (6.38.00)
-is compiled against 3.11.0; importing PyROOT from 3.12+ fails with
-`symbol not found in flat namespace '__Py_HashPointer'`.
+Python and all pip dependencies are uv-managed. ROOT is not a pip package: it
+comes from an existing install, and `env.sh` wires its PyROOT into the uv venv
+via `PYTHONPATH`. All four stages run under this one environment.
 
-### Stage 3 needs a different environment
+`ROOTSYS` defaults to the conda `py312` install, which is the ROOT that works
+here. `env.sh` reads the Python version ROOT was built against from
+`root-config` and pins uv to match; a mismatch fails with
+`ImportError: symbol not found in flat namespace '__Py_HashPointer'`.
 
-`Unfolding/unfold_thrust.py` hardcodes `~/code/RooUnfold/build/libRooUnfold.dylib`
-(`unfold_thrust.py:18-22`), and that build links `libCore.6.36`. Loading it under
-ROOT 6.38.00 mixes two ROOT installations and aborts:
+`ROOUNFOLD_LIB` defaults to `~/code/RooUnfold/build/libRooUnfold.dylib`, which
+links `libCore.6.36` and so matches that ROOT. Both variables are overridable.
+
+### Why not ROOT 6.38
+
+`~/code/root` (6.38.00) does not work on this machine. Its cling modulemap
+references libc++ headers that AppleClang 21 reorganised:
 
 ```
-Fatal in <TKey::ReadObj>: Incorrect detection of the inheritance from TObject for class TObjArray
+etc/cling/std_darwin.modulemap:73: error: header '__type_traits/add_lvalue_reference.h' not found
 ```
 
-The matched combination is conda `py312` (ROOT 6.36.06) + RooUnfold `build/`,
-which is what Appendix A documents. Until RooUnfold is rebuilt against 6.38.00,
-stages 1, 2 and 4 run under `env.sh` and stage 3 needs `conda activate py312`.
+Dictionary generation for templated classes then fails, so RooUnfold loads but
+cannot be used:
+
+```
+TypeError: cannot instantiate incomplete class 'RooUnfoldBayesT<TH1,TH2>'
+```
+
+Its `libXMLParser.so` also has a dangling `/opt/local/lib/libxml2.2.dylib`
+(MacPorts) dependency. RooUnfold *was* rebuilt against 6.38 and links it
+correctly (`build-root638/`), which confirms the ROOT install is the problem
+rather than RooUnfold. Fixing it needs ROOT 6.38 rebuilt against the current
+toolchain; the 6.36.06 install is fully functional in the meantime.
 
 ## Not reproducible from open data alone
 

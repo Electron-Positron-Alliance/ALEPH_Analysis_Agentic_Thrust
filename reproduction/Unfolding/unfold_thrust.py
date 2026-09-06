@@ -15,11 +15,20 @@ import sys
 import numpy as np
 import ROOT
 
-_ROOUNFOLD_LIB = os.path.join(
+# RooUnfold must be built against the same ROOT that PyROOT is using. Mixing
+# two ROOT installations aborts at the first TFile read with
+#   Fatal in <TKey::ReadObj>: Incorrect detection of the inheritance from
+#   TObject for class TObjArray
+# reproduction/env.sh exports ROOUNFOLD_LIB pointing at the build that matches
+# the ROOT it sets up; the historical hardcoded path is the fallback.
+_ROOUNFOLD_LIB = os.environ.get("ROOUNFOLD_LIB") or os.path.join(
     os.path.expanduser("~"), "code/RooUnfold/build/libRooUnfold.dylib")
 if not os.path.exists(_ROOUNFOLD_LIB):
-    raise FileNotFoundError(f"RooUnfold library not found: {_ROOUNFOLD_LIB}")
-ROOT.gSystem.Load(_ROOUNFOLD_LIB)
+    raise FileNotFoundError(
+        f"RooUnfold library not found: {_ROOUNFOLD_LIB}\n"
+        "Set ROOUNFOLD_LIB, or run `source reproduction/env.sh`.")
+if ROOT.gSystem.Load(_ROOUNFOLD_LIB) < 0:
+    raise RuntimeError(f"failed to load RooUnfold: {_ROOUNFOLD_LIB}")
 
 from ROOT import RooUnfoldResponse
 from ROOT import RooUnfold
