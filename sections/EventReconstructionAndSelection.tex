@@ -69,7 +69,7 @@ Use neutral objects & \texttt{keepNeutralTracks} = \texttt{True} (nominal) \\
 \label{tab:particle_selection_summary}
 \end{table}
 
-The nominal hadronic event selection is summarized in Table~\ref{tab:event_selection_summary}, also with one line per requirement.
+The nominal hadronic event selection is summarized in Table~\ref{tab:event_selection_summary}, also with one line per requirement. The last two rows reject no events in the nominal configuration; they are listed so that the configuration is fully specified, and are the hooks through which the missing-momentum variation of Table~\ref{tab:exp_systematics} is applied.
 
 \begin{table}[t!]
 \centering
@@ -86,7 +86,7 @@ Visible energy guard & $E_{\mathrm{vis}}\ge 0$ GeV (nominally inactive) \\
 Missing-momentum guard & $|\vec{p}_{\mathrm{miss}}|<9999$ GeV (nominally inactive) \\
 \hline
 \end{tabular}
-\caption{Nominal event-level hadronic selection requirements. The final two rows are guards implemented in the analysis code but set to values that reject no events in the nominal configuration; they are listed for completeness so that the nominal configuration is fully specified, and are retained because they are the hooks through which the missing-momentum variation of Table~\ref{tab:exp_systematics} is applied. They impose no selection on the nominal result.}
+\caption{Nominal event-level hadronic selection, one requirement per row.}
 \label{tab:event_selection_summary}
 \end{table}
 
@@ -113,8 +113,8 @@ configuration used for the current thrust workflow.
 
 \input{sections/PWFlagFullDistributions}
 
-\textbf{pwflag=0 (charged tracks).} Figure~\ref{fig:pwflag0_full} is the dominant
-detector-modeling anchor for this analysis because charged tracks provide most of the
+\textbf{pwflag=0 (charged hadrons).} Figure~\ref{fig:pwflag0_full} is the dominant
+detector-modeling anchor for this analysis because charged particles provide most of the
 selected-particle multiplicity and momentum flow. Data/MC agreement is good in the
 bulk of all distributions. The $\cos\theta$ panel shows the geometric acceptance
 cutoff at $|\cos\theta|=0.94$, with consistent data/MC behavior across the accepted

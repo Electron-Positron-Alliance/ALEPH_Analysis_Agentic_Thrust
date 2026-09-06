@@ -90,7 +90,7 @@ The usable binning resolution is characterized using matched reco--gen event pai
 \subsection{Systematics execution map}
 
 Systematic branches are executed by rerunning unfolding with variation-specific inputs or theory weights, then converting each branch into a signed shift relative to nominal.
-The combination structure is summarized in Table~\ref{fig:systematics_execution_chart}.
+The combination structure is summarized in Table~\ref{fig:systematics_execution_chart}. Its input branches are \texttt{iter4}/\texttt{iter6}, unfolding passes at $N_{\mathrm{iter}}=4$ and $6$; \texttt{ntpc7}, \texttt{pt04}, \texttt{ech10} and \texttt{with\_met}, the track and event selection variations; and \texttt{nes\_up}/\texttt{nes\_down} and \texttt{ner}, the neutral energy-scale and removal-efficiency variations, all defined in Table~\ref{tab:exp_systematics}. The experimental subtotal and the final total are formed by quadrature of their sub-components. The \texttt{no\_neutrals} branch is a cross-check only.
 
 \input{tables/systematics_execution_chart_figure}
 
