@@ -18,6 +18,11 @@ Here are some comments about the text itself:
 - page 13-14-15-16-17 there is a mis-matching between the figure number in the figure itself and in the caption.
 - page 15 what is the MC excess in phi around -1.5 ?
 - page 19 , neutral hadron, nothing is visible in figure 6 and the so-called cleaning cut of figure 7 is very badly explained, this part is not understandable it must be rewritten
+  - **Response.** Rewritten, and the old text was wrong rather than merely unclear: it said the
+    right panel compared the distribution with and without the cleaning cut. That cut acts at
+    object level (`Analyze.cxx:394`) and is therefore applied in both curves; the two panels differ
+    only by the hadronic event selection. The caption and body now say so. A genuine cut-on/cut-off
+    comparison would need a new configuration flag and a re-run.
 - page 19 also Fig. 8 must be understood before publication (or removed, it seems a detail on MC-data corrections done in the nineties).
 - page 23 first paragraph, I do not understand the text.
 - page 25 last paragraph I do not understand how ISR is treated and if corrections are applied or not, please rewrite in a less obscure way.

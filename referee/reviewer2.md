@@ -115,6 +115,11 @@ Sec 7.3
 - Fig 10. What are the (huge) error bars on the efficiency plot ?
 - Fig 11. The distribution seems in fact to peak above zero, as if there is a bias.
   can you comment on that ?
+  - **Response.** You are right on both counts, and there was also a mismatch: the figure is the
+    two-dimensional resolution map, while the caption, body text and label all described a
+    one-dimensional projection. All three now describe the map, and the unsupported claim of no
+    significant bias is removed. The one-dimensional projection and a bias profile exist and can be
+    added if you would prefer them.
 - Table 6. Several entries in the table are not very clear or have not been defined, like input labels "ntpc7, pt04, ech10, with met  "
   - **Response.** The Table 6 caption now defines each branch and points to Table 7. Previously the labels appeared on p. 25 while their definitions only arrived in Table 7 on p. 28.
 - Sec 7.6 previously it was stated that "The ISR correction is not yet implemented in the current analysis and represents a systematic gap relative to the published results;"  but here is seems it is implemented.
