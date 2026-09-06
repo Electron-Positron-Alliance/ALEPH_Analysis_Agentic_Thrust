@@ -65,6 +65,7 @@ Sec 5
 
 Sec 6
 - Table 2 . Suggest to modify the text in :
+  - **Response.** Adopted verbatim. The previous labels called pwflag 1 and 2 both "charged leptons", which did not distinguish them.
   0 charged hadrons
   1 electrons (tracker + ECAL category)
   2 muons (tracker + muon category)
@@ -73,6 +74,7 @@ Sec 6
   - **NEEDS DATA MACHINE before submission.** The reference point is stated from expert recollection, not confirmed. Our analysis code only reads the stored $d_0$/$z_0$ and carries no information about what they are measured against, so this has to come from the original ALEPH data processing (miniDST production / reconstruction documentation). Mirrored as a comment above the claim in `sections/EventReconstructionAndSelection.tex`.
 - Table 3 maybe should clarify if and how these criteria are applied at gen level
 - Table 4 : why are inactive cuts listed ? Explain their role.
+  - **Response.** The caption now states that the last two rows reject no events in the nominal configuration, are listed so the nominal setup is fully specified, and are the hooks used by the missing-momentum variation in Table 7.
 
 Sec 6.3
 - Fig 1 Can you comment on why we have enhancements at costheta=0 (also for gen) ?
@@ -114,6 +116,7 @@ Sec 7.3
 - Fig 11. The distribution seems in fact to peak above zero, as if there is a bias.
   can you comment on that ?
 - Table 6. Several entries in the table are not very clear or have not been defined, like input labels "ntpc7, pt04, ech10, with met  "
+  - **Response.** The Table 6 caption now defines each branch and points to Table 7. Previously the labels appeared on p. 25 while their definitions only arrived in Table 7 on p. 28.
 - Sec 7.6 previously it was stated that "The ISR correction is not yet implemented in the current analysis and represents a systematic gap relative to the published results;"  but here is seems it is implemented.
   Can you clarify ?
 - Why is the ISR uncertainty only taken from the finite MC statistics ?
