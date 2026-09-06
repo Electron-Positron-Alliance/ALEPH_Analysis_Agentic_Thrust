@@ -141,6 +141,24 @@ def is_blank(s):
     return s.strip() == ""
 
 
+def _brace_balanced(s):
+    """True if every { in s is closed within s. Escaped \\{ and \\} do not count."""
+    d = 0
+    i = 0
+    while i < len(s):
+        if s[i] == "\\":
+            i += 2
+            continue
+        if s[i] == "{":
+            d += 1
+        elif s[i] == "}":
+            d -= 1
+            if d < 0:
+                return False
+        i += 1
+    return d == 0
+
+
 def wrap(macro, atoms):
     """Wrap a run of atoms in \\DIFadd/\\DIFdel, preserving outer whitespace."""
     s = "".join(atoms)
@@ -149,6 +167,14 @@ def wrap(macro, atoms):
     lead = s[: len(s) - len(s.lstrip())]
     trail = s[len(s.rstrip()):]
     core = s.strip()
+    if not _brace_balanced(core):
+        # The run straddles a brace boundary, so wrapping it would close our own
+        # macro with someone else's brace. Happens when ATOM_RE cannot take a
+        # command and its argument as one atom -- e.g. \caption{...} nesting two
+        # or more levels -- and mark_run then splits the run at a never-mark
+        # command inside it. Emitting unmarked keeps the content correct and
+        # only loses the highlight; wrapping it corrupts the document.
+        return s if macro == "DIFadd" else lead + trail
     if re.search(r"(?<!\\)%", core):
         # Defensive: some other path handed us a comment. Put the closing brace
         # on its own line so the % cannot comment it out.
