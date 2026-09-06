@@ -43,7 +43,7 @@ All selected charged and neutral categories contribute to the thrust numerator a
 % what they are measured against; the convention was fixed by the original ALEPH
 % data processing, so confirm against the miniDST production / reconstruction
 % documentation. Referee 2 asked this directly. Mirrored in referee/reviewer2.md.
-Table~\ref{tab:particle_selection_summary} lists the object-level nominal selection with one requirement per row. These criteria define which reconstructed particles are propagated into thrust and therefore which detector effects enter the response model. Here $d_0$ and $z_0$ are the transverse and longitudinal track impact parameters, defined as the distance of closest approach of the reconstructed track helix to the per-event reconstructed primary vertex, measured in the plane transverse to the beam and along the beam axis respectively. Both are read directly as stored in the archived ALEPH reconstruction and are not recomputed in this work. $N_{\mathrm{TPC}}$ is the number of TPC coordinates associated with the track.
+Table~\ref{tab:particle_selection_summary} lists the object-level nominal selection with one requirement per row. These criteria, and the event-level requirements of Table~\ref{tab:event_selection_summary}, are applied at detector level only; generator-level particles are retained without them, so the particle-level target is defined by the stable-hadron criterion of Sec.~\ref{sec:datasets} alone. These criteria define which reconstructed particles are propagated into thrust and therefore which detector effects enter the response model. Here $d_0$ and $z_0$ are the transverse and longitudinal track impact parameters, defined as the distance of closest approach of the reconstructed track helix to the per-event reconstructed primary vertex, measured in the plane transverse to the beam and along the beam axis respectively. Both are read directly as stored in the archived ALEPH reconstruction and are not recomputed in this work. $N_{\mathrm{TPC}}$ is the number of TPC coordinates associated with the track.
 
 \begin{table}[t!]
 \centering
@@ -107,7 +107,9 @@ ingredients that enter the event-shape sums and axis determination. Any mismodel
 acceptance, momentum scale, or category composition can propagate into migration in the detector
 response matrix and into unfolded distributions. To assess detector modeling of these inputs, we
 compare data and MC reco distributions for each \texttt{pwflag} category using Data/MC ratio
-panels, with generator-level references from \texttt{tgen} and \texttt{tgenBefore}. These
+panels, with generator-level references from \texttt{tgen} and \texttt{tgenBefore}. Both
+detector-level samples are stored in trees named \texttt{t}, so they are labelled
+\emph{Data reco} and \emph{MC reco} throughout to keep them distinct. These
 validation plots are taken from the dedicated validation snapshot with the same nominal selection
 configuration used for the current thrust workflow.
 

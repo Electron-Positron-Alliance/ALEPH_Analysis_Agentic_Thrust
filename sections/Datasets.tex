@@ -1,6 +1,9 @@
 \section{Data and simulated event samples}
 \label{sec:datasets}
 
+Particle categories referred to throughout this section are defined in
+Table~\ref{tab:pwflag_definition}.
+
 % NEEDS DATA MACHINE before submission: verify the luminosity and every event count in
 % this section against the production, not against each other.
 %   40 pb^-1 "after quality requirements" -- no source found in the analysis repo or the
@@ -36,7 +39,8 @@ C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{g
 \end{equation}
 would additionally correct the result from the ISR-inclusive generator-level distribution to the pure $\sqrt{s}=M_Z$ distribution. Both published ALEPH event-shape analyses~\cite{Barate:1996fi,Heister:2003aj} apply this correction. The ISR correction is not yet implemented in the current analysis and represents a systematic gap relative to the published results; its expected impact and planned implementation are discussed in Sec.~\ref{sec:systematics}.
 
-The unfolding step consumes four synchronized inputs:
+The unfolding step consumes four synchronized inputs, each a ROOT \texttt{TTree} in the
+archived sample and referred to below by its tree name:
 \begin{itemize}
 \item detector-level data tree (\texttt{t}),
 \item detector-level MC tree (\texttt{t}),

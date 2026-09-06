@@ -32,10 +32,12 @@ accelerator for engineering and documentation tasks, not as an autonomous scient
 \label{sec:agent_inputs}
 
 The context supplied to the agent at the start of each session can be grouped into four categories.
-First, \textit{reference materials}: the published ALEPH thrust measurement~\cite{Heister:2003aj}, prior ROOT-based analysis macros for event selection and thrust calculation, and internal analysis notes documenting the miniDST format, detector calibration, and \texttt{pwflag} definitions.
-Second, \textit{data inputs}: the LEP\,1 open-data miniDST files for the 1994 running period at $\sqrt{s}=91.2$~GeV, together with the corresponding ALEPH Monte Carlo simulation samples.
-Third, \textit{physicist-written prompts}: each iteration began with a prompt specifying the physics objective (e.g.\ ``propagate the hadronic-event correction as an independent systematic component with per-bin envelope uncertainties''), acceptance criteria (e.g.\ ``refolded spectra must reproduce detector-level data within statistical precision''), and output-format expectations (figure style, table layout, note section to update).
-Fourth, \textit{what was not supplied}: no pre-written unfolding code, no systematic-uncertainty framework, and no covariance-matrix infrastructure were provided. The agent constructed these from the physics descriptions in the prompts, using the reference code as stylistic guidance rather than as a template to copy. This distinction is important for assessing what the agent can build from first principles versus what it merely adapts from existing implementations.
+\begin{itemize}
+\item \textit{reference materials}: the published ALEPH thrust measurement~\cite{Heister:2003aj}, prior ROOT-based analysis macros for event selection and thrust calculation, and internal analysis notes documenting the miniDST format, detector calibration, and \texttt{pwflag} definitions.
+\item \textit{data inputs}: the LEP\,1 open-data miniDST files for the 1994 running period at $\sqrt{s}=91.2$~GeV, together with the corresponding ALEPH Monte Carlo simulation samples.
+\item \textit{physicist-written prompts}: each iteration began with a prompt specifying the physics objective (e.g.\ ``propagate the hadronic-event correction as an independent systematic component with per-bin envelope uncertainties''), acceptance criteria (e.g.\ ``refolded spectra must reproduce detector-level data within statistical precision''), and output-format expectations (figure style, table layout, note section to update).
+\item \textit{what was not supplied}: no pre-written unfolding code, no systematic-uncertainty framework, and no covariance-matrix infrastructure were provided. The agent constructed these from the physics descriptions in the prompts, using the reference code as stylistic guidance rather than as a template to copy. This distinction is important for assessing what the agent can build from first principles versus what it merely adapts from existing implementations.
+\end{itemize}
 
 \subsection{Boundaries, controls, and reproducibility}
 
@@ -68,7 +70,8 @@ The ${\sim}23\%$ difference between energy-flow and charged-only thrust was conf
 
 \textit{Final result.}
 The unfolded thrust distribution was compared to the ALEPH\,2004 published result, yielding $\chi^{2}/\mathrm{ndf}=0.36$ over 42~bins.
-Per-bin uncertainty breakdowns were examined for pathological bins, particularly the endpoint region $T\in[0.99,1.00]$.
+Per-bin uncertainty breakdowns were examined for pathological bins, meaning bins whose total
+uncertainty exceeds the spectrum itself, particularly the endpoint region $T\in[0.99,1.00]$.
 
 \textit{Documentation.}
 All figure captions, table entries, and interpretive statements in this work were reviewed by the physicist for physics accuracy.
@@ -79,7 +82,8 @@ analysis steps are version-controlled, with code and configuration managed
 in a git repository so that any result can be traced to a specific commit
 and set of inputs. Workflow runs produce structured output artifacts,
 including summary files that capture the configuration used, the software
-versions, and checksums of key outputs. Physicist oversight at each review
+versions, and checksums of key outputs, the last being hashes of the exported spectra and
+covariance files used to confirm that a rerun reproduces a previous result byte for byte. Physicist oversight at each review
 stage provides an additional layer of validation: discrepancies between
 expected and observed outputs are flagged before any result is promoted to
 the baseline. These controls together ensure that results are reproducible

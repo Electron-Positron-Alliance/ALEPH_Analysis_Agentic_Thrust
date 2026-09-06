@@ -16,9 +16,12 @@ Here are some comments about the text itself:
 - page 6 lines 4 - 5 this is a repetition of page 3
 - page 8 line 5 I did not catch the proof of concept, where is it ?
 - page 9 line 2, quote table 2 here
+  - **Response.** Added a pointer to Table 2 at the start of Sec. 5.
 - page 9 “Two generator-level corrections are applied after unfolding” : it seems that the second (ISR) is not applied from what is written at the end of the page.
 - page 9 two lines after 5.1 I do not understand what you mean, unless it is something obvious, if you do not do unfolding and do not use the generator for that, you are not generator dependent …
 - page 9-10 what is it a “tree” in this context ?
+  - **Response.** These are ROOT `TTree`s in the archived sample; the four inputs to the
+    unfolding are now introduced as such in Sec. 5 and referred to by their tree names.
 - table 4 it seems that the Sphericity axis acceptance cut is sculpting the thrust distribution, could you comment about that ?
 - page 13-14-15-16-17 there is a mis-matching between the figure number in the figure itself and in the caption.
 - page 15 what is the MC excess in phi around -1.5 ?
