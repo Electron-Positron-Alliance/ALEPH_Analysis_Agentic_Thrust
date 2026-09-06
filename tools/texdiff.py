@@ -141,6 +141,11 @@ def is_blank(s):
     return s.strip() == ""
 
 
+# Runs that wrap() refused because they straddle a brace boundary. Reported at the
+# end of a run so an unmarked change cannot pass unnoticed.
+GUARDED = []
+
+
 def _brace_balanced(s):
     """True if every { in s is closed within s. Escaped \\{ and \\} do not count."""
     d = 0
@@ -174,6 +179,11 @@ def wrap(macro, atoms):
         # or more levels -- and mark_run then splits the run at a never-mark
         # command inside it. Emitting unmarked keeps the content correct and
         # only loses the highlight; wrapping it corrupts the document.
+        #
+        # Recorded, not silent: an unmarked addition is invisible in diff.pdf and
+        # a file left with no markup at all is skipped by the faithfulness check,
+        # so it would drop out of both the diff and the verification unnoticed.
+        GUARDED.append(core[:60])
         return s if macro == "DIFadd" else lead + trail
     if re.search(r"(?<!\\)%", core):
         # Defensive: some other path handed us a comment. Put the closing brace
@@ -491,6 +501,12 @@ def main():
         tot_d += nd
         tot_r += nrep
     print(f"  {'TOTAL':48s} +{tot_a:<4d} -{tot_d}   singleton repairs: {tot_r}")
+    if GUARDED:
+        print(f"  WARN {len(GUARDED)} run(s) left UNMARKED: they straddle a brace boundary, so")
+        print(f"       the change is real but is not highlighted in diff.pdf. Shorten or")
+        print(f"       simplify the surrounding command if the highlight matters:")
+        for g in GUARDED:
+            print(f"         {g!r}")
     for rel in added:
         print(f"  NOTE {rel}: new file - every line marked as added")
     for rel, nlines, still_input in removed:
