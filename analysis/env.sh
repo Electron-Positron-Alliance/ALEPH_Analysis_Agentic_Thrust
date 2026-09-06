@@ -49,11 +49,16 @@ if [ ! -d "$HERE/.venv" ]; then
   uv venv "$HERE/.venv" --python "$_RPY_MINOR" || return 1
   uv pip install --python "$HERE/.venv/bin/python" -q numpy matplotlib pandas h5py || return 1
 fi
-source "$HERE/.venv/bin/activate"
+# Two ROOT binaries must be callable, neither of which is a pip package:
+#   root-config  analysis/DataProcessing/Makefile builds Analyze.exe with
+#                `root-config --cflags/--libs`
+#   hadd         runAnalyze.py:233 merges per-division output when --ndivs > 1
+# APPENDED, not prepended, and set before the venv is activated: $ROOTSYS is a
+# whole conda env, and putting it first shadows the venv's python, after which
+# `import ROOT` fails.
+export PATH="$PATH:$ROOTSYS/bin"
 
-# root-config must be callable: analysis/DataProcessing/Makefile uses
-# `root-config --cflags/--libs` to build Analyze.exe.
-export PATH="$ROOTSYS/bin:$PATH"
+source "$HERE/.venv/bin/activate"
 
 # PyROOT lives in the ROOT install, not the venv.
 _SITE="$ROOTSYS/lib/python$_RPY_MINOR/site-packages"
@@ -64,7 +69,12 @@ export ROOTSYS
 export ROOUNFOLD_LIB="${ROOUNFOLD_LIB:-$HOME/code/RooUnfold/build/libRooUnfold.dylib}"
 
 echo "    ROOT      $_RV  (python $_RPY)  $ROOTSYS"
-echo "    python    $(python --version 2>&1 | awk '{print $2}')  (uv venv)"
+_PY="$(command -v python)"
+case "$_PY" in
+  "$HERE/.venv/"*) _PYTAG="uv venv" ;;
+  *)               _PYTAG="!! NOT the uv venv: $_PY" ;;
+esac
+echo "    python    $(python --version 2>&1 | awk '{print $2}')  ($_PYTAG)"
 python -c "import ROOT" 2>/dev/null && echo "    PyROOT    importable" \
   || echo "    !! PyROOT NOT importable" >&2
 if [ -f "$ROOUNFOLD_LIB" ]; then echo "    RooUnfold $ROOUNFOLD_LIB"
