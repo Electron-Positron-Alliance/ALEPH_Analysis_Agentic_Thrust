@@ -3,6 +3,11 @@
 Here are some comments about the text itself:
 - You should write ALEPH archived data on all histograms
 - page 1 precision QCD is not where theoretical uncertainties become limiting.
+  - **OPEN, substantive.** Needs a considered reply, not a reword. Note the paragraph also now
+    contains an internal tension introduced when we adopted Referee 2's wording for the preceding
+    sentence: it states the goal is to hold theoretical uncertainties at the level of the
+    experimental ones, two sentences before asserting they become limiting. Sentences 1 and 3 of
+    Sec. 1 should be rewritten together as one claim when answering this.
 - page 2 how the physicists brainstormed the AI Agent ? In English ?
 - page 5 lines 13-14 Section 1 was before, not in the remainder of the document
   - **Response.** Removed the Sec. 1 entry; the list now starts at Sec. 3. Sec. 1 is introduced separately, earlier in Sec. 2.

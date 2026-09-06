@@ -7,10 +7,15 @@ Dear Authors, Thanks for this very interesting work.
 Abstract
 - "entirely" seems in contrast with "under expert physicist direction"
 - "spectrum" > "thrust spectrum"
+  - **Response.** Changed.
 
 Sec 1
 - "ensure robust control " is not  very clear, can you elaborate that ?
   Or maybe state something simpler like  "keep the impact of theoretical systematic uncertainties at the level of the experimental uncertainties" ?
+  - **Response.** Adopted your phrasing. The sentence now reads "in order to keep the impact of
+    theoretical systematic uncertainties at the level of the experimental uncertainties, so that
+    potential new-physics anomalies can be interpreted reliably", which also drops the
+    overclaiming "ensure".
 
 Lessons from AI–Physicist Collaboration
 - I find the statements in these two paragraphs a bit vague, and maybe repetitive.
