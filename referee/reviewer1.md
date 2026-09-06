@@ -22,4 +22,11 @@ Here are some comments about the text itself:
 - page 23 first paragraph, I do not understand the text.
 - page 25 last paragraph I do not understand how ISR is treated and if corrections are applied or not, please rewrite in a less obscure way.
 - page 39-40 Table 9, 10 there are considerable differences between the ALEPH original uncertainties and your number, in some cases there are even new rows at the start of the table, can you comment in the paper ?
+  - **Response, part 1 (the rows).** The leading $[0.55,0.56)$ row was empty in all three tables --
+    every column was a dash -- and is removed; the captions now state the range as
+    $0.56 \le T < 1.0$. Four further low-thrust rows remain and carry very large uncertainties
+    (500.9%, 97.2%, 82.7%, 75.3%). Those are real values, and suppressing them would narrow the
+    reported range, so we have left that as an explicit decision rather than a formatting change.
+  - **Response, part 2 (why they differ).** Outstanding. This needs a paragraph in Sec. 9.1, not a
+    table edit, and it interacts with Referee 2's question on the same figure. Tracked separately.
 - page 45 Section 11 and following pages do not seem for publication, in any case they are far below publication quality
