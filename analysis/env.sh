@@ -51,6 +51,10 @@ if [ ! -d "$HERE/.venv" ]; then
 fi
 source "$HERE/.venv/bin/activate"
 
+# root-config must be callable: analysis/DataProcessing/Makefile uses
+# `root-config --cflags/--libs` to build Analyze.exe.
+export PATH="$ROOTSYS/bin:$PATH"
+
 # PyROOT lives in the ROOT install, not the venv.
 _SITE="$ROOTSYS/lib/python$_RPY_MINOR/site-packages"
 export PYTHONPATH="${_SITE}:${_RLIB}${PYTHONPATH:+:$PYTHONPATH}"
