@@ -47,6 +47,9 @@ Sec 4
 Sec 5
 - "corresponds to an integrated luminosity of"
   Add information on the size of the simulated sample
+  - **Response.** Both are already given: the integrated luminosity in Sec. 5, and the per-sample
+    event counts in Table 1. While checking this we found Sec. 5 quoted the MC total as if it were
+    the selected count; corrected to 752k, matching Table 1.
 - Clarify if the contributions from background sources (as tau pair productions) have been considered.
 - Specify the lifetime definition for the "stable-hadron level" definition (lifetime > ? )
   - **Response.** Sec. 5 now states the criterion in the prose, proper decay length $c\tau > 10$~mm, where the particle-level definition is introduced. It was previously given only as a row in Table 5.
@@ -128,6 +131,10 @@ Sec 8.
 
 Sec 9.1
 - "largest discrepancy at the endpoint"  reported to be 1.30+-0.27, but on the plot appear to be at a lower value.
+  - **TO CHECK before submission.** You are right, and the text is what is wrong. The run summary
+    that generated the figure gives 1.088 +- 0.229 for that bin; 1.30 +- 0.27 traces to an internal
+    note that misquotes it. The three chi2/ndf values in the same caption disagree with the same
+    source in the same way. Being corrected in a dedicated PR.
 - Fig 19. How is it that the ALEPH measurements seem to have larger uncertainties over most of the bins ?  Can you comment on that ?
 - Table 9 : Are the ALEPH uncertainties the same as plotted in Fig 19 ?
   Just looking at the endpoint bin the table quotes 15% but the plot seems to show 20-25%

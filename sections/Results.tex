@@ -33,11 +33,22 @@ prior IBU spectra from the archived-data analysis program. Sub-unity $\chi^2/\ma
 values reflect the conservative uncertainty model and positive off-diagonal correlations,
 not overestimation. Differences are localized to the endpoint region.
 
+% TO CHECK before submission: four numbers in this figure block disagree with the run
+% summary that generated the figure, Studies/PreliminaryResult/2026-02-17_thrust_iter5/
+% summary/of_ibu_comparison_metrics.json (its own output_pdf field is this figure):
+%   chi2/ndf  OmniFold  0.663 here vs 1.4305 in source
+%             prior IBU 0.421 here vs 1.2164 in source
+%             ALEPH2004 0.361 here vs 0.2904 in source
+%   endpoint ratio 1.30 +- 0.27 here vs 1.088 +- 0.229 in source
+% The paper values trace to Plans/2026-02-19_thrust_difference_checks.md, which cites
+% that JSON and misquotes it. Two source chi2/ndf exceed unity, which falsifies the
+% "Sub-unity chi2/ndf" sentence below. Referee 2 raised the endpoint ratio directly.
+% Being handled in a dedicated PR; not resolved here. Mirrored in referee/reviewer2.md.
 The total correlation matrix for the combined result is shown in
 Fig.~\ref{fig:final_total_correlation_matrix_sys}. The off-diagonal structure is
 non-trivial: strong positive correlations appear in the high-thrust region where the
 theory and hadronic-correction components dominate and their shifts are coherent across
-bins. The maximum off-diagonal correlation is $|\rho_{ij}|=0.889$, confirming that the
+bins. The maximum off-diagonal correlation is $|\rho_{ij}|=0.887$, confirming that the
 full covariance matrix --- rather than diagonal uncertainties alone --- must be used in
 any downstream fit or comparison.
 
@@ -47,7 +58,7 @@ any downstream fit or comparison.
 \caption{Total bin-to-bin correlation matrix for the final result, combining
 statistical, unfolding-iteration, experimental, theory, hadronic-correction, and
 ISR-correction components using the \texttt{template\_correlated} covariance model.
-The maximum off-diagonal correlation is $|\rho_{ij}|=0.889$.}
+The maximum off-diagonal correlation is $|\rho_{ij}|=0.887$.}
 \label{fig:final_total_correlation_matrix_sys}
 \end{figure}
 
