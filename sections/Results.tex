@@ -10,26 +10,20 @@ reconstructed and generated thrust bins.
 
 \subsection{Final unfolded thrust distribution}
 
-% NEEDS DATA MACHINE before submission: four numbers in the figure group and text that
-% follow disagree with the run that generated the figure,
+% NEEDS DATA MACHINE before submission: the endpoint ratio in the first paragraph after
+% this figure, 1.30 +- 0.27, disagrees with the run that generated the figure,
 % Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/of_ibu_comparison_metrics.json
-% (its output_pdf field is this figure):
-%   chi2/ndf in the caption below  OmniFold  0.663 here vs 1.4305 in run
-%                                  prior IBU 0.421 here vs 1.2164 in run
-%                                  ALEPH2004 0.361 here vs 0.2904 in run
-%   endpoint ratio, first paragraph after this figure: 1.30 +- 0.27 here
-%                                                     vs 1.088 +- 0.229 in run
-% The chi2 convention was checked: build_prelim_uncertainty_summary.py uses
-% sigma2 = yerr1^2 + yerr2^2, diagonal only, ndf = valid bins -- exactly what the caption
-% claims. So the run values are computed as described and these are not from that code.
-% They trace to Plans/2026-02-19_thrust_difference_checks.md, which cites that JSON and
-% misquotes it.
+% (its output_pdf field is this figure), which gives 1.088 +- 0.229.
+% The three chi2/ndf values that were also wrong here are no longer quoted -- removed from
+% the caption, with a note there on how to restore them from the run.
+% The endpoint value traces to Plans/2026-02-19_thrust_difference_checks.md, which cites
+% that JSON as its source and misquotes it.
 % The endpoint bin is a three-way conflict: Table 9 has ours 1.01 / ALEPH 1.31 -> 1.297,
 % matching the text, while the run binning.csv bin 50 has ours 1.2057 -> 1.087, matching
 % the JSON. Tables and figure are therefore different vintages.
-% Knock-on: the "Sub-unity chi2/ndf" sentence, second paragraph after this figure, is false
-% against the run output, where two of three exceed unity, inverting it into tension with
-% the prior results.
+% The "Sub-unity chi2/ndf" sentence that sat in the second paragraph is also gone: it was
+% false against the run output, where two of three exceed unity, and it depended on the
+% removed numbers.
 % NOT corrected in text on purpose -- that would leave Table 9 contradicting it. Needs one
 % run regenerating tables, figure and metrics together. Mirrored in referee/reviewer2.md.
 % Does NOT apply to the max off-diagonal correlation 0.887 further down: that one is
@@ -40,7 +34,14 @@ reconstructed and generated thrust bins.
 \includegraphics[width=0.48\textwidth]{figures/final_result_uncertainty_breakdown.pdf}%
 \hfill%
 \includegraphics[width=0.48\textwidth]{figures/final_result_of_ibu_comparison.pdf}
-\caption{Left: final unfolded thrust distribution with total uncertainty band compared to the published ALEPH 2004 result. The ratio panel shows bin-by-bin agreement across the full measurement range, with the gray band representing the total uncertainty envelope. Right: comparison with OmniFold and prior IBU spectra; the ratio panel shows each method relative to the current unfolded nominal. Compatibility metrics are $\chi^2/\mathrm{ndf}=0.663$ (OmniFold), $0.421$ (prior IBU), and $0.361$ (ALEPH 2004), evaluated over 42 bins using the diagonal of the total covariance.}
+\caption{Left: final unfolded thrust distribution with total uncertainty band compared to the published ALEPH 2004 result. The ratio panel shows bin-by-bin agreement across the full measurement range, with the gray band representing the total uncertainty envelope. Right: comparison with OmniFold and prior IBU spectra; the ratio panel shows each method relative to the current unfolded nominal.}
+% chi2/ndf against OmniFold, prior IBU and ALEPH 2004 was quoted here and removed: the
+% values did not match the run that generated the figure and raw numbers in captions have
+% to be re-fixed on every re-run. To restore it, take chi2_metrics/*/chi2_per_ndf from the
+% run summary of_ibu_comparison_metrics.json rather than from any note or prose, and state
+% the convention -- the code uses sigma2 = yerr1^2 + yerr2^2, diagonal only, ndf = bins
+% with non-zero sigma2. Prefer putting it in the body text over the caption.
+
 \label{fig:final_thrust_result}
 \end{figure}
 
@@ -54,9 +55,8 @@ uncertainties there. Normalization convention differences between the current an
 and the 2004 ALEPH publication also contribute at the endpoint.
 
 Figure~\ref{fig:final_thrust_result} (right) shows direct comparison with OmniFold and
-prior IBU spectra from the archived-data analysis program. Sub-unity $\chi^2/\mathrm{ndf}$
-values reflect the conservative uncertainty model and positive off-diagonal correlations,
-not overestimation. Differences are localized to the endpoint region.
+prior IBU spectra from the archived-data analysis program. Differences are localized to the
+endpoint region.
 
 The total correlation matrix for the combined result is shown in
 Fig.~\ref{fig:final_total_correlation_matrix_sys}. The off-diagonal structure is
@@ -71,8 +71,7 @@ any downstream fit or comparison.
 \includegraphics[width=\textwidth]{figures/matrix_total_correlation_final.pdf}
 \caption{Total bin-to-bin correlation matrix for the final result, combining
 statistical, unfolding-iteration, experimental, theory, hadronic-correction, and
-ISR-correction components using the \texttt{template\_correlated} covariance model.
-The maximum off-diagonal correlation is $|\rho_{ij}|=0.887$.}
+ISR-correction components using the \texttt{template\_correlated} covariance model.}
 \label{fig:final_total_correlation_matrix_sys}
 \end{figure}
 
