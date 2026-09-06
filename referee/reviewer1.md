@@ -7,7 +7,7 @@ Here are some comments about the text itself:
 - page 5 lines 13-14 Section 1 was before, not in the remainder of the document
 - page 5 start of Section 3 “This internal note” if you wish to publish it is a paper (this error is recurring)
   - **Response.** Fixed. Sixteen occurrences of "this note", "this internal note" and
-    "the note" are reworded to "this paper", "this work" or "this analysis", across the
+    "the note" are reworded uniformly to "this work", across the
     Introduction, Sec. 3, Sec. 5, Sec. 7, Sec. 8, Sec. 11, Appendix B and the workflow
     figure caption. Three self-references remain: one in Sec. 11 ("Because this document
     is an internal note rather than a final publication...") and two in Appendix C. All
