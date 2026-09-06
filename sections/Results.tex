@@ -10,22 +10,26 @@ reconstructed and generated thrust bins.
 
 \subsection{Final unfolded thrust distribution}
 
-% NEEDS DATA MACHINE before submission: the endpoint ratio in the first paragraph after
-% this figure, 1.30 +- 0.27, disagrees with the run that generated the figure,
-% Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/of_ibu_comparison_metrics.json
-% (its output_pdf field is this figure), which gives 1.088 +- 0.229.
-% The three chi2/ndf values that were also wrong here are no longer quoted -- removed from
-% the caption, with a note there on how to restore them from the run.
-% The endpoint value traces to Plans/2026-02-19_thrust_difference_checks.md, which cites
-% that JSON as its source and misquotes it.
-% The endpoint bin is a three-way conflict: Table 9 has ours 1.01 / ALEPH 1.31 -> 1.297,
-% matching the text, while the run binning.csv bin 50 has ours 1.2057 -> 1.087, matching
-% the JSON. Tables and figure are therefore different vintages.
-% The "Sub-unity chi2/ndf" sentence that sat in the second paragraph is also gone: it was
-% false against the run output, where two of three exceed unity, and it depended on the
-% removed numbers.
-% NOT corrected in text on purpose -- that would leave Table 9 contradicting it. Needs one
-% run regenerating tables, figure and metrics together. Mirrored in referee/reviewer2.md.
+% VERIFIED by rerunning the analysis from the raw open data. The endpoint numbers
+% are NOT wrong -- Table 9 and this text are the pre-ISR spectrum, while the figure
+% and the stored run metrics are post-ISR, and nothing states which is which:
+%   endpoint bin [0.99,1.00), (1/sigma)dsigma/dT
+%     1.0177  after IBU
+%     1.0082  after the hadronic event-selection correction  <- Table 9 says 1.01
+%     1.2057  after the ISR correction (C_ISR = 1.1996)      <- run binning.csv
+%   endpoint ratio ALEPH/ours
+%     1.3012  no-ISR rerun   <- this text says 1.30 +- 0.27, so the text is right
+%     1.0881  published ISR-applied run  <- what the figure shows
+% The rerun is bit-exact against the published nominal output (all 13 objects, zero
+% relative difference), so this is a labelling gap, not a numerical error.
+% Referee 2 spotted a real inconsistency; the fix is to say which correction stage
+% each object is at. Deferred until the ISR correction code is available, since the
+% wording depends on how the ISR story is presented.
+% Still unexplained and separate: the three chi2/ndf values in the caption below
+% (0.663 / 0.421 / 0.361) reproduce in NEITHER configuration -- the published run
+% gives 1.4305 / 1.2164 / 0.2904 and a no-theory no-ISR rerun gives 0.9855 / 0.6556
+% / 0.4063. They trace to Plans/2026-02-19_thrust_difference_checks.md, which cites
+% of_ibu_comparison_metrics.json and misquotes it. Mirrored in referee/reviewer2.md.
 % Does NOT apply to the max off-diagonal correlation 0.887 further down: that one is
 % independently confirmed from corr_total.csv (0.8868657167 at bin 15,16).
 

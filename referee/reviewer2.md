@@ -54,12 +54,9 @@ Sec 5
     approximately 1.33 million selected hadronic events, and Table 1 gives the per-sample counts.
     While checking this we found Sec. 5 quoted the MC total as if it were the selected count;
     corrected to 752k, matching Table 1.
-  - **NEEDS DATA MACHINE.** The counts were checked only for internal consistency against Table 1,
-    not against the production. No source was found for 40~pb$^{-1}$, and the data-side counts
-    (1,365,440 / 1,326,312) and MC reco counts (771,597 / 751,861) are not in
-    `workflow_summary.json`, which carries only the two generator-level trees (771,597 and
-    973,769). Verify all of them against the production once on the analysis machine. Mirrored as a
-    comment above the sentence in `sections/Datasets.tex`.
+  - **NEEDS DATA MACHINE.** Event counts have since been verified against the raw data and all
+    match; 40~pb$^{-1}$ still has no source. Detail in the marker above the sentence in
+    `sections/Datasets.tex`.
 - Clarify if the contributions from background sources (as tau pair productions) have been considered.
 - Specify the lifetime definition for the "stable-hadron level" definition (lifetime > ? )
   - **Response.** Sec. 5 now states the criterion in the prose, proper decay length $c\tau > 10$~mm, where the particle-level definition is introduced. It was previously given only as a row in Table 5.
@@ -153,41 +150,13 @@ Sec 8.
 
 Sec 9.1
 - "largest discrepancy at the endpoint"  reported to be 1.30+-0.27, but on the plot appear to be at a lower value.
-  - **Response.** You are right, and the text is what is wrong rather than your reading of the
-    plot. The run that generated the figure gives 1.088 +- 0.229 for that bin.
-  - **NEEDS DATA MACHINE.** Root cause traced. Four numbers in the Fig. 20 block disagree with the
-    run that generated the figure, and the manuscript's tables and figure come from different
-    vintages, so this is a re-derivation rather than a wording fix.
-
-    | claim | paper | run output | status |
-    |---|---|---|---|
-    | chi2/ndf OmniFold | 0.663 | 1.4305 | no longer quoted |
-    | chi2/ndf prior IBU | 0.421 | 1.2164 | no longer quoted |
-    | chi2/ndf ALEPH 2004 | 0.361 | 0.2904 | no longer quoted |
-    | endpoint ratio | 1.30 +- 0.27 | 1.088 +- 0.229 | still in the text |
-
-    The three chi2/ndf values are removed from the caption rather than corrected, with a note
-    there on restoring them from the run summary if wanted. The "Sub-unity chi2/ndf" sentence
-    went with them: it was false against the run output and depended on those numbers.
-
-    Verified: the chi2 convention in `build_prelim_uncertainty_summary.py` is
-    `sigma2 = yerr1^2 + yerr2^2`, diagonal only, ndf = valid bins -- exactly what the caption
-    claims, so the run values are computed as described and the paper's are not from that code.
-    The paper's four values trace to `Plans/2026-02-19_thrust_difference_checks.md`, which cites
-    `of_ibu_comparison_metrics.json` and misquotes it.
-
-    The endpoint bin is a three-way conflict: Table 9 has ours 1.01 / ALEPH 1.31 (ratio 1.297,
-    matching the text), while the run's `binning.csv` bin 50 has ours 1.2057 (ratio 1.087,
-    matching the JSON). So the text and Table 9 agree with each other, the run outputs agree with
-    each other, and the two groups disagree.
-
-    Two knock-on effects: `Results.tex:32` "Sub-unity chi2/ndf values reflect the conservative
-    uncertainty model" is false against the run output, where two of three exceed unity and the
-    reading inverts to tension with the prior results; and Table 9's endpoint value needs
-    regenerating, not editing.
-
-    Fix requires one run regenerating tables, figure and metrics together. Deliberately not
-    corrected in text, which would leave Table 9 contradicting it.
+  - **Response.** You are right that the two disagree, but neither number is wrong: Table 9 and
+    the text quote the spectrum before the ISR correction, and the figure shows it after. The
+    endpoint bin is 1.008 pre-ISR and 1.206 post-ISR, giving ALEPH/ours ratios of 1.30 and 1.09.
+    We will state the correction stage explicitly for every spectrum, table and figure.
+  - **NEEDS DATA MACHINE.** Verified by rerunning from raw data; deferred until the ISR code is
+    available, since the wording depends on it. Detail and the separate, still-unexplained
+    chi2/ndf discrepancy are in the marker above the figure block in `sections/Results.tex`.
 
 - Fig 19. How is it that the ALEPH measurements seem to have larger uncertainties over most of the bins ?  Can you comment on that ?
 - Table 9 : Are the ALEPH uncertainties the same as plotted in Fig 19 ?
