@@ -112,9 +112,10 @@ Sec 7
 
 Sec 7.3
 - Would be good to add some references for the unfolding procedure
-  - **Response.** Sec. 7.3 previously contained no citations. It now cites D'Agostini for the
-    iterative Bayesian method and Adye for RooUnfold. OmniFold is also cited at first use in
-    Sec. 3.3 and at the comparisons in Sec. 9.1 and App. B.
+  - **Response.** Sec. 7.3 previously contained no citations. The iteration formula now cites
+    D'Agostini's original method paper together with the later note on improvements, and
+    RooUnfold cites Adye. OmniFold is cited at first use in Sec. 3.3 and at the comparisons in
+    Sec. 9.1 and App. B.
 - Can you quantify better how small is the iteration-to-iteration change ?
 - Can you quantify how much is the migration driven separately by the charged particle momentum resolution, and by the soft particles acceptance ?
   I would guess the latter is dominant.
