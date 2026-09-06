@@ -20,6 +20,24 @@ grepping for those literal filenames finds nothing.
 Appendix A of the paper lists only the four stage-3 scripts. That reproduces the
 final spectrum but none of the other 74 figures.
 
+### Why each file is here
+
+Every file is either an entry point that produces something the paper uses, or is
+imported by one. Two are kept prospectively rather than for the current paper:
+
+- `Studies/.../thrust_resolution_1d.py` produces `thrust_resolution_1d.pdf`, which
+  is **not** shipped -- the paper's Fig. 11 includes `thrust_resolution_2d.pdf`
+  under the label `fig:thrust_resolution_1d`. Referee 2 asks about the resolution
+  distribution peaking above zero, which is the 1D projection, so this is the
+  producer for the figure that comment needs.
+- `Studies/.../refolding_pull_panel.py` produces the refolded-vs-data pull panel.
+  Appendix A cites refolding diagnostics for the `N_iter=5` choice but ships no
+  such figure.
+
+`DataProcessing/plotting/styles/` is imported as a package
+(`from styles.canvas_utils import draw_histogram_canvas` in `plot.py`), so both
+files in it are required.
+
 ## Inputs
 
 Verify all of them with `python verify_inputs.py`.

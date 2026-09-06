@@ -2,8 +2,8 @@
 """Check that every input the paper's result depends on is present and has the
 entry counts the manuscript claims.
 
-    source reproduction/env.sh
-    python reproduction/verify_inputs.py
+    source analysis/env.sh
+    python analysis/verify_inputs.py
 
 Exits non-zero if anything is missing or a count disagrees with Table 1.
 """

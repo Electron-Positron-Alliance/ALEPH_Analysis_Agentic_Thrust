@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Set up the reproduction environment. Source, do not execute:
+# Set up the analysis environment. Source, do not execute:
 #
-#   source reproduction/env.sh
-#   python reproduction/verify_inputs.py
+#   source analysis/env.sh
+#   python analysis/verify_inputs.py
 #
 # Python and all pip dependencies are uv-managed. ROOT itself is not a pip
 # package -- it comes from an existing ROOT install, and this script wires its
@@ -41,7 +41,7 @@ _RLIB="$("$ROOTSYS/bin/root-config" --libdir)"
 
 if [ -n "${BASH_SOURCE:-}" ]; then _SRC="${BASH_SOURCE[0]}"
 elif [ -n "${ZSH_VERSION:-}" ]; then _SRC="${(%):-%x}"
-else _SRC="$PWD/reproduction/env.sh"; fi
+else _SRC="$PWD/analysis/env.sh"; fi
 HERE="$(cd "$(dirname "$_SRC")" && pwd)"
 
 if [ ! -d "$HERE/.venv" ]; then

@@ -96,5 +96,5 @@ TObject.C
 # Local PDF builds from tools/make_pdfs.sh
 /build/
 
-# uv environment for reproduction/
-reproduction/.venv/
+# uv environment for analysis/
+analysis/.venv/
