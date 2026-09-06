@@ -147,12 +147,16 @@ Sec 9.1
     run that generated the figure, and the manuscript's tables and figure come from different
     vintages, so this is a re-derivation rather than a wording fix.
 
-    | claim | paper | run output |
-    |---|---|---|
-    | chi2/ndf OmniFold | 0.663 | 1.4305 |
-    | chi2/ndf prior IBU | 0.421 | 1.2164 |
-    | chi2/ndf ALEPH 2004 | 0.361 | 0.2904 |
-    | endpoint ratio | 1.30 +- 0.27 | 1.088 +- 0.229 |
+    | claim | paper | run output | status |
+    |---|---|---|---|
+    | chi2/ndf OmniFold | 0.663 | 1.4305 | no longer quoted |
+    | chi2/ndf prior IBU | 0.421 | 1.2164 | no longer quoted |
+    | chi2/ndf ALEPH 2004 | 0.361 | 0.2904 | no longer quoted |
+    | endpoint ratio | 1.30 +- 0.27 | 1.088 +- 0.229 | still in the text |
+
+    The three chi2/ndf values are removed from the caption rather than corrected, with a note
+    there on restoring them from the run summary if wanted. The "Sub-unity chi2/ndf" sentence
+    went with them: it was false against the run output and depended on those numbers.
 
     Verified: the chi2 convention in `build_prelim_uncertainty_summary.py` is
     `sigma2 = yerr1^2 + yerr2^2`, diagonal only, ndf = valid bins -- exactly what the caption
