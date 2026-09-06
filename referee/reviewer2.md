@@ -141,41 +141,22 @@ Sec 8.
 
 Sec 9.1
 - "largest discrepancy at the endpoint"  reported to be 1.30+-0.27, but on the plot appear to be at a lower value.
-  - **Response.** You are right, and the text is what is wrong rather than your reading of the
-    plot. The run that generated the figure gives 1.088 +- 0.229 for that bin.
-  - **NEEDS DATA MACHINE.** Root cause traced. Four numbers in the Fig. 20 block disagree with the
-    run that generated the figure, and the manuscript's tables and figure come from different
-    vintages, so this is a re-derivation rather than a wording fix.
-
-    | claim | paper | run output | status |
-    |---|---|---|---|
-    | chi2/ndf OmniFold | 0.663 | 1.4305 | no longer quoted |
-    | chi2/ndf prior IBU | 0.421 | 1.2164 | no longer quoted |
-    | chi2/ndf ALEPH 2004 | 0.361 | 0.2904 | no longer quoted |
-    | endpoint ratio | 1.30 +- 0.27 | 1.088 +- 0.229 | still in the text |
-
-    The three chi2/ndf values are removed from the caption rather than corrected, with a note
-    there on restoring them from the run summary if wanted. The "Sub-unity chi2/ndf" sentence
-    went with them: it was false against the run output and depended on those numbers.
-
-    Verified: the chi2 convention in `build_prelim_uncertainty_summary.py` is
-    `sigma2 = yerr1^2 + yerr2^2`, diagonal only, ndf = valid bins -- exactly what the caption
-    claims, so the run values are computed as described and the paper's are not from that code.
-    The paper's four values trace to `Plans/2026-02-19_thrust_difference_checks.md`, which cites
+  - **Response.** You identified a real inconsistency, and thank you -- but the cause is not
+    the number. Table 9 and the text quote the spectrum *before* the ISR correction, while the
+    figure shows it *after*, and the paper never says which is which. Reproducing the analysis
+    from the raw data gives, for the endpoint bin: 1.008 after the hadronic event-selection
+    correction, which is Table 9's 1.01, and 1.206 once the ISR correction is applied. The
+    corresponding ALEPH/ours ratios are 1.30 and 1.09. We will state the correction stage
+    explicitly for every spectrum, table and figure so the two cannot be confused.
+  - **NEEDS DATA MACHINE.** Verified rather than guessed: the rerun is bit-exact against the
+    published nominal output (all 13 objects, zero relative difference), and C_ISR = 1.1996 at
+    the endpoint reproduces 1.2057 to four decimals. Deferred only because the wording depends
+    on how the ISR correction is presented, and the ISR code is not yet available. Separately
+    unexplained: the three chi2/ndf values in the same caption (0.663 / 0.421 / 0.361) reproduce
+    in neither configuration -- the published run gives 1.4305 / 1.2164 / 0.2904 and a
+    no-theory no-ISR rerun gives 0.9855 / 0.6556 / 0.4063. They trace to
+    `Plans/2026-02-19_thrust_difference_checks.md`, which cites
     `of_ibu_comparison_metrics.json` and misquotes it.
-
-    The endpoint bin is a three-way conflict: Table 9 has ours 1.01 / ALEPH 1.31 (ratio 1.297,
-    matching the text), while the run's `binning.csv` bin 50 has ours 1.2057 (ratio 1.087,
-    matching the JSON). So the text and Table 9 agree with each other, the run outputs agree with
-    each other, and the two groups disagree.
-
-    Two knock-on effects: `Results.tex:32` "Sub-unity chi2/ndf values reflect the conservative
-    uncertainty model" is false against the run output, where two of three exceed unity and the
-    reading inverts to tension with the prior results; and Table 9's endpoint value needs
-    regenerating, not editing.
-
-    Fix requires one run regenerating tables, figure and metrics together. Deliberately not
-    corrected in text, which would leave Table 9 contradicting it.
 
 - Fig 19. How is it that the ALEPH measurements seem to have larger uncertainties over most of the bins ?  Can you comment on that ?
 - Table 9 : Are the ALEPH uncertainties the same as plotted in Fig 19 ?
