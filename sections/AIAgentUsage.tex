@@ -26,7 +26,7 @@ checks, and documentation rigor. In practical terms, the agent is used to:
 \end{itemize}
 
 This model is intentionally conservative: the agent is treated as an
-accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker at this stage. The interaction is analogous to advising a graduate student, where the physicist supplies expert judgment and direction while the student (agent) carries out the technical execution.
+accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker at this stage.
 
 \subsection{Inputs and context supplied to agents}
 \label{sec:agent_inputs}
@@ -60,7 +60,8 @@ Distributions of $\cos\theta_{\mathrm{thrust}}$ and $\varphi$ were inspected for
 
 \textit{Unfolding.}
 Refolded spectra were required to reproduce the detector-level data within statistical precision.
-An iteration scan confirmed that $\chi^{2}/\mathrm{ndf}$ is stable across iterations~4--6.
+An iteration scan confirmed that the refolded-to-measured $\chi^{2}/\mathrm{ndf}$ is stable
+across the regularization variation passes at $N_{\mathrm{iter}}=4$, $5$ and $6$.
 Independent cross-checks with OmniFold~\cite{Andreassen:2019cjw} and a prior-sensitivity IBU variant were reviewed to ensure the baseline result is not an artifact of the nominal method.
 
 \textit{Systematic uncertainties.}

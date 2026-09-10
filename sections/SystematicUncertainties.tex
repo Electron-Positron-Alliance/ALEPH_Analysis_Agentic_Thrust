@@ -32,7 +32,10 @@ $\Delta_{\mathrm{iter}}(j)=\max(|\delta_{\mathrm{iter4}}(j)|,|\delta_{\mathrm{it
 is sub-percent in the bulk of the spectrum, confirming that the nominal
 $N_{\mathrm{iter}}=5$ sits on a stable plateau and that regularization is not a
 limiting source of uncertainty. Figure~\ref{fig:unc_comp_stat_iter} shows the
-signed per-bin shifts for both components across the measurement range.
+signed per-bin shifts for both components across the measurement range. The
+iteration shifts change sign across the range because $N_{\mathrm{iter}}=4$ and $6$
+bracket the nominal, and the bin-to-bin alternation at low thrust reflects the
+anti-correlation that regularization induces between neighbouring bins.
 
 \begin{figure}[t!]
 \centering
@@ -194,8 +197,9 @@ The theory envelope is taken as the maximum absolute shift across the three gene
              |\delta_{\mathrm{sherpa}}(j)|\right).
 \end{equation}
 All three generators agree well with the nominal at high thrust ($T>0.95$)
-but diverge progressively at lower thrust where soft-gluon emission and
-hadronization effects are largest. The theory envelope is the dominant uncertainty
+but diverge progressively at lower thrust, where multi-jet configurations and hard,
+wide-angle gluon emission dominate and the parton-shower and matrix-element matching
+differ between generators. The theory envelope is the dominant uncertainty
 contribution across the central measurement range, as shown in
 Figure~\ref{fig:unc_comp_theory}.
 
