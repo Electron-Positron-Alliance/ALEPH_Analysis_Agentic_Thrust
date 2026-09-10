@@ -98,3 +98,6 @@ TObject.C
 
 # uv environment for analysis/
 analysis/.venv/
+
+# built on demand from analysis/DataProcessing/Makefile
+analysis/DataProcessing/Analyze.exe

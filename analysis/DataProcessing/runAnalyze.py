@@ -230,6 +230,9 @@ def run_tree_jobs(ops, file_config, sel_name, selection, tree_name):
     if ops.ndivs > 1:
         final_outfile = f"{base_outfile}_{sel_name}_{tree_name}.root"
         division_files = [f"{base_outfile}_{sel_name}_{tree_name}_{div}.root" for div in range(ops.ndivs)]
+        # hadd is a ROOT binary, not a Python dependency: env.sh puts
+        # $ROOTSYS/bin on PATH for it. Note the cleanup below deletes the
+        # division files, so a missing hadd loses them too.
         hadd_cmd = f"hadd -f {final_outfile} {' '.join(division_files)}"
         cleanup_cmd = f"rm -f {' '.join(division_files)}"
         print(f"  [{tree_name}] Merging files...")

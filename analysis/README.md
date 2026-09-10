@@ -20,6 +20,24 @@ grepping for those literal filenames finds nothing.
 Appendix A of the paper lists only the four stage-3 scripts. That reproduces the
 final spectrum but none of the other 74 figures.
 
+### Stage 1 needs two ROOT binaries, not just Python
+
+`runAnalyze.py` is a launcher. It shells out to:
+
+- **`./Analyze.exe`** — the analyzer, built from `Analyze.cxx` by the `Makefile`.
+  Run `make` in `DataProcessing/` first; the binary is gitignored, not tracked.
+- **`hadd`** — ROOT's merge tool, used at `runAnalyze.py:233` whenever
+  `--ndivs > 1` to combine the per-division outputs.
+
+Neither is on `PATH` by default, which is why `env.sh` exports `$ROOTSYS/bin`.
+
+**Do not combine `-n` with `--ndivs > 1`.** `Analyze.cxx:281-285` lets `-n`
+override the division range, so every division reads events `0..n` and the
+merged file contains the same events repeated once per division. Verified:
+`--ndivs 2 -n 20000` yields 40,000 entries, which is 20,000 events counted
+twice. Use `-n` only with the default `--ndivs 1`; for a partitioned run, drop
+`-n` and let each division take its own slice.
+
 ### Why each file is here
 
 Every file is either an entry point that produces something the paper uses, or is
