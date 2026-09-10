@@ -211,7 +211,10 @@ The event-level panels close the logic between object-level selections and the f
 entering event-shape reconstruction. $N_{\mathrm{trk}}$ and
 $N_{\mathrm{trk}}+N_{\mathrm{neu}}$ test whether multiplicity thresholds sculpt data and MC in a
 consistent way; this is critical because those same multiplicities enter hadronic-event
-preselection and determine which events contribute to response filling. $E_{\mathrm{Ch}}$ checks
+preselection and determine which events contribute to response filling. The $N_{\mathrm{trk}}$
+ratio alternates between adjacent bins because charge conservation makes the generated
+charged multiplicity even, a preference that track losses only partially wash out, so any
+data--simulation difference in that even--odd structure appears as a bin-to-bin oscillation. $E_{\mathrm{Ch}}$ checks
 charged-energy modeling near the hadronic-selection boundary at 15 GeV, and
 $\cos\theta_{\mathrm{Sph}}$ tests whether accepted event topology is similarly contained in
 detector acceptance for data and MC.

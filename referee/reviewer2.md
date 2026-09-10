@@ -131,6 +131,9 @@ Sec 6.4
 - Fig 9 : It seems surprising that there seems to be almost no difference in the Gen and GenBefore predictions  except for the theta distribution.
   The GenBefore distributions should have larger particle multiplicities and total energy.
 - What is also strange is the up-down oscillating pattern in the MC/Data for the (upper-left) Ntrk plot : how is that happening ?
+  - **Response.** Charge conservation makes the generated charged multiplicity even, and track
+    losses only partially wash that out, so any data--simulation difference in the even--odd
+    structure shows up as a bin-to-bin oscillation in the ratio. Now stated in Sec. 6.
 - define "IBU" on page 20
   - **Response.** IBU is already defined, at first use in Sec. 2: "Iterative Bayesian Unfolding (IBU) implemented in RooUnfold". No change made.
 
