@@ -130,7 +130,17 @@ Sec 6.3
 Sec 6.4
 - Fig 9 : It seems surprising that there seems to be almost no difference in the Gen and GenBefore predictions  except for the theta distribution.
   The GenBefore distributions should have larger particle multiplicities and total energy.
+  - **Response.** "Before" refers to the detector-level event selection, not to particle-level cuts;
+    neither tree applies object-level cuts at generator level. In the archived ntuples \texttt{tgen}
+    is an exact subset of \texttt{tgenBefore}, and the missing events are removed by polar-angle
+    acceptance, with only weak dependence on multiplicity, so only
+    $\cos\theta_{\mathrm{Sph}}$ separates the two.
+    Stated in Sec. 6.4.
 - What is also strange is the up-down oscillating pattern in the MC/Data for the (upper-left) Ntrk plot : how is that happening ?
+  - **Response.** The modulation is in the generator-level curves, not in data or MC reco: counted
+    charged multiplicity has the same parity as the summed charge of the counted particles, which
+    vanishes for most events. Track inefficiency randomizes that parity at detector level. Noted in
+    Sec. 6.4.
 - define "IBU" on page 20
   - **Response.** IBU is already defined, at first use in Sec. 2: "Iterative Bayesian Unfolding (IBU) implemented in RooUnfold". No change made.
 

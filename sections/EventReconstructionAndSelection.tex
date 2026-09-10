@@ -216,6 +216,19 @@ charged-energy modeling near the hadronic-selection boundary at 15 GeV, and
 $\cos\theta_{\mathrm{Sph}}$ tests whether accepted event topology is similarly contained in
 detector acceptance for data and MC.
 
+The two generator-level references in these panels, \texttt{tgen} and
+\texttt{tgenBefore}, apply no object-level selection and count particles identically;
+they differ only in which events are retained. \texttt{tgen} holds the generator record of
+the events written to the reconstructed after-cut sample and \texttt{tgenBefore} that of all
+generated events, so \texttt{tgen} is a subset. The events missing from it are removed by
+polar-angle acceptance rather than by particle content, which is why the two normalized
+multiplicity and charged-energy spectra very nearly coincide and only
+$\cos\theta_{\mathrm{Sph}}$ separates them. Both generator-level curves also show an even--odd modulation in
+$N_{\mathrm{trk}}$: the counted charged multiplicity has the same parity as the summed charge
+of the counted particles, which vanishes for most generated events, so even values dominate.
+The modulation is absent at detector level, where charged-track inefficiency randomizes that
+parity.
+
 Overall agreement in the high-statistics regions supports the response-model baseline used for IBU.
 The visible differences are concentrated in lower-populated tails and near selection boundaries,
 where statistical fluctuations and detector-response limitations are expected to be larger. These
