@@ -143,12 +143,32 @@ To quantify this distinction, the full unfolding chain was repeated with neutral
 particles ($\mathrm{pwflag}\in\{4,5\}$) removed, yielding a charged-only thrust
 distribution. Both the energy-flow and charged-only results are processed through
 the complete analysis chain --- IBU with $N_{\mathrm{iter}}=5$, hadronic correction
-$C_{\mathrm{had}}(j)$, and ISR correction $C_{\mathrm{ISR}}(j)$ --- using
-separate response matrices for each particle-level definition. Both distributions
+$C_{\mathrm{had}}(j)$, and ISR correction $C_{\mathrm{ISR}}(j)$. The reconstructed
+particle collection differs between the two, but both are unfolded to the same
+energy-flow particle-level definition, so the comparison isolates the sensitivity of
+the measurement to neutral-object reconstruction. Both distributions
 are shown with statistical uncertainties only; the full systematic suite is not
 propagated for this diagnostic comparison, and the charged-only branch is excluded
 from the nominal total uncertainty combination.
 
+% AUTHOR DECISION NEEDED before submission: the two sentences below, and the matching
+% clause in the Fig. 16 caption, argue that the ~23% shift is too large to be a detector
+% uncertainty and therefore shows the two distributions are "fundamentally different
+% observables" with "different particle-level definitions". Verified against the code that
+% the premise is false: run_thrust_prelim_workflow.py:428-445 overrides only reco_mc_file
+% and data_file for cut-based variations, never gen_mc_file, and only one generator-level
+% file exists (no_event_sel_tgen) whose name lacks the "_nominal_" token variation_file()
+% would need to substitute it. Confirmed in the run output: mc_gen_all and mc_genBefore are
+% bit-identical between the nominal and no_neutrals unfoldings (max bin difference 0), so
+% both are unfolded to the SAME energy-flow particle level; only the matched subset mc_gen
+% differs, because fewer reco events pass.
+% So the ~23% is a sensitivity of the measurement to neutral-object reconstruction, unfolded
+% to a single particle-level target -- not a difference of observables. That inverts the
+% argument, and it also means the cross-check Referee 2 asks for is already the one
+% performed. Rewriting the physics conclusion is an author decision, so the factual claim
+% about response matrices has been corrected but these two sentences are left as they stand.
+% The ~23% figure itself is correct: central-range mean 22.64%, matching
+% no_neutrals_crosscheck in the run summary. Mirrored in referee/reviewer2.md.
 The charged-only spectrum is systematically softer than the energy-flow result at low
 thrust, as expected from the missing neutral-energy deposits. In the central range the
 mean shift is approximately $23\%$ --- a magnitude that could not plausibly represent
@@ -164,7 +184,7 @@ thrust distribution. Figure~\ref{fig:charged_vs_ef} shows the comparison.
 \caption{Comparison of the charged-only (red open circles) and energy-flow (black
 filled circles) unfolded thrust distributions. Both are processed through the complete
 analysis chain: IBU ($N_{\mathrm{iter}}=5$), hadronic correction $C_{\mathrm{had}}(j)$,
-and ISR correction $C_{\mathrm{ISR}}(j)$, with separate response matrices for each
+and ISR correction $C_{\mathrm{ISR}}(j)$, both unfolded to the same energy-flow
 particle-level definition. Error bars represent statistical uncertainties only. Both
 distributions are normalized to $(1/N)\,\mathrm{d}N/\mathrm{d}T$. The ratio panel shows
 charged-only / energy-flow; the dashed line marks unity. The ${\sim}23\%$ central-range
