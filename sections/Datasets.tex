@@ -33,11 +33,16 @@ C_{\mathrm{had}}(j) = \frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 \end{equation}
 accounts for the efficiency of the hadronic event selection at the generator level: multiplying the unfolded spectrum by $C_{\mathrm{had}}$ restores events lost to the hadronic selection, yielding a result independent of the generator-level hadronic event selection.
 
+% NEEDS DATA MACHINE before submission: Sec. 8.7 writes the per-bin total with a
+% Delta_ISR term, but Table 8 has no ISR column, Table 6's formula omits it and Fig. 18's
+% legend does not carry it. Now that this section states the correction is applied, the
+% gap is between the text and the tables rather than between two prose passages.
+% Regenerating those objects needs the isr0/isr1 samples. Mirrored in referee/reviewer2.md.
 An initial-state radiation (ISR) correction,
 \begin{equation}
 C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)},
 \end{equation}
-would additionally correct the result from the ISR-inclusive generator-level distribution to the pure $\sqrt{s}=M_Z$ distribution. Both published ALEPH event-shape analyses~\cite{Barate:1996fi,Heister:2003aj} apply this correction. This correction is applied in the present analysis; its implementation and uncertainty are described in Sec.~\ref{sec:systematics}.
+corrects the result from the ISR-inclusive generator-level distribution to the pure $\sqrt{s}=M_Z$ distribution, as in both published ALEPH event-shape analyses~\cite{Barate:1996fi,Heister:2003aj}. Its implementation and uncertainty are described in Sec.~\ref{sec:systematics}.
 
 The unfolding step consumes four synchronized inputs, each a ROOT \texttt{TTree} in the
 archived sample:

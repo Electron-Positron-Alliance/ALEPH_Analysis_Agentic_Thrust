@@ -166,6 +166,10 @@ Sec 7.3
 - Sec 7.6 previously it was stated that "The ISR correction is not yet implemented in the current analysis and represents a systematic gap relative to the published results;"  but here is seems it is implemented.
   - **Response.** The Sec. 5 sentence was stale and has been corrected. The ISR correction is
     applied, as Sec. 7.6 describes.
+  - **NEEDS DATA MACHINE before submission.** With Sec. 5 corrected, the remaining gap is that
+    Sec. 8.7 writes the total with a $\Delta_{\mathrm{ISR}}$ term while Table 8, Table 6's
+    formula and Fig. 18's legend carry no ISR component. Regenerating those needs the
+    isr0/isr1 samples.
   Can you clarify ?
 - Why is the ISR uncertainty only taken from the finite MC statistics ?
 
