@@ -28,6 +28,7 @@ Section 3
   that are not already currently used routinely by many analyst in the HEP community.
   It is important to emphasise what is new and distinctive in this work.
 - Again some repetition of previous statements, like the graduate student analogy.
+  - **Response.** Removed; the analogy is now made once, in Sec. 2.
 - Would be good to define pwflag and/or to point to sec 6.1
   - **Response.** Added a pointer to Sec. 6.1 and Table 2 at the first use, in Sec. 2. Sec. 6.1 had no label, so it could not previously be referenced; one has been added.
 - A reference for miniDST would be good to add.
@@ -41,6 +42,8 @@ Sec 3.2
 
 Sec 3.3
 - Not clear what the chi2 is and what the "iterations 4–6." are.  Some more informations would be useful.
+  - **Response.** Clarified: it is the refolded-to-measured $\chi^2/\mathrm{ndf}$, and 4--6 are the
+    regularization variation passes about the nominal $N_{\mathrm{iter}}=5$.
 - clarify what  "pathological bins" are
   - **Response.** Defined at that point as bins whose total uncertainty exceeds the spectrum
     itself.
@@ -104,10 +107,17 @@ Sec 6.3
 - Fig 3 the phi structure, only at gen level, is suprising, can you comment on that ?
 - Fig 4 : the peaks here at E~p=45 GeV for V0 collection should also be explained (and why they are only in the reco)
 - page 18 : comments on fig 1 : "The NTPC distribution shows good overall agree-
+  - **Response.** Right on both counts. Only the archived JETSET sample is shown, and
+    $N_{\mathrm{TPC}}$ is a detector hit count rather than a generator observable; the sentence is
+    rewritten accordingly.
   ment between generators, with small differences between JETSET and modern generators"
   but the figure shows only one MC prediction.
   It is also not clear why NTPC would be a sensitive observable for that.
 - There are other comments in the text referring to comparisons to different generators for other figures 2,3,4,5,6
+  - **Response.** Removed. Those passages were wrong: Pythia 8, Herwig and Sherpa are generated
+    at particle level only, so they have no reconstructed objects and cannot appear in the
+    pwflag figures. They enter the analysis solely as event-level reweighting for the theory
+    uncertainty. Five such passages are corrected.
   that are not visible in the figures.
 - Fig 2,3 : "Differences between the archived MC and modern generators (Pythia 8, Herwig, Sherpa) are visible in.. "
 - Fig 4 " "Generator differences are more visible than for charged tracks, reflecting differences in strange-particle production modeling"
@@ -154,6 +164,12 @@ Sec 7.3
 - Table 6. Several entries in the table are not very clear or have not been defined, like input labels "ntpc7, pt04, ech10, with met  "
   - **Response.** The Table 6 caption now defines each branch and points to Table 7. Previously the labels appeared on p. 25 while their definitions only arrived in Table 7 on p. 28.
 - Sec 7.6 previously it was stated that "The ISR correction is not yet implemented in the current analysis and represents a systematic gap relative to the published results;"  but here is seems it is implemented.
+  - **Response.** The Sec. 5 sentence was stale and has been corrected. The ISR correction is
+    applied, as Sec. 7.6 describes.
+  - **NEEDS DATA MACHINE before submission.** With Sec. 5 corrected, the remaining gap is that
+    Sec. 8.7 writes the total with a $\Delta_{\mathrm{ISR}}$ term while Table 8, Table 6's
+    formula and Fig. 18's legend carry no ISR component. Regenerating those needs the
+    isr0/isr1 samples.
   Can you clarify ?
 - Why is the ISR uncertainty only taken from the finite MC statistics ?
 
@@ -161,6 +177,9 @@ Sec 8.
 - I'm wondering how the MC stat fluctuations (that should be larger than the data ones) are being taken into account. Can you elaborate ?
 - Fig 14. Could be nice to show also a zoom of the y axis on both plots to show better the uncertainties in the higher T regions.
 - Why does the unfolding uncertainty flip sign several times across the T range ?
+  - **Response.** The $N_{\mathrm{iter}}=4$ and $6$ passes bracket the nominal, so their shifts have
+    opposite sign, and the bin-to-bin alternation at low thrust is the anti-correlation that
+    regularization induces between neighbouring bins. Now stated in Sec. 8.
 
 8.2
 - Fig 16 the charged/EF ratio is interesting, it seems the leading effect is a shift of the charged to lower values:
@@ -168,6 +187,8 @@ Sec 8.
 - Could you perform the No-neutrals xcheck measurement unfolding to the same T particle level definition as the reference analysis, so it is indeed the measurement of the same observable (with a reduced reco particle collection) ?
   This should represent a more meaningful and stringent xcheck of the results.
 - 8.3 "at lower thrust where soft-gluon emission and hadronization effects are largest"
+  - **Response.** You are right, the attribution was inverted. Low thrust is the multi-jet region
+    where hard, wide-angle emission dominates; the text now says so.
   isn't lower thrust where hard gluon emissions are relevant ?
 - Fig 17. The difference at low values look mostly like fluctuations. At higher values there is maybe a shift of T to lower values for the new models ?
 - 8.5 Do we have any idea of how large / relevant could be the difference of ISR effects evaluated with pythia and koralz ?

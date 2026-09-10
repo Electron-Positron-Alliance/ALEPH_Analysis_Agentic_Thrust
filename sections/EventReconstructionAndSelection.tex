@@ -122,16 +122,13 @@ bulk of all distributions. The $\cos\theta$ panel shows the geometric acceptance
 cutoff at $|\cos\theta|=0.94$, with consistent data/MC behavior across the accepted
 range. The impact-parameter panels ($d_0$, $z_0$) show the effect of the nominal
 selection quality cuts, with both data and MC reproducing the expected Gaussian core
-and non-Gaussian tails. The $N_{\mathrm{TPC}}$ distribution shows good overall
-agreement between generators, with small differences between JETSET and modern
-generators in the tail region.
+and non-Gaussian tails. The $N_{\mathrm{TPC}}$ distribution, a detector hit count rather than a generator
+observable, is well reproduced by the simulation.
 
 \textbf{pwflag=1 and 2 (ECAL-matched and muon-matched leptons).}
 Figures~\ref{fig:pwflag1_full} and~\ref{fig:pwflag2_full} show the two charged-lepton
 categories. These are lower-rate than charged tracks. Data/MC agreement is satisfactory
-in the bulk of the kinematic distributions. Differences between the archived MC and
-modern generators (Pythia~8, Herwig, Sherpa) are visible in the energy tails, which
-reflect generator-dependent differences in leptonic event rates and fake-lepton modeling.
+in the bulk of the kinematic distributions. Data/MC differences are visible in the energy tails.
 
 \textbf{pwflag=3 ($V^0$ candidates).} Figure~\ref{fig:pwflag3_full} shows $K_S^0$ and
 $\Lambda$ candidates from displaced-vertex reconstruction. These enter the thrust sum
@@ -163,9 +160,8 @@ curves of the right panel.}
 \label{fig:pwflag5_costheta_cut}
 \end{figure}
 
-Generator differences between the archived ALEPH MC and modern generators are
-largest in this category, reflecting known differences in neutral hadronic energy
-modeling in the 1--2\,GeV range. These differences are propagated through the
+Data/MC differences are largest in this category, in the neutral hadronic energy
+range of a few GeV. These differences are propagated through the
 dedicated neutral-response systematic branches and do not affect the nominal
 response matrix.
 
@@ -178,8 +174,7 @@ pwflag=4 (photons) and pwflag=5 (neutral hadrons), comparing data, MC reco, and
 MC gen. Vertical lines mark the 24 HCAL module boundaries. The modulation is
 present in both reco and gen MC distributions but not at the same phase in data,
 suggesting the excess is primarily of generator (JETSET~7.4) origin rather than
-a detector $\phi$-acceptance effect. It is retained as a cross-check and noted
-as a known difference between the archived MC and modern generators.
+a detector $\phi$-acceptance effect. It is retained as a cross-check.
 
 \begin{figure}[t!]
 \centering
@@ -196,8 +191,7 @@ The modulation is present in both reconstructed and generator-level MC distribut
 but is absent from data at the same phase, pointing to a generator (JETSET~7.4)
 origin rather than a detector acceptance effect. Because it cancels between MC reco
 and gen in the response matrix, it does not bias the unfolded thrust distribution;
-it is retained here as a cross-check and documented difference between the archived
-MC and modern generators.
+it is retained here as a cross-check.
 
 \subsection{Event-level selection observables}
 
