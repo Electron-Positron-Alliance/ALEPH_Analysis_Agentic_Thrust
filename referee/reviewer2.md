@@ -117,10 +117,12 @@ Sec 6.3
   - **Response.** Removed. Those passages were wrong: Pythia 8, Herwig and Sherpa are generated
     at particle level only, so they have no reconstructed objects and cannot appear in the
     pwflag figures. They enter the analysis solely as event-level reweighting for the theory
-    uncertainty. Five such passages are corrected.
+    uncertainty. Six such passages are corrected.
   that are not visible in the figures.
 - Fig 2,3 : "Differences between the archived MC and modern generators (Pythia 8, Herwig, Sherpa) are visible in.. "
+  - **Response.** Removed; only the archived MC is shown in these figures.
 - Fig 4 " "Generator differences are more visible than for charged tracks, reflecting differences in strange-particle production modeling"
+  - **Response.** Rewritten as a data/MC statement; the strange-production attribution is dropped.
   "The ϕ spectrum (Fig. 5) shows a modulation in the generator-level distribution"
   I'm guessing all this discussion on generators across pages 18-19-20 refers to some other figures.
 - The comment "(see Sec. 6.3)" is awkward as it is written inside Sec 6.3
