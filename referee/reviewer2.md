@@ -173,7 +173,16 @@ Sec 8.
 - 8.5 Do we have any idea of how large / relevant could be the difference of ISR effects evaluated with pythia and koralz ?
 - 8.7 could you add some justification to combine in quadrature ?
 - Fig 18 : What is the nature of the asymmetric NES uncertainties ?
+  - **Response.** The scale variation is symmetric by construction, so the asymmetry is a
+    non-linear response rather than an asymmetric input. It is confined to $T<0.70$; across the
+    fit window the up and down shifts agree to better than 0.05% and are themselves below 0.2%.
+    The variation scales neutral momenta, and we confirmed it leaves the neutral multiplicity
+    unchanged, so it is not driven by objects migrating across the selection threshold.
 - Why does the track pt cut uncertainty jump to 12-13 % in the T~1 last bin
+  - **Response.** Raising the threshold removes soft tracks, which makes events appear more
+    collimated and roughly doubles the reconstructed endpoint population. The last bin sits
+    against the kinematic boundary, so that migration is a large fractional change there while
+    remaining below 1.5% through the bulk of the spectrum.
 
 Sec 9.1
 - "largest discrepancy at the endpoint"  reported to be 1.30+-0.27, but on the plot appear to be at a lower value.
