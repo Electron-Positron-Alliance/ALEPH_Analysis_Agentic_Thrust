@@ -11,13 +11,17 @@ reading the archived MC ntuple directly:
   2. The acceptance tgen/tgenBefore is flat in generator multiplicity but
      falls sharply outside |cos(theta_Sph)| < 0.8, so normalized
      multiplicity and charged-energy spectra coincide.
-  3. The generator-level charged multiplicity has the same parity as the
-     summed charge of the counted particles, which drives the even-odd
-     modulation seen in the N_trk panel.
+  3. The even-odd modulation in the N_trk panel comes from charge
+     conservation: without the conversion-electron cleaning the charged
+     multiplicity has exactly the same parity as the summed charge of the
+     counted particles, which vanishes for most events. The cleaning
+     removes one member of each identified pair from the count and dilutes
+     the modulation to the strength seen in the figure.
 
 Particle counting follows Analyze.cxx at generator level: no object-level
 cuts, beam-pipe radiation artifacts removed, charged = pwflag 0-2,
-neutral = pwflag 3-5.
+neutral = pwflag 3-5. The cleaning is applied in the "cleaned" counting and
+omitted in the "raw" counting so its effect on the parity is visible.
 
 Usage (from repo root):
     python analysis/Studies/Phase2_Checks_2026-03-03/scripts/gen_vs_genbefore.py \
@@ -37,17 +41,35 @@ ROOT.TH1.AddDirectory(False)
 # beam-pipe radiation artifacts, as removed in Analyze.cxx for generator trees
 KEEP = "!(abs(phi)<=0.001f && pt>0.00099f && pt<0.001009f && charge==0)"
 
+# Conversion-electron cleaning, as in Analyze.cxx: an adjacent opposite-charge
+# pwflag==2 pair close in theta and phi. Analyze.cxx vetoes the second member
+# (index i) and pops the first from the saved particle list, so exactly one
+# track per identified pair leaves the multiplicity count.
+CONV = """
+ROOT::RVecI conv(pwflag.size(), 0);
+for (size_t i = 1; i < pwflag.size(); ++i) {
+  if (pwflag[i] == 2 && pwflag[i-1] == 2 && charge[i] == -charge[i-1]
+      && std::abs(theta[i] - theta[i-1]) <= 0.05
+      && std::acos(std::cos(phi[i] - phi[i-1])) <= 0.05) conv[i] = 1;
+}
+return conv;
+"""
+
 
 def define(tree, path):
     df = ROOT.RDataFrame(tree, path)
     df = df.Define("keep", KEEP)
-    df = df.Define("isch", "keep && pwflag>=0 && pwflag<=2")
-    df = df.Define("isne", "keep && pwflag>=3 && pwflag<=5")
+    df = df.Define("conv", CONV)
+    df = df.Define("israw", "keep && pwflag>=0 && pwflag<=2")
+    df = df.Define("isch", "israw && conv==0")
+    df = df.Define("isne", "keep && conv==0 && pwflag>=3 && pwflag<=5")
     df = df.Define("en", "sqrt(pmag*pmag+mass*mass)")
     df = df.Define("gNTrk", "(int)Sum(isch)")
+    df = df.Define("gNTrkRaw", "(int)Sum(israw)")
     df = df.Define("gNNeu", "(int)Sum(isne)")
     df = df.Define("gECh", "Sum(en[isch])")
-    df = df.Define("gQ", "(int)Sum(charge[isch])")
+    df = df.Define("gQ", "(int)Sum(charge[israw])")
+    df = df.Define("nConv", "(int)Sum(conv)")
     df = df.Define("cosThetaSph", "cos(STheta)")
     return df
 
@@ -71,10 +93,12 @@ def main():
             ech=df.Mean("gECh"),
             h_ntrk=df.Histo1D((f"ntrk_{t}", "", 61, -0.5, 60.5), "gNTrk"),
             h_cos=df.Histo1D((f"cos_{t}", "", 20, -1.0, 1.0), "cosThetaSph"),
+            nconv=df.Mean("nConv"),
             n_odd_ntrk=df.Filter("gNTrk % 2 != 0").Count(),
+            n_odd_raw=df.Filter("gNTrkRaw % 2 != 0").Count(),
             n_odd_q=df.Filter("abs(gQ) % 2 != 0").Count(),
             n_zero_q=df.Filter("gQ == 0").Count(),
-            n_parity_mismatch=df.Filter("(gNTrk - gQ) % 2 != 0").Count(),
+            n_parity_mismatch=df.Filter("(gNTrkRaw - gQ) % 2 != 0").Count(),
         )
 
     print("=== event counts and generator-level means ===")
@@ -107,14 +131,18 @@ def main():
     b = bookings["tgen"]
     tot = b["n"].GetValue()
     mismatch = b["n_parity_mismatch"].GetValue()
-    print(f"  fraction of events with odd N_trk = {b['n_odd_ntrk'].GetValue()/tot:.5f}")
-    print(f"  fraction of events with odd summed charge = {b['n_odd_q'].GetValue()/tot:.5f}")
     print(f"  fraction with zero summed charge = {b['n_zero_q'].GetValue()/tot:.5f}")
-    print(f"  events where N_trk and summed charge differ in parity = {mismatch}")
+    print(f"  fraction with odd summed charge  = {b['n_odd_q'].GetValue()/tot:.5f}")
+    print(f"  fraction with odd N_trk, cleaning omitted = {b['n_odd_raw'].GetValue()/tot:.5f}")
+    print(f"  fraction with odd N_trk, as counted        = {b['n_odd_ntrk'].GetValue()/tot:.5f}")
+    print(f"  conversion-electron vetoes per event       = {b['nconv'].GetValue():.4f}")
+    print(f"  events where the uncleaned N_trk and the summed charge differ in parity = {mismatch}")
     if mismatch:
         print("  MISMATCH: N_trk parity does not track the summed charge", file=sys.stderr)
         return 1
-    print("  N_trk parity tracks the summed charge exactly, as charge conservation requires")
+    print("  Without the cleaning, N_trk parity tracks the summed charge exactly, as charge")
+    print("  conservation requires. The cleaning removes one track per identified pair, which")
+    print("  dilutes the modulation to the strength seen in Fig. 9.")
     return 0
 
 

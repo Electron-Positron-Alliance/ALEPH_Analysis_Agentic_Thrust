@@ -137,10 +137,14 @@ Sec 6.4
     $\cos\theta_{\mathrm{Sph}}$ separates the two.
     Stated in Sec. 6.4.
 - What is also strange is the up-down oscillating pattern in the MC/Data for the (upper-left) Ntrk plot : how is that happening ?
-  - **Response.** The modulation is in the generator-level curves, not in data or MC reco: counted
-    charged multiplicity has the same parity as the summed charge of the counted particles, which
-    vanishes for most events. Track inefficiency randomizes that parity at detector level. Noted in
-    Sec. 6.4.
+  - **Response.** The modulation is in the generator-level curves, not in data or MC reco. Charge
+    conservation fixes the parity of the charged multiplicity to that of the summed charge, which
+    vanishes for most generated events; the conversion-electron cleaning removes one track per
+    identified pair and dilutes the effect to the size seen. Track inefficiency randomizes the parity
+    at detector level. Noted in Sec. 6.4.
+  - **AUTHOR DECISION NEEDED.** That cleaning drops the pair from the saved particle list but leaves
+    one member in $N_{\mathrm{trk}}$, $E_{\mathrm{Ch}}$ and $E_{\mathrm{vis}}$, so the selection
+    counters and the thrust particle list differ by one track per pair. Confirm the intent.
 - define "IBU" on page 20
   - **Response.** IBU is already defined, at first use in Sec. 2: "Iterative Bayesian Unfolding (IBU) implemented in RooUnfold". No change made.
 
