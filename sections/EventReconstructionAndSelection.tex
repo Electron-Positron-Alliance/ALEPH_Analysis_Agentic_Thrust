@@ -43,7 +43,7 @@ All selected charged and neutral categories contribute to the thrust numerator a
 % what they are measured against; the convention was fixed by the original ALEPH
 % data processing, so confirm against the miniDST production / reconstruction
 % documentation. Referee 2 asked this directly. Mirrored in referee/reviewer2.md.
-Table~\ref{tab:particle_selection_summary} lists the object-level nominal selection with one requirement per row. These criteria define which reconstructed particles are propagated into thrust and therefore which detector effects enter the response model. They are imposed on the reconstructed collection only; the generator-level particles of the same events are retained without them, so the particle-level target is set by the stable-hadron criterion of Sec.~\ref{sec:datasets}. Here $d_0$ and $z_0$ are the transverse and longitudinal impact parameters of the track with respect to the per-event reconstructed primary vertex. Both are taken from the archived reconstruction. $N_{\mathrm{TPC}}$ is the number of TPC coordinates associated with the track.
+Table~\ref{tab:particle_selection_summary} lists the object-level nominal selection with one requirement per row. These criteria define which reconstructed particles are propagated into thrust and therefore which detector effects enter the response model. They are imposed on the reconstructed collection only; the generator-level particles of the same events are retained without them. Here $d_0$ and $z_0$ are the transverse and longitudinal impact parameters of the track with respect to the per-event reconstructed primary vertex. Both are taken from the archived reconstruction. $N_{\mathrm{TPC}}$ is the number of TPC coordinates associated with the track.
 
 \begin{table}[t!]
 \centering
@@ -92,8 +92,10 @@ Missing-momentum guard & $|\vec{p}_{\mathrm{miss}}|<9999$ GeV (nominally inactiv
 
 In practice, these selections enforce a phase space with high tracking quality, controlled forward
 acceptance, and stable visible-energy topology before entering event-shape reconstruction. They are
-chosen to follow ALEPH-standard hadronic selections while retaining explicit control over the
-regions that dominate event-shape sensitivity.
+chosen to follow ALEPH standard hadronic selections while retaining explicit control over the
+regions that dominate event-shape sensitivity. 
+
+Note that the acceptance requirement based on the event shape variable sphericity introduces a slight sculpting of the thrust distribution. The cut removes approximately 2.3\% of selected events, with the largest effect in the multijet region. In data, the ratio of the thrust distribution with the cut to that without rises monotonically from $\approx 0.85$ at $T \approx 0.6$--$0.75$ to $\approx 0.95$ at $T \approx 0.9$ and $\approx 0.99$ as $T \to 1$. This shaping is corrected by the unfolding, since the response matrix is built with the same requirement imposed at detector level and none at generator level, so the reported spectrum corresponds to the inclusive phase space.
 
 \label{sec:neutral_hadron_cleaning}%
 The neutral hadron cleaning requirement (reject \texttt{pwflag}=5 for $-0.19\le\cos\theta<-0.18$) removes a localized region where the ALEPH hadronic calorimeter response is known to produce spurious neutral-hadron candidates. This narrow angular window corresponds to a structural gap in the detector and was identified from the data/MC neutral-hadron $\cos\theta$ distribution.
@@ -137,55 +139,45 @@ distributions is adequate. Data/MC differences are more visible than for charged
 tracks.
 
 \textbf{pwflag=4 (photons).} Figure~\ref{fig:pwflag4_full} shows the photon category
-reconstructed by the ECAL. Data/MC agreement is good in the central angular region.
-The $\phi$ spectrum (Fig.~\ref{fig:pwflag4_full}) shows a modulation in the
-generator-level distribution, discussed with Fig.~\ref{fig:phi_excess_investigation}.
+reconstructed by the ECAL. Data/MC agreement is generally good in the central region. Some modulations of the generator-level $\phi$ spectrum are seen which have a negligible impact on the result and are believed to be an artifact of how photons were stored in the sample.
 
-\textbf{pwflag=5 (neutral hadrons).} Figure~\ref{fig:pwflag5_full} shows the neutral
-hadronic calorimeter objects. The $\cos\theta$ distribution shows a visible suppression
-in the narrow window $-0.19\le\cos\theta<-0.18$, which is the result of the neutral
-hadron cleaning cut applied at that angular position. Figure~\ref{fig:pwflag5_costheta_cut} compares the $\cos\theta$ distribution with and
-without the hadronic event selection. The cleaning cut itself acts at object level and is
-applied in both curves, so the figure does not isolate its effect.
+% The $\phi$ spectrum (Fig.~\ref{fig:pwflag4_full}) shows a modulation in the generator-level distribution, discussed with Fig.~\ref{fig:phi_excess_investigation}. 
 
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.49\textwidth]{figures/pwflag5_costheta_data_vs_mc.pdf}
-\includegraphics[width=0.49\textwidth]{figures/pwflag5_costheta_data_with_vs_without_sel.pdf}
-\caption{$\cos\theta$ for pwflag=5 (neutral hadrons). Left: data vs MC. Right: data with
-and without the hadronic \emph{event} selection. The dotted line marks the neutral-hadron
-cleaning window; that cut acts at object level and so is applied in both panels and in both
-curves of the right panel.}
-\label{fig:pwflag5_costheta_cut}
-\end{figure}
+\textbf{pwflag=5 (neutral hadrons).} Figure~\ref{fig:pwflag5_full} shows the neutral hadronic calorimeter objects. Data/MC differences are largest in this category, in the neutral hadronic energy range of a few GeV. These differences are propagated through the dedicated neutral-response systematic branches and do not affect the nominal response matrix.
 
-Data/MC differences are largest in this category, in the neutral hadronic energy
-range of a few GeV. These differences are propagated through the
-dedicated neutral-response systematic branches and do not affect the nominal
-response matrix.
+% \begin{figure}[t!]
+% \centering
+% \includegraphics[width=0.49\textwidth]{figures/pwflag5_costheta_data_vs_mc.pdf}
+% \includegraphics[width=0.49\textwidth]{figures/pwflag5_costheta_data_with_vs_without_sel.pdf}
+% \caption{$\cos\theta$ for pwflag=5 (neutral hadrons). Left: data vs MC. Right: data with
+% and without the hadronic \emph{event} selection. The dotted line marks the neutral-hadron
+% cleaning window; that cut acts at object level and so is applied in both panels and in both
+% curves of the right panel.}
+% \label{fig:pwflag5_costheta_cut}
+% \end{figure}
 
-The $\phi$ spectrum excess visible in generator-level particles
-for photons and neutral hadrons (Fig.~\ref{fig:pwflag4_full} and
-Fig.~\ref{fig:pwflag5_full}) may reflect JETSET~7.4 generator effects or the
-periodic modular structure of the ALEPH HCAL (24 iron absorber modules in $\phi$).
-Figure~\ref{fig:phi_excess_investigation} compares the $\phi$ distribution for
-the two categories in data, MC reco, and MC gen, with the module boundaries marked.
+% The $\phi$ spectrum excess visible in generator-level particles
+% for photons and neutral hadrons (Fig.~\ref{fig:pwflag4_full} and
+% Fig.~\ref{fig:pwflag5_full}) may reflect JETSET~7.4 generator effects or the
+% periodic modular structure of the ALEPH HCAL (24 iron absorber modules in $\phi$).
+% Figure~\ref{fig:phi_excess_investigation} compares the $\phi$ distribution for
+% the two categories in data, MC reco, and MC gen, with the module boundaries marked.
 
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.49\textwidth]{figures/phi_pw4_all.pdf}
-\includegraphics[width=0.49\textwidth]{figures/phi_pw5_all.pdf}
-\caption{$\phi$ distribution for pwflag=4 photons (left) and pwflag=5 neutral
-hadrons (right), comparing data reco, MC reco, and MC gen. Dashed vertical lines
-mark the 24-fold HCAL module boundaries.}
-\label{fig:phi_excess_investigation}
-\end{figure}
+% \begin{figure}[t!]
+% \centering
+% \includegraphics[width=0.49\textwidth]{figures/phi_pw4_all.pdf}
+% \includegraphics[width=0.49\textwidth]{figures/phi_pw5_all.pdf}
+% \caption{$\phi$ distribution for pwflag=4 photons (left) and pwflag=5 neutral
+% hadrons (right), comparing data reco, MC reco, and MC gen. Dashed vertical lines
+% mark the 24-fold HCAL module boundaries.}
+% \label{fig:phi_excess_investigation}
+% \end{figure}
 
-The modulation is present in both reconstructed and generator-level MC distributions
-but is absent from data at the same phase, pointing to a generator (JETSET~7.4)
-origin rather than a detector acceptance effect. Because it cancels between MC reco
-and gen in the response matrix, it does not bias the unfolded thrust distribution;
-it is retained here as a cross-check.
+% The modulation is present in both reconstructed and generator-level MC distributions
+% but is absent from data at the same phase, pointing to a generator (JETSET~7.4)
+% origin rather than a detector acceptance effect. Because it cancels between MC reco
+% and gen in the response matrix, it does not bias the unfolded thrust distribution;
+% it is retained here as a cross-check.
 
 \subsection{Event-level selection observables}
 

@@ -79,15 +79,27 @@ ISR-correction components using the \texttt{template\_correlated} covariance mod
 \label{fig:final_total_correlation_matrix_sys}
 \end{figure}
 
-The numerical per-bin uncertainty breakdown is given in
-Tables~\ref{tab:per_bin_uncertainty}--\ref{tab:per_bin_uncertainty_breakdown_comparison},
-listing all component contributions and the total for each thrust bin.
+% NEEDS WORKSTATION RERUN before submission: the three per-bin uncertainty tables are
+% commented out below. As written they are the post-hadronic-correction, PRE-ISR spectrum,
+% while the figures and the stored run metrics are POST-ISR (C_ISR = 1.1996 in the endpoint
+% bin), so the ALEPH comparison rows understate our values -- this is the "considerable
+% differences" that Referee 1 asked about on Tables 9 and 10. They also carry no
+% Delta_ISR column even though Sec. 8.7 writes the per-bin total with that term.
+% To restore them: regenerate on the workstation where the isr0/isr1 samples and the
+% unfolding run outputs live, at the post-ISR stage, and add the ISR component as its own
+% column so the tabulated components sum in quadrature to the Total. Also restrict the
+% range to the bins common to both measurements (T >= 0.58) rather than commenting out
+% individual rows, and restore the "Dashes indicate ..." caption sentences only if any
+% dash entries come back. Mirrored in referee/reviewer1.md.
+% The numerical per-bin uncertainty breakdown is given in
+% Tables~\ref{tab:per_bin_uncertainty}--\ref{tab:per_bin_uncertainty_breakdown_comparison},
+% listing all component contributions and the total for each thrust bin.
 
-\input{tables/per_bin_uncertainty_table}
+% \input{tables/per_bin_uncertainty_table}
 
-\input{tables/per_bin_uncertainty_table_aleph}
+% \input{tables/per_bin_uncertainty_table_aleph}
 
-\input{tables/per_bin_uncertainty_table_comparison}
+% \input{tables/per_bin_uncertainty_table_comparison}
 
 \FloatBarrier
 
