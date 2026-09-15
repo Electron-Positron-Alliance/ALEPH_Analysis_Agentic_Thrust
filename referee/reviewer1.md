@@ -1,4 +1,11 @@
 - This paper presents a re-analysis of ALEPH entirely done with AI agents. The result is impressive, even if the quality of the AI-based publication is not great. Given that the most interesting part is not concerning physics, but the fact that the AI-agents did the work, it would be nice to have an evaluation, with some metric, of the amount of human intervention.
+  - **Response.** Agreed that the agentic execution, not the thrust value itself, is the result of
+    interest; the measurement reproduces a known quantity by design, and we keep it on that basis.
+    We have no quantitative metric of human intervention. Sec. 2 lists the sign-off gates and the
+    checks the physicist performed at each stage, and App. C reconstructs the specification--execution
+    cycle from the project artifact trail.
+  - **NEEDS AUTHOR INPUT.** Whether to add a quantitative measure (e.g. agent-authored versus
+    human-edited lines, number of physicist-initiated corrections) is a scope decision.
 
 Here are some comments about the text itself:
 - You should write ALEPH archived data on all histograms
@@ -54,3 +61,9 @@ Here are some comments about the text itself:
   - **Response, part 2 (why they differ).** Outstanding. This needs a paragraph in Sec. 9.1, not a
     table edit, and it interacts with Referee 2's question on the same figure. Tracked separately.
 - page 45 Section 11 and following pages do not seem for publication, in any case they are far below publication quality
+  - **Response.** Sec. 11 is the record of where the agentic workflow failed or needed correction,
+    which is the substance of this work rather than supplementary material, so we retain it. The
+    sentence presenting the document as an internal note rather than a publication is removed.
+  - **NEEDS AUTHOR INPUT.** App. B (validation and cross-checks) and App. C (reconstructed
+    communication summary) are the pages the referee most likely means; whether either belongs in
+    a submission is your call.
