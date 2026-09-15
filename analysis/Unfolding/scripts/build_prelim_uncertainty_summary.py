@@ -977,7 +977,7 @@ def make_component_group_plot(
         drawn_hists.append(h)
     leg.Draw()
     # Place ALEPH label just above the plotting content, consistent with the component-panel style.
-    myText(0.18, 0.961, "ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV", align=13, size=0.045)
+    myText(0.18, 0.961, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", align=13, size=0.045)
 
     outdir = os.path.dirname(out_path)
     if outdir:
@@ -1095,7 +1095,7 @@ def make_final_plot(
     if raw_data is not None:
         leg.AddEntry(h_raw, "Raw data (detector level)", "pl")
     leg.Draw()
-    myText(0.2, 0.925, "ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV", size=0.045)
+    myText(0.2, 0.925, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", size=0.045)
 
     c.cd()
     pad2 = ROOT.TPad("pad2", "", 0.0, 0.05, 1.0, 0.30)
@@ -1443,7 +1443,7 @@ def make_correction_stages_plot(
     leg.AddEntry(h_nom_draw, "IBU + had. + ISR (final)", "pl")
     leg.AddEntry(h_band4, "Final unc. band", "f")
     leg.Draw()
-    myText(0.2, 0.925, "ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV", size=0.045)
+    myText(0.2, 0.925, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", size=0.045)
 
     # --- Ratio pad: all curves / ALEPH 2004 ---
     c.cd()
@@ -1667,7 +1667,7 @@ def make_of_ibu_comparison_plot(
     leg.AddEntry(h_ibu, "IBU reanalysis", "pl")
     leg.AddEntry(h_aleph, "ALEPH 2004", "pl")
     leg.Draw()
-    myText(0.2, 0.925, "ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV", size=0.045)
+    myText(0.2, 0.925, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", size=0.045)
 
     c.cd()
     pad2 = ROOT.TPad("pad2_cmp", "", 0.0, 0.05, 1.0, 0.30)

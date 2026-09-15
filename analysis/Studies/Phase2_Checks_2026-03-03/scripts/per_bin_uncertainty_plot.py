@@ -120,7 +120,7 @@ def save_fig(fig, outdir, stem):
         print(f"Saved: {p}")
 
 
-ALEPH_LABEL = r"ALEPH archived data  $e^+e^-$  91.2 GeV"
+ALEPH_LABEL = r"ALEPH archived data, $e^+e^-$ $\sqrt{s}=91.2$ GeV"
 
 
 def make_panel_fig():

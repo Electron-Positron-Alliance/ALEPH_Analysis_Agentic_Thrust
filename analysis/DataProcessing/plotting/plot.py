@@ -268,7 +268,7 @@ def main():
                 hists=hists,
                 max_bin=max_bin,
                 out_path=os.path.join(args.outDir, f"{var_name}.pdf"),
-                header_text="ALEPH e^{+}e^{-}, #sqrt{s} = 91.2 GeV",
+                header_text="ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV",
             )
             write_sample_hists(hists, var_name, hist_out_files)
 
@@ -303,7 +303,7 @@ def main():
                 hists=hists,
                 max_bin=max_bin,
                 out_path=os.path.join(args.outDir, f"{var_name}.pdf"),
-                header_text=f"ALEPH e^{{+}}e^{{-}}, #sqrt{{s}} = 91.2 GeV, {pwflags[pwflag_val]}",
+                header_text=f"ALEPH archived data, e^{{+}}e^{{-}} #sqrt{{s}}=91.2 GeV, {pwflags[pwflag_val]}",
             )
             write_sample_hists(hists, var_name, hist_out_files)
     finally:

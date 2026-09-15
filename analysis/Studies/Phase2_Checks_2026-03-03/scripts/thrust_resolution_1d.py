@@ -91,7 +91,7 @@ def main():
     lbl.SetNDC(True)
     lbl.SetTextFont(42)
     lbl.SetTextSize(0.040)
-    lbl.DrawLatex(0.14, 0.93, "ALEPH e^{+}e^{#minus},  #sqrt{s}=91.2 GeV")
+    lbl.DrawLatex(0.14, 0.93, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
 
     out = os.path.join(args.outdir, "thrust_resolution_1d.pdf")
     c.SaveAs(out)
