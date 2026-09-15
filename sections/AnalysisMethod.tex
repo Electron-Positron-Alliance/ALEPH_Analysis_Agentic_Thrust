@@ -32,10 +32,14 @@ Response filling uses event-by-event matching through \texttt{uniqueID}. Reconst
 \item the miss term required by RooUnfold for inefficiency handling.
 \end{itemize}
 
-% NEEDS DATA MACHINE before submission: the fake rate is asserted as negligible but is
-% not quantified anywhere. Referee 1 could not follow this paragraph, so a number would
-% settle it. Mirrored in referee/reviewer1.md.
-The response is filled only from events reconstructed and generated in the same phase space, so each entry relates a detector-level thrust to the generator-level thrust of the same event. Two cases fall outside that pairing. A generator-level event with no reconstructed counterpart, lost to inefficiency or acceptance, is a miss: it is passed to the response as \texttt{response.Miss($x_{\mathrm{gen}}$)} so that the unfolding restores it, as described below. A reconstructed event with no generator-level counterpart is a fake; in the archived ALEPH hadronic sample these are taken to be negligible and no fake subtraction is applied.
+% NEEDS DATA MACHINE before submission, two items. (1) Reconstruction inefficiency: the
+% response is built only from MC events passing the detector-level selection, so events
+% lost to inefficiency or acceptance are not represented in it at all and the miss term
+% carries only out-of-range reco values. Confirm whether the generator-level tree is
+% already restricted to selected events, and if not, whether an efficiency correction is
+% missing. (2) The fake rate is asserted as negligible but is not quantified anywhere.
+% Both mirrored in referee/reviewer1.md.
+The response is filled from MC events that pass the detector-level selection, pairing the reconstructed and generator-level thrust of the same event through \texttt{uniqueID}. A selected event whose reconstructed thrust falls outside the unfolding range enters instead through RooUnfold's miss term, which supplies the efficiency factor $1/\epsilon_j$ appearing below. Reconstructed events with no generator-level counterpart are taken to be negligible in the archived ALEPH hadronic sample and are not subtracted.
 
 \subsection{Iterative Bayesian Unfolding setup and iteration choice}
 
