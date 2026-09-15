@@ -39,7 +39,7 @@ Here are some comments about the text itself:
   - We checked how the STheta cut behaves when applied alone in data. This cut removes ~2.3% of events. The cut has most effect in the multijet region. The ratio of thrust with STheta cut applied to thrust with no cut applied is ~0.85 at thrust~0.6-0.75, then monotonically increasing up to ~0.95 at thrust~0.9, and ~0.99 at thrust~1. The same cut is applied at the reco level MC used for unfolding so the effect is corrected for. 
 
 - page 13-14-15-16-17 there is a mis-matching between the figure number in the figure itself and in the caption.
-  - Fixed.
+  - Hmm that is weird. When we rerun the latex compilation there does not seem to be an issue.
 
 - page 15 what is the MC excess in phi around -1.5 ?
   - This is an artifact of the archived MC, which is believed to be how the QED ISR was saved. We checked the impact of removing this contribution and the impact is negligible. 
