@@ -1,9 +1,9 @@
 - This paper presents a re-analysis of ALEPH entirely done with AI agents. The result is impressive, even if the quality of the AI-based publication is not great. Given that the most interesting part is not concerning physics, but the fact that the AI-agents did the work, it would be nice to have an evaluation, with some metric, of the amount of human intervention.
-  - Thank you for the nice words. We agree that the agentic execution, not the thrust measurement itself, is the result of interest. We don't have quantitative metric of human intervention given that the analysis was done collaboratively between physicist and AI agent
+  - Thank you for the nice words. We agree that the agentic execution, not the thrust measurement itself, is the result of interest. We don't have a quantitative metric of human intervention given that the analysis was done collaboratively between physicist and AI agent
 
 Here are some comments about the text itself:
 - You should write ALEPH archived data on all histograms
-  - 
+  - **TO-DO**
 
 - page 1 precision QCD is not where theoretical uncertainties become limiting.
   - Definitely for some important physics the QCD based uncertainties became extremely important, e.g. alphaS uncertainty for Higgs decays, non-perturbative uncertainties, parton shower uncertainties. We reworded to make that clear. 
@@ -36,13 +36,13 @@ Here are some comments about the text itself:
   - These are ROOT `TTree`s in the archived sample; the four inputs to the unfolding are now introduced as such in Sec. 5 and referred to by their tree names.
 
 - table 4 it seems that the Sphericity axis acceptance cut is sculpting the thrust distribution, could you comment about that ?
-  - We checked how the STheta cut behaves when applied alone in data. This cut removes ~2.3% of events. The cut has most effect in the multijet region. The ratio of thrust with STheta cut applied to thrust with no cut applied is ~0.85 at thrust~0.6-0.75, then monotically increasing up to ~0.95 at thrust~0.9, and ~0.99 at thrust~1. 
+  - We checked how the STheta cut behaves when applied alone in data. This cut removes ~2.3% of events. The cut has most effect in the multijet region. The ratio of thrust with STheta cut applied to thrust with no cut applied is ~0.85 at thrust~0.6-0.75, then monotonically increasing up to ~0.95 at thrust~0.9, and ~0.99 at thrust~1. The same cut is applied at the reco level MC used for unfolding so the effect is corrected for. 
 
 - page 13-14-15-16-17 there is a mis-matching between the figure number in the figure itself and in the caption.
   - Fixed.
 
 - page 15 what is the MC excess in phi around -1.5 ?
-  - This is an artifact of the archived MC, which is believed to be how the QED ISR was saved. We checked the impact of removing this contribution and the impact is negligble. 
+  - This is an artifact of the archived MC, which is believed to be how the QED ISR was saved. We checked the impact of removing this contribution and the impact is negligible. 
 
 - page 19 , neutral hadron, nothing is visible in figure 6 and the so-called cleaning cut of figure 7 is very badly explained, this part is not understandable it must be rewritten
   - Removed the sentences that are confusing. Removed figure 7 also since unnecessary.
@@ -57,7 +57,7 @@ Here are some comments about the text itself:
   - Yes ISR correction is applied. Fixed.
 
 - page 39-40 Table 9, 10 there are considerable differences between the ALEPH original uncertainties and your number, in some cases there are even new rows at the start of the table, can you comment in the paper ?
-  - The ALEPH 2004 measurement went down to thrust=0.58 while we went down to thrust=0.56 in the binning. Those bins have very low statistics and are now commented out for clarity.
+  - The ALEPH 2004 measurement went down to thrust=0.58 while we went down to thrust=0.56 in the binning. Those bins have very low statistics and are now commented out for clarity. The tables are generally less useful than the figures and so are commented out. The exact numbers can be released in a hepdata format if useful but given the main point of the paper is the agentic demonstration and not the precision thrust measurement we prefer to not include the table with the exact numbers.
 
 - page 45 Section 11 and following pages do not seem for publication, in any case they are far below publication quality
   - Removed Section 11 onwards

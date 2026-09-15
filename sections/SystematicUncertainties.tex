@@ -206,8 +206,8 @@ Three additional generators are used to reweight the generator-level thrust
 distribution event-by-event, producing alternative response matrices that span a
 wide range of parton-shower algorithms and hadronization models:
 \texttt{pythia8} (Pythia~8 with Monash tune, dipole-ordered shower),
-\texttt{herwig} (Herwig~7.3, angular-ordered shower with cluster hadronization), and
-\texttt{sherpa} (Sherpa with AHADIC++ hadronization).
+\texttt{herwig} (Herwig~7.3, angular-ordered shower with cluster hadronization)~\cite{bewick2024herwig73releasenote}, and
+\texttt{sherpa} (Sherpa with AHADIC++ hadronization)~\cite{Bothmann2019}.
 The theory envelope is taken as the maximum absolute shift across the three generators:
 \begin{equation}
 \Delta_{\mathrm{theory}}(j)=
@@ -245,7 +245,7 @@ C_{\mathrm{had}}(j) = \frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 U_j^{\mathrm{corr}} = U_j\,C_{\mathrm{had}}(j).
 \end{equation}
 This correction maps the unfolded spectrum from the generator-level hadronic-event-selected
-phase space to the full stable-hadron level, as described in Sec.~\ref{sec:datasets}.
+phase space to the full inclusive hadronic phase space.
 The uncertainty on this correction is propagated as an independent component
 $\Delta_{\mathrm{had}}$.
 
@@ -276,7 +276,7 @@ Both published ALEPH event-shape analyses apply this
 correction~\cite{Barate:1996fi,Heister:2003aj}. The 1998 ALEPH
 analysis~\cite{Barate:1996fi} defines it as the ratio of generator-level thrust
 distributions produced with and without ISR, using JETSET~7.4. The 2004
-analysis~\cite{Heister:2003aj} uses KORALZ, which provides a more accurate
+analysis~\cite{Heister:2003aj} uses \textsc{KORALZ}, which provides a more accurate
 treatment of ISR, to generate the corrected distribution.
 
 The ISR correction is applied bin-by-bin after the hadronic correction using
@@ -293,11 +293,12 @@ where $N_0$ and $N_1$ are the ISR-OFF and ISR-ON histogram contents with their
 Poisson errors. Up and down variations
 $C_{\mathrm{ISR}}^{\pm}(j) = C_{\mathrm{ISR}}(j)\cdot(1\pm\sigma_{\mathrm{rel}}(j))$
 are applied to the unfolded spectrum and the envelope is taken as $\Delta_{\mathrm{ISR}}(j)$.
-The uncertainty is purely MC-statistical in nature; the \textsc{Pythia8} generator
-used here differs from the \textsc{KORALZ} generator used in the ALEPH 2004
-analysis~\cite{Heister:2003aj}, which provides a more accurate ISR description.
-This difference in generator is not propagated as an additional systematic in the
-current release.
+The uncertainty is purely MC-statistical in nature. The \textsc{Pythia8} generator
+used here gives a less accurate ISR description than the \textsc{KORALZ} generator used
+in the ALEPH 2004 analysis~\cite{Heister:2003aj}; for a full measurement the modern
+equivalent, \textsc{KKMCee}, would be the natural choice, as noted in
+Sec.~\ref{sec:corrections_and_cov}. This difference in generator is not propagated as an
+additional systematic in the current release.
 
 \subsection{Statistical covariance}
 \label{sec:stat_covariance}
