@@ -128,7 +128,8 @@ Sec 6.3
     The second quote is a different case and is retained: there ``generator-level'' means MC
     truth level, not a comparison between generators. The ϕ modulation is seen in MC at both reco
     and truth level but not at the same phase in data, which is why it is attributed to the
-    generator and investigated separately.
+    generator and investigated separately. That conclusion had been stated three times, in the
+    text either side of the figure and in its caption; it is now made once.
 - The comment "(see Sec. 6.3)" is awkward as it is written inside Sec 6.3
   - **Response.** The reference pointed at a label inside the same subsection. Retargeted to the figure that shows the investigation.
 - Fig 7 :  It would be interesting to see the MC (no-sel) prediction to justify the cut.
