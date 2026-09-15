@@ -226,25 +226,22 @@ detector acceptance for data and MC.
 % the pair from both, or from neither, was intended.
 % See analysis/Studies/Phase2_Checks_2026-03-03/scripts/gen_vs_genbefore.py.
 
-The two generator-level references in these panels, \texttt{tgen} and \texttt{tgenBefore},
-receive the same particle-level treatment and count particles identically; they differ only in
-which events are retained. The kinematic track and neutral selections of
-Sec.~\ref{sec:object_selection} are applied at detector level only, while the two cleaning
-steps for the archived MC, removal of beam-pipe radiation artifacts and of identified
-photon-conversion pairs (adjacent opposite-charge electron candidates close in $\theta$ and
-$\phi$), apply at generator level as well. \texttt{tgen} holds the generator record of the events written to the
-reconstructed after-cut sample and \texttt{tgenBefore} that of all generated events, so
-\texttt{tgen} is a subset. The events missing from it are removed almost entirely by
-polar-angle acceptance rather than by particle content, which is why the two normalized
-multiplicity and charged-energy spectra coincide through the bulk and
-$\cos\theta_{\mathrm{Sph}}$ is the only panel where they clearly separate. A small residual
-depletion remains in the sparse low-energy tail of $E_{\mathrm{Ch}}$, near the charged-energy
-selection boundary. Both generator-level curves also show an even--odd modulation in $N_{\mathrm{trk}}$,
-with even values favoured: the charged multiplicity has the same parity as the summed charge
-of the counted particles, and charge conservation makes that sum vanish for most generated
-events. The conversion-pair cleaning takes one track out of the multiplicity count and so
-dilutes the modulation without removing it. The modulation is absent
-at detector level, where charged-track inefficiency randomizes the parity.
+\texttt{tgen} and \texttt{tgenBefore} receive the same particle-level treatment and differ
+only in which events are retained: \texttt{tgen} holds the generator record of the events
+written to the reconstructed after-cut sample, \texttt{tgenBefore} that of all generated
+events, so \texttt{tgen} is a subset. The kinematic selections of
+Sec.~\ref{sec:object_selection} are applied at detector level only; the archived-MC cleaning
+of beam-pipe radiation artifacts and of identified photon-conversion pairs, adjacent
+opposite-charge electron candidates close in angle, applies at generator level too. The events
+missing from \texttt{tgen} are removed almost entirely by polar-angle acceptance rather than
+by particle content, so the normalized multiplicity and charged-energy spectra coincide
+through the bulk, separating only in the sparse low-$E_{\mathrm{Ch}}$ tail near the
+charged-energy boundary, and $\cos\theta_{\mathrm{Sph}}$ is the one panel where the curves
+clearly differ. Both generator-level curves also show an even--odd modulation in
+$N_{\mathrm{trk}}$: the charged multiplicity shares the parity of the summed charge of the
+counted particles, which charge conservation makes vanish for most generated events, and the
+conversion-pair cleaning removes one track per pair and so dilutes it. The modulation is
+absent at detector level, where charged-track inefficiency randomizes the parity.
 
 Overall agreement in the high-statistics regions supports the response-model baseline used for IBU.
 The visible differences are concentrated in lower-populated tails and near selection boundaries,
