@@ -31,18 +31,18 @@ The hadronic event-selection correction,
 \begin{equation}
 C_{\mathrm{had}}(j) = \frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 \end{equation}
-accounts for the efficiency of the hadronic event selection at the generator level: multiplying the unfolded spectrum by $C_{\mathrm{had}}$ restores events lost to the hadronic selection, yielding a result independent of the generator-level hadronic event selection.
+accounts for the efficiency of the hadronic event selection at the generator level. The correction factor is applied multiplicative so that the final spectrum restores the yield lost by the hadronic selection.
 
 % NEEDS DATA MACHINE before submission: Sec. 8.7 writes the per-bin total with a
 % Delta_ISR term, but Table 8 has no ISR column, Table 6's formula omits it and Fig. 18's
 % legend does not carry it. Now that this section states the correction is applied, the
 % gap is between the text and the tables rather than between two prose passages.
 % Regenerating those objects needs the isr0/isr1 samples. Mirrored in referee/reviewer2.md.
-An initial-state radiation (ISR) correction,
+A correction for Quantum Electrodynamics (QED) initial-state radiation (ISR) is applied,
 \begin{equation}
-C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)},
+C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)}.
 \end{equation}
-corrects the result from the ISR-inclusive generator-level distribution to the pure $\sqrt{s}=M_Z$ distribution, as in both published ALEPH event-shape analyses~\cite{Barate:1996fi,Heister:2003aj}. Its implementation and uncertainty are described in Sec.~\ref{sec:systematics}.
+This factor is applied to enable comparisons with state-of-the-art theory calculations which do not include QED ISR. Its implementation and uncertainty are described in Sec.~\ref{sec:systematics}.
 
 The unfolding step consumes four synchronized inputs, each a ROOT \texttt{TTree} in the
 archived sample:

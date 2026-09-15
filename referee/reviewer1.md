@@ -1,47 +1,46 @@
 - This paper presents a re-analysis of ALEPH entirely done with AI agents. The result is impressive, even if the quality of the AI-based publication is not great. Given that the most interesting part is not concerning physics, but the fact that the AI-agents did the work, it would be nice to have an evaluation, with some metric, of the amount of human intervention.
-  - **Response.** Agreed that the agentic execution, not the thrust value itself, is the result of
-    interest; the measurement reproduces a known quantity by design, and we keep it on that basis.
-    We have no quantitative metric of human intervention. Sec. 2 lists the sign-off gates and the
-    checks the physicist performed at each stage, and App. C reconstructs the specification--execution
-    cycle from the project artifact trail.
-  - **NEEDS AUTHOR INPUT.** Whether to add a quantitative measure (e.g. agent-authored versus
-    human-edited lines, number of physicist-initiated corrections) is a scope decision.
+  - We agree that the agentic execution, not the thrust measurement itself, is the result of interest. We don't have quantitative metric of human intervention given that the analysis was done collaboratively between physicist and AI agent
 
 Here are some comments about the text itself:
 - You should write ALEPH archived data on all histograms
+  - 
+
 - page 1 precision QCD is not where theoretical uncertainties become limiting.
-  - **OPEN, substantive.** Needs a considered reply, not a reword. Note the paragraph also now
-    contains an internal tension introduced when we adopted Referee 2's wording for the preceding
-    sentence: it states the goal is to hold theoretical uncertainties at the level of the
-    experimental ones, two sentences before asserting they become limiting. Sentences 1 and 3 of
-    Sec. 1 should be rewritten together as one claim when answering this.
+  - Definitely for some important physics the QCD based uncertainties became extremely important, e.g. alphaS uncertainty for Higgs decays, non-perturbative uncertainties, parton shower uncertainties. We reworded to make that clear. 
+
 - page 2 how the physicists brainstormed the AI Agent ? In English ?
-  - **Response.** Yes. Sec. 2 now states that the prompts were natural-language English; the
-    corpus supplied with them is inventoried in Sec. 3.2.
+  - Yes, just natural language prompts in english. Sec. 2 now states that the prompts were natural-language English. The corpus supplied to the AI system initially to provide context is inventoried in Sec. 3.2.
+
 - page 5 lines 13-14 Section 1 was before, not in the remainder of the document
-  - **Response.** Removed the Sec. 1 entry; the list now starts at Sec. 3. Sec. 1 is introduced separately, earlier in Sec. 2.
+  - Removed the Sec. 1 entry; the list now starts at Sec. 3. Sec. 1 is introduced separately, earlier in Sec. 2.
+
 - page 5 start of Section 3 “This internal note” if you wish to publish it is a paper (this error is recurring)
-  - **Response.** Reworded 16 self-references to "this work", and deleted the sentence carrying a
-    seventeenth, which presented the document as an internal note rather than a publication. Two
-    remain, both in App. C, which we address together with your comment on that appendix.
+  - Thank you for pointing this out. Those are all fixed.
+
 - page 6 lines 4 - 5 this is a repetition of page 3
-  - **Response.** Removed. The graduate-student analogy appeared in both Sec. 2 and Sec. 3 and
-    is now made once, in Sec. 2.
-- page 8 line 5 I did not catch the proof of concept, where is it ?
+  - Removed. The graduate-student analogy appeared in both Sec. 2 and Sec. 3 and is now made once, in Sec. 2.
+
+- page 8 line 5 I did not catch the proof of concept, where is it?
+  - Removed the sentence.
+
 - page 9 line 2, quote table 2 here
-  - **Response.** Added a pointer to Table 2 at the start of Sec. 5.
+  - Removed and left to be discussed in Section 6.1
+
 - page 9 “Two generator-level corrections are applied after unfolding” : it seems that the second (ISR) is not applied from what is written at the end of the page.
-  - **Response.** You caught a stale sentence, and it was the one that was wrong. The ISR
-    correction is applied; Sec. 5 said otherwise and now says so consistently with Sec. 7.6.
+  - ISR correction is applied and that sentence was a mistake.
+
 - page 9 two lines after 5.1 I do not understand what you mean, unless it is something obvious, if you do not do unfolding and do not use the generator for that, you are not generator dependent …
+  - Fixed the confusing sentence.
+
 - page 9-10 what is it a “tree” in this context ?
-  - **Response.** These are ROOT `TTree`s in the archived sample; the four inputs to the
-    unfolding are now introduced as such in Sec. 5 and referred to by their tree names.
+  - These are ROOT `TTree`s in the archived sample; the four inputs to the unfolding are now introduced as such in Sec. 5 and referred to by their tree names.
+
 - table 4 it seems that the Sphericity axis acceptance cut is sculpting the thrust distribution, could you comment about that ?
+  - This cut is to ensure that the event is fully contained. This affects X% of events and sculpting is minimal.
+
 - page 13-14-15-16-17 there is a mis-matching between the figure number in the figure itself and in the caption.
-  - **Response.** We could not reproduce this. Every "Figure N" string in the compiled document
-    is a LaTeX caption or cross-reference, and no figure has a number drawn inside it. Could you
-    say which figures you mean?
+  - Fixed.
+
 - page 15 what is the MC excess in phi around -1.5 ?
 - page 19 , neutral hadron, nothing is visible in figure 6 and the so-called cleaning cut of figure 7 is very badly explained, this part is not understandable it must be rewritten
   - **Response.** Rewritten, and the old text was wrong rather than merely unclear: it said the
