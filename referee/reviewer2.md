@@ -117,15 +117,22 @@ Sec 6.3
   but the figure shows only one MC prediction.
   It is also not clear why NTPC would be a sensitive observable for that.
 - There are other comments in the text referring to comparisons to different generators for other figures 2,3,4,5,6
+  that are not visible in the figures.
   - **Response.** Removed. Those passages were wrong: Pythia 8, Herwig and Sherpa are generated
     at particle level only, so they have no reconstructed objects and cannot appear in the
     pwflag figures. They enter the analysis solely as event-level reweighting for the theory
-    uncertainty. Five such passages are corrected.
-  that are not visible in the figures.
+    uncertainty. Six such passages are corrected.
 - Fig 2,3 : "Differences between the archived MC and modern generators (Pythia 8, Herwig, Sherpa) are visible in.. "
+  - **Response.** Removed; only the archived MC is shown in these figures.
 - Fig 4 " "Generator differences are more visible than for charged tracks, reflecting differences in strange-particle production modeling"
   "The ϕ spectrum (Fig. 5) shows a modulation in the generator-level distribution"
   I'm guessing all this discussion on generators across pages 18-19-20 refers to some other figures.
+  - **Response.** Rewritten as a data/MC statement; the strange-production attribution is dropped.
+    The second quote is a different case and is retained: there ``generator-level'' means MC
+    truth level, not a comparison between generators. The ϕ modulation is seen in MC at both reco
+    and truth level but not at the same phase in data, which is why it is attributed to the
+    generator and investigated separately. That conclusion had been stated three times, in the
+    text either side of the figure and in its caption; it is now made once.
 - The comment "(see Sec. 6.3)" is awkward as it is written inside Sec 6.3
   - **Response.** The reference pointed at a label inside the same subsection. Retargeted to the figure that shows the investigation.
 - Fig 7 :  It would be interesting to see the MC (no-sel) prediction to justify the cut.

@@ -51,6 +51,19 @@ Here are some comments about the text itself:
     comparison would need a new configuration flag and a re-run.
 - page 19 also Fig. 8 must be understood before publication (or removed, it seems a detail on MC-data corrections done in the nineties).
 - page 23 first paragraph, I do not understand the text.
+  - **Response.** Rewritten. The paragraph asserted a consistent phase space and then described
+    two ways the phase spaces differ, and deferred the mechanism to a later passage. It now states
+    only what the code does: the response is filled from MC events passing the detector-level
+    selection, each paired with the corresponding generator-level event; a selected event whose
+    reconstructed thrust falls outside the unfolding range enters through the miss term; fakes
+    are taken to be negligible.
+  - **NEEDS DATA MACHINE before submission, two items.** (1) Events lost to reconstruction
+    inefficiency or acceptance are not represented in the response at all: the generator-level loop
+    in `unfold_thrust.py` skips any event absent from the selected reco set, so the miss term
+    carries only out-of-range reco values, not inefficiency. Confirm whether the generator-level
+    tree is already restricted to selected events; if it is not, an efficiency correction is
+    missing and both this paragraph and the $\pi_j^{(0)} = N_{\mathrm{gen}}(j)$ prior statement
+    need revising. (2) The fake rate is asserted as negligible but never quantified.
 - page 25 last paragraph I do not understand how ISR is treated and if corrections are applied or not, please rewrite in a less obscure way.
   - **Response.** Same stale sentence in Sec. 5, now corrected, so the two sections no longer
     contradict each other. The remaining ISR items are answered separately.
