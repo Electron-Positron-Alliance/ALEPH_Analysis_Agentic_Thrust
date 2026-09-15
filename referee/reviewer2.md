@@ -191,6 +191,19 @@ Sec 8.
   is there any understanding for that ?
 - Could you perform the No-neutrals xcheck measurement unfolding to the same T particle level definition as the reference analysis, so it is indeed the measurement of the same observable (with a reduced reco particle collection) ?
   This should represent a more meaningful and stringent xcheck of the results.
+  - **Response.** That is already what the cross-check does. Both the energy-flow and
+    charged-only spectra are unfolded to the same energy-flow particle level; only the
+    reconstructed particle collection differs. We had described it as using separate response
+    matrices per particle-level definition, which was incorrect, and Sec. 8.2 and the Fig. 16
+    caption are corrected accordingly.
+  - **AUTHOR DECISION NEEDED.** Verified in the code and the run output: only reco and data
+    inputs are varied, never the generator-level file, and the generator-level histograms are
+    bit-identical between the two unfoldings. The central-range shift is therefore a
+    sensitivity to neutral-object reconstruction against a single particle-level target, not a
+    difference of observables -- which inverts the argument Sec. 8.2 currently makes from it.
+    The shift itself is confirmed at the quoted magnitude. Rewriting that conclusion is a
+    physics decision; the factual claim has been corrected and the interpretation left for the
+    authors. Mirrored in `sections/SystematicUncertainties.tex`.
 - 8.3 "at lower thrust where soft-gluon emission and hadronization effects are largest"
   - **Response.** You are right, the attribution was inverted. Low thrust is the multi-jet region
     where hard, wide-angle emission dominates; the text now says so.
