@@ -6,6 +6,9 @@ Dear Authors, Thanks for this very interesting work.
 
 Abstract
 - "entirely" seems in contrast with "under expert physicist direction"
+  - **Response.** Reworded. The abstract now states what the agents produce (all analysis code,
+    execution, and note writing) and what the physicist does (directs and reviews), rather than
+    asserting the two at once.
 - "spectrum" > "thrust spectrum"
   - **Response.** Changed.
 
@@ -137,13 +140,22 @@ Sec 6.3
 Sec 6.4
 - Fig 9 : It seems surprising that there seems to be almost no difference in the Gen and GenBefore predictions  except for the theta distribution.
   The GenBefore distributions should have larger particle multiplicities and total energy.
+  - **Response.** "Before" refers to the detector-level event selection, not to particle-level cuts;
+    the two trees receive identical particle-level treatment, the kinematic selections being applied
+    at detector level only. In the archived ntuples \texttt{tgen}
+    is an exact subset of \texttt{tgenBefore}, and the missing events are removed almost entirely
+    by polar-angle acceptance, with only weak dependence on multiplicity, so
+    $\cos\theta_{\mathrm{Sph}}$ is the only panel where the two clearly separate; a small
+    depletion also survives in the sparse low-$E_{\mathrm{Ch}}$ tail. Stated in Sec. 6.4.
 - What is also strange is the up-down oscillating pattern in the MC/Data for the (upper-left) Ntrk plot : how is that happening ?
-  - **Response.** Charge conservation makes the generated charged multiplicity even, and track
-    losses only partially wash that out, so any data--simulation difference in the even--odd
-    structure shows up as a bin-to-bin oscillation in the ratio. Now stated in Sec. 6.
-  - **NEEDS DATA MACHINE.** The even--odd mechanism is the expected one but has not been checked
-    against the figure. Confirm the alternation has period two and an amplitude consistent with
-    it, rather than being bin-edge placement against integer multiplicity or ratio scatter.
+  - **Response.** The modulation is in the generator-level curves, not in data or MC reco. Charge
+    conservation fixes the parity of the charged multiplicity to that of the summed charge, which
+    vanishes for most generated events; the conversion-electron cleaning removes one track per
+    identified pair and dilutes the effect to the size seen. Track inefficiency randomizes the parity
+    at detector level. Noted in Sec. 6.4.
+  - **AUTHOR DECISION NEEDED.** That cleaning drops the pair from the saved particle list but leaves
+    one member in $N_{\mathrm{trk}}$, $E_{\mathrm{Ch}}$ and $E_{\mathrm{vis}}$, so the selection
+    counters and the thrust particle list differ by one track per pair. Confirm the intent.
 - define "IBU" on page 20
   - **Response.** IBU is already defined, at first use in Sec. 2: "Iterative Bayesian Unfolding (IBU) implemented in RooUnfold". No change made.
 
@@ -218,6 +230,8 @@ Sec 8.
   isn't lower thrust where hard gluon emissions are relevant ?
 - Fig 17. The difference at low values look mostly like fluctuations. At higher values there is maybe a shift of T to lower values for the new models ?
 - 8.5 Do we have any idea of how large / relevant could be the difference of ISR effects evaluated with pythia and koralz ?
+  - **NEEDS DATA MACHINE.** Answering this needs a KORALZ sample run through the same ISR
+    correction; we have only the Pythia-based estimate. To be checked before submission.
 - 8.7 could you add some justification to combine in quadrature ?
 - Fig 18 : What is the nature of the asymmetric NES uncertainties ?
   - **Response.** The scale variation is symmetric by construction, so the asymmetry is a
