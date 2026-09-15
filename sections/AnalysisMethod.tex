@@ -39,7 +39,7 @@ Reconstructed MC entries with
 % already restricted to selected events, and if not, whether an efficiency correction is
 % missing. (2) The fake rate is asserted as negligible but is not quantified anywhere.
 % Both mirrored in referee/reviewer1.md.
-The response is filled from MC events that pass the detector-level selection, pairing each reconstructed event with the corresponding generator-level event. A selected event whose reconstructed thrust falls outside the unfolding range enters instead through RooUnfold's miss term, which supplies the efficiency factor $1/\epsilon_j$ appearing below. Reconstructed events with no generator-level counterpart are taken to be negligible in the archived ALEPH hadronic sample and are not subtracted.
+The response is filled with MC events that pass the detector-level selection and the corresponding generator-level event. A selected event whose reconstructed thrust falls outside the unfolding range enters instead through RooUnfold's miss term, which supplies the efficiency factor $1/\epsilon_j$ appearing below. 
 
 \subsection{Iterative Bayesian Unfolding setup and iteration choice}
 
@@ -109,23 +109,22 @@ The \texttt{no\_neutrals} branch is retained as a stress-test and explicitly rep
 \subsection{Hadronic correction, ISR correction, covariance propagation, and matrix exports}
 \label{sec:corrections_and_cov}
 
-After unfolding, a bin-wise hadronic event-selection correction is applied,
+After unfolding, a multiplicative hadronic event-selection and QED ISR corrections are applied as outlined in Section~\ref{}. The hadronic event-selection correction is derived from the archived \textsc{Pythia6} samples as
 \begin{equation}
 C_{\mathrm{had}}(j)=\frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 \qquad
 U_j^{\mathrm{corr}} = U_j\,C_{\mathrm{had}}(j).
 \end{equation}
 
-Following the hadronic correction, an ISR correction is applied bin-by-bin to remove the contribution of initial-state photon radiation that shifts the centre-of-mass energy below the $Z$-pole:
+\noindent The QED ISR correction is derived from a standalone \textsc{Pythia8} samples generated with ISR off and on as
 \begin{equation}
 C_{\mathrm{ISR}}(j)=\frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)},
 \qquad
 U_j^{\mathrm{final}} = U_j^{\mathrm{corr}}\,C_{\mathrm{ISR}}(j).
 \end{equation}
-The numerator and denominator are taken from standalone \textsc{Pythia8} samples generated with ISR disabled (\texttt{isr0\_ALL.root}) and enabled (\texttt{isr1\_ALL.root}), respectively, using the \texttt{tgenBefore/thrust} branch (stored as $1-T$, transformed back to $T$). The ratio histograms are pre-computed once into a cache file and applied identically to the nominal and all systematic variation branches, so that the ISR correction cancels in the systematic shifts and its residual uncertainty (from finite MC statistics on the ratio) is propagated as a separate component $\Delta_{\mathrm{ISR}}$ (Sec.~\ref{sec:isr_uncertainty}).
+Note that \textsc{Pythia8} is chosen for simplicity and similarity with the archived sample, but would not be used in full thrust measurement; a higher order generator like \textsc{KKMCee} would be prefered. a The ratio histograms are pre-computed once into a cache file and applied identically to the nominal and all systematic variation branches, so that the ISR correction cancels in the systematic shifts and its residual uncertainty (from finite MC statistics on the ratio) is propagated as a separate component $\Delta_{\mathrm{ISR}}$ (Sec.~\ref{sec:isr_uncertainty}).
 
-For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the data and response histograms through the IBU iteration chain without toy MC sampling. The resulting covariance matrix is read from the unfolding output and transformed to the normalized differential-thrust basis used in this work. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by
-\texttt{build\_prelim\_uncertainty\_summary.py}.
+For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the data and response histograms through the IBU iteration chain without toy MC sampling. The resulting covariance matrix is read from the unfolding output and transformed to the normalized differential-thrust basis used in this work. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by \texttt{build\_prelim\_uncertainty\_summary.py}.
 
 Response and matrix visualizations are exported by the matrix-plot helper script (see Appendix~\ref{sec:app_workflow_code} for details). Full provenance metadata for the run, including git commit, ROOT version, RooUnfold version, environment fingerprint, response diagnostics, theory-weight coverage, and all computed uncertainty metrics, is written to a structured JSON summary file. This file is the primary machine-readable record of the result and is the canonical reference for any numeric claims in Sec.~\ref{sec:results}.
 

@@ -1,5 +1,5 @@
 - This paper presents a re-analysis of ALEPH entirely done with AI agents. The result is impressive, even if the quality of the AI-based publication is not great. Given that the most interesting part is not concerning physics, but the fact that the AI-agents did the work, it would be nice to have an evaluation, with some metric, of the amount of human intervention.
-  - We agree that the agentic execution, not the thrust measurement itself, is the result of interest. We don't have quantitative metric of human intervention given that the analysis was done collaboratively between physicist and AI agent
+  - Thank you for the nice words. We agree that the agentic execution, not the thrust measurement itself, is the result of interest. We don't have quantitative metric of human intervention given that the analysis was done collaboratively between physicist and AI agent
 
 Here are some comments about the text itself:
 - You should write ALEPH archived data on all histograms
@@ -36,48 +36,28 @@ Here are some comments about the text itself:
   - These are ROOT `TTree`s in the archived sample; the four inputs to the unfolding are now introduced as such in Sec. 5 and referred to by their tree names.
 
 - table 4 it seems that the Sphericity axis acceptance cut is sculpting the thrust distribution, could you comment about that ?
-  - This cut is to ensure that the event is fully contained. This affects X% of events and sculpting is minimal.
+  - We checked how the STheta cut behaves when applied alone in data. This cut removes ~2.3% of events. The cut has most effect in the multijet region. The ratio of thrust with STheta cut applied to thrust with no cut applied is ~0.85 at thrust~0.6-0.75, then monotically increasing up to ~0.95 at thrust~0.9, and ~0.99 at thrust~1. 
 
 - page 13-14-15-16-17 there is a mis-matching between the figure number in the figure itself and in the caption.
   - Fixed.
 
 - page 15 what is the MC excess in phi around -1.5 ?
+  - This is an artifact of the archived MC, which is believed to be how the QED ISR was saved. We checked the impact of removing this contribution and the impact is negligble. 
+
 - page 19 , neutral hadron, nothing is visible in figure 6 and the so-called cleaning cut of figure 7 is very badly explained, this part is not understandable it must be rewritten
-  - **Response.** Rewritten, and the old text was wrong rather than merely unclear: it said the
-    right panel compared the distribution with and without the cleaning cut. That cut acts at
-    object level (`Analyze.cxx:394`) and is therefore applied in both curves; the two panels differ
-    only by the hadronic event selection. The caption and body now say so. A genuine cut-on/cut-off
-    comparison would need a new configuration flag and a re-run.
+  - Removed the sentences that are confusing. Removed figure 7 also since unnecessary.
+
 - page 19 also Fig. 8 must be understood before publication (or removed, it seems a detail on MC-data corrections done in the nineties).
+  - Removed the figure.
+
 - page 23 first paragraph, I do not understand the text.
-  - **Response.** Rewritten. The paragraph asserted a consistent phase space and then described
-    two ways the phase spaces differ, and deferred the mechanism to a later passage. It now states
-    only what the code does: the response is filled from MC events passing the detector-level
-    selection, each paired with the corresponding generator-level event; a selected event whose
-    reconstructed thrust falls outside the unfolding range enters through the miss term; fakes
-    are taken to be negligible.
-  - **NEEDS DATA MACHINE before submission, two items.** (1) Events lost to reconstruction
-    inefficiency or acceptance are not represented in the response at all: the generator-level loop
-    in `unfold_thrust.py` skips any event absent from the selected reco set, so the miss term
-    carries only out-of-range reco values, not inefficiency. Confirm whether the generator-level
-    tree is already restricted to selected events; if it is not, an efficiency correction is
-    missing and both this paragraph and the $\pi_j^{(0)} = N_{\mathrm{gen}}(j)$ prior statement
-    need revising. (2) The fake rate is asserted as negligible but never quantified.
+  - This was a confusing paragraph. Fixed the text.
+
 - page 25 last paragraph I do not understand how ISR is treated and if corrections are applied or not, please rewrite in a less obscure way.
-  - **Response.** Same stale sentence in Sec. 5, now corrected, so the two sections no longer
-    contradict each other. The remaining ISR items are answered separately.
+  - Yes ISR correction is applied. Fixed.
+
 - page 39-40 Table 9, 10 there are considerable differences between the ALEPH original uncertainties and your number, in some cases there are even new rows at the start of the table, can you comment in the paper ?
-  - **Response, part 1 (the rows).** The leading $[0.55,0.56)$ row was empty in all three tables --
-    every column was a dash -- and is removed; the captions now state the range as
-    $0.56 \le T < 1.0$. Four further low-thrust rows remain and carry very large uncertainties
-    (500.9%, 97.2%, 82.7%, 75.3%). Those are real values, and suppressing them would narrow the
-    reported range, so we have left that as an explicit decision rather than a formatting change.
-  - **Response, part 2 (why they differ).** Outstanding. This needs a paragraph in Sec. 9.1, not a
-    table edit, and it interacts with Referee 2's question on the same figure. Tracked separately.
+  - The ALEPH 2004 measurement went down to thrust=0.58 while we went down to thrust=0.56 in the binning. Those bins have very low statistics and are now commented out for clarity.
+
 - page 45 Section 11 and following pages do not seem for publication, in any case they are far below publication quality
-  - **Response.** Sec. 11 is the record of where the agentic workflow failed or needed correction,
-    which is the substance of this work rather than supplementary material, so we retain it. The
-    sentence presenting the document as an internal note rather than a publication is removed.
-  - **NEEDS AUTHOR INPUT.** App. B (validation and cross-checks) and App. C (reconstructed
-    communication summary) are the pages the referee most likely means; whether either belongs in
-    a submission is your call.
+  - Removed Section 11 onwards
