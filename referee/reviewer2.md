@@ -114,17 +114,21 @@ Sec 6.3
   but the figure shows only one MC prediction.
   It is also not clear why NTPC would be a sensitive observable for that.
 - There are other comments in the text referring to comparisons to different generators for other figures 2,3,4,5,6
+  that are not visible in the figures.
   - **Response.** Removed. Those passages were wrong: Pythia 8, Herwig and Sherpa are generated
     at particle level only, so they have no reconstructed objects and cannot appear in the
     pwflag figures. They enter the analysis solely as event-level reweighting for the theory
     uncertainty. Six such passages are corrected.
-  that are not visible in the figures.
 - Fig 2,3 : "Differences between the archived MC and modern generators (Pythia 8, Herwig, Sherpa) are visible in.. "
   - **Response.** Removed; only the archived MC is shown in these figures.
 - Fig 4 " "Generator differences are more visible than for charged tracks, reflecting differences in strange-particle production modeling"
-  - **Response.** Rewritten as a data/MC statement; the strange-production attribution is dropped.
   "The ϕ spectrum (Fig. 5) shows a modulation in the generator-level distribution"
   I'm guessing all this discussion on generators across pages 18-19-20 refers to some other figures.
+  - **Response.** Rewritten as a data/MC statement; the strange-production attribution is dropped.
+    The second quote is a different case and is retained: there ``generator-level'' means MC
+    truth level, not a comparison between generators. The ϕ modulation is seen in MC at both reco
+    and truth level but not at the same phase in data, which is why it is attributed to the
+    generator and investigated separately.
 - The comment "(see Sec. 6.3)" is awkward as it is written inside Sec 6.3
   - **Response.** The reference pointed at a label inside the same subsection. Retargeted to the figure that shows the investigation.
 - Fig 7 :  It would be interesting to see the MC (no-sel) prediction to justify the cut.
@@ -136,6 +140,9 @@ Sec 6.4
   - **Response.** Charge conservation makes the generated charged multiplicity even, and track
     losses only partially wash that out, so any data--simulation difference in the even--odd
     structure shows up as a bin-to-bin oscillation in the ratio. Now stated in Sec. 6.
+  - **NEEDS DATA MACHINE.** The even--odd mechanism is the expected one but has not been checked
+    against the figure. Confirm the alternation has period two and an amplitude consistent with
+    it, rather than being bin-edge placement against integer multiplicity or ratio scatter.
 - define "IBU" on page 20
   - **Response.** IBU is already defined, at first use in Sec. 2: "Iterative Bayesian Unfolding (IBU) implemented in RooUnfold". No change made.
 

@@ -25,11 +25,11 @@ The nominal branch is the only run with covariance enabled; variation branches a
 
 \subsection{Response construction from matched MC}
 
-Response filling uses event-by-event matching through \texttt{uniqueID}. Reconstructed MC entries with
+Reconstructed MC entries with
 \texttt{passEventSelection} equal to 1 define the selected detector-level phase space. Generator-level entries are then matched to this selected set and used to fill:
 \begin{itemize}
 \item the response counts matrix;
-\item the miss term required by RooUnfold for inefficiency handling.
+\item the miss term of the RooUnfold response.
 \end{itemize}
 
 % NEEDS DATA MACHINE before submission, two items. (1) Reconstruction inefficiency: the
@@ -39,7 +39,7 @@ Response filling uses event-by-event matching through \texttt{uniqueID}. Reconst
 % already restricted to selected events, and if not, whether an efficiency correction is
 % missing. (2) The fake rate is asserted as negligible but is not quantified anywhere.
 % Both mirrored in referee/reviewer1.md.
-The response is filled from MC events that pass the detector-level selection, pairing the reconstructed and generator-level thrust of the same event through \texttt{uniqueID}. A selected event whose reconstructed thrust falls outside the unfolding range enters instead through RooUnfold's miss term, which supplies the efficiency factor $1/\epsilon_j$ appearing below. Reconstructed events with no generator-level counterpart are taken to be negligible in the archived ALEPH hadronic sample and are not subtracted.
+The response is filled from MC events that pass the detector-level selection, pairing each reconstructed event with the corresponding generator-level event. A selected event whose reconstructed thrust falls outside the unfolding range enters instead through RooUnfold's miss term, which supplies the efficiency factor $1/\epsilon_j$ appearing below. Reconstructed events with no generator-level counterpart are taken to be negligible in the archived ALEPH hadronic sample and are not subtracted.
 
 \subsection{Iterative Bayesian Unfolding setup and iteration choice}
 

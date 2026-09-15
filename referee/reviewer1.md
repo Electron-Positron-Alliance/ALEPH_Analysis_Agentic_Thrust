@@ -45,7 +45,8 @@ Here are some comments about the text itself:
   - **Response.** Rewritten. The paragraph asserted a consistent phase space and then described
     two ways the phase spaces differ, and deferred the mechanism to a later passage. It now states
     only what the code does: the response is filled from MC events passing the detector-level
-    selection, paired by `uniqueID`; a selected event whose reconstructed thrust falls outside the
+    selection, each paired with the corresponding generator-level event; a selected event whose
+    reconstructed thrust falls outside the
     unfolding range enters through the miss term; fakes are taken to be negligible.
   - **NEEDS DATA MACHINE before submission, two items.** (1) Events lost to reconstruction
     inefficiency or acceptance are not represented in the response at all: the generator-level loop
