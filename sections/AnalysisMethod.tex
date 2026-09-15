@@ -111,7 +111,7 @@ After unfolding, two multiplicative corrections are applied. A correction for th
 \begin{equation}
 C_{\mathrm{had}}(j) = \frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 \end{equation}
-accounts for the efficiency of the selection at the generator level. The correction factor is derived from the archived \textsc{Pythia6} sample~\cite{Sjostrand:2000wi} and is applied so that the final spectrum restores the yield lost by the hadronic selection.
+accounts for the efficiency of the selection at the generator level. The correction factor is derived from the archived \textsc{Pythia}~6 sample~\cite{Sjostrand:2000wi} and is applied so that the final spectrum restores the yield lost by the hadronic selection.
 
 % NEEDS DATA MACHINE before submission: Sec. 8.7 writes the per-bin total with a
 % Delta_ISR term, but Table 8 has no ISR column, Table 6's formula omits it and Fig. 18's
@@ -122,7 +122,7 @@ The correction for Quantum Electrodynamics (QED) initial-state radiation (ISR) i
 \begin{equation}
 C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)}.
 \end{equation}
-This factor is applied to enable comparisons with state-of-the-art theory calculations which do not include QED ISR. The correction is derived from standalone \textsc{Pythia8} samples generated with ISR switched off and on~\cite{Bierlich:2022pfr}. \textsc{Pythia8} is chosen here for simplicity; a higher-order generator such as \textsc{KKMCee} would be preferred for a full thrust measurement~\cite{Jadach:2022mbe}. The ratio histograms are pre-computed once into a cache file and applied identically to the nominal and all systematic variation branches, so that the ISR correction cancels in the systematic shifts and its residual uncertainty (from finite MC statistics on the ratio) is propagated as a separate component $\Delta_{\mathrm{ISR}}$ (Sec.~\ref{sec:isr_uncertainty}).
+This factor is applied to enable comparisons with state-of-the-art theory calculations which do not include QED ISR. The correction is derived from standalone \textsc{Pythia}~8.317 samples generated with ISR switched off and on~\cite{Bierlich:2022pfr}. \textsc{Pythia}~8.317 is chosen here for simplicity; a higher-order generator such as \textsc{KKMCee}~5.00.02 would be preferred for a full thrust measurement~\cite{Jadach:2022mbe}. The ratio histograms are pre-computed once into a cache file and applied identically to the nominal and all systematic variation branches, so that the ISR correction cancels in the systematic shifts and its residual uncertainty (from finite MC statistics on the ratio) is propagated as a separate component $\Delta_{\mathrm{ISR}}$ (Sec.~\ref{sec:isr_uncertainty}).
 
 For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the data and response histograms through the IBU iteration chain without toy MC sampling. The resulting covariance matrix is read from the unfolding output and transformed to the normalized differential-thrust basis used in this work. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by \texttt{build\_prelim\_uncertainty\_summary.py}.
 

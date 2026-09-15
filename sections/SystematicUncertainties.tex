@@ -201,13 +201,13 @@ within the energy-flow observable.}
 
 Theory systematic variations probe the residual model dependence introduced by
 the Monte Carlo generator used to build the detector response matrix. The nominal
-response matrix is constructed from Jetset~7.4/Pythia~6, the ALEPH simulation.
+response matrix is constructed from \textsc{Pythia}~6~\cite{Sjostrand:2000wi}, the ALEPH simulation.
 Three additional generators are used to reweight the generator-level thrust
 distribution event-by-event, producing alternative response matrices that span a
 wide range of parton-shower algorithms and hadronization models:
-\texttt{pythia8} (Pythia~8 with Monash tune, dipole-ordered shower),
-\texttt{herwig} (Herwig~7.3, angular-ordered shower with cluster hadronization)~\cite{bewick2024herwig73releasenote}, and
-\texttt{sherpa} (Sherpa with AHADIC++ hadronization)~\cite{Bothmann2019}.
+\texttt{pythia8} (\textsc{Pythia}~8.317 with Monash tune, dipole-ordered shower)~\cite{Bierlich:2022pfr},
+\texttt{herwig} (\textsc{Herwig}~7.1.5, angular-ordered shower with cluster hadronization)~\cite{B_hr_2008,Bellm:2015jjp,Bellm:2017bvx, bewick2024herwig73releasenote}, and
+\texttt{sherpa} (\textsc{Sherpa}~2.2.6 with AHADIC++ hadronization)~\cite{Bothmann2019}.
 The theory envelope is taken as the maximum absolute shift across the three generators:
 \begin{equation}
 \Delta_{\mathrm{theory}}(j)=
@@ -275,12 +275,12 @@ C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{g
 Both published ALEPH event-shape analyses apply this
 correction~\cite{Barate:1996fi,Heister:2003aj}. The 1998 ALEPH
 analysis~\cite{Barate:1996fi} defines it as the ratio of generator-level thrust
-distributions produced with and without ISR, using JETSET~7.4. The 2004
+distributions produced with and without ISR, using \textsc{JETSET}~7.4. The 2004
 analysis~\cite{Heister:2003aj} uses \textsc{KORALZ}, which provides a more accurate
 treatment of ISR, to generate the corrected distribution.
 
 The ISR correction is applied bin-by-bin after the hadronic correction using
-standalone \textsc{Pythia8} samples with ISR disabled (\texttt{isr0}) and enabled
+standalone \textsc{Pythia}~8.317 samples with ISR disabled (\texttt{isr0}) and enabled
 (\texttt{isr1}), as described in Sec.~\ref{sec:corrections_and_cov}. The uncertainty on
 this correction is derived from the finite Monte Carlo statistics of the ratio
 $C_{\mathrm{ISR}}(j) = N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)/N^{\mathrm{gen}}_{\mathrm{ISR}}(j)$
@@ -293,10 +293,10 @@ where $N_0$ and $N_1$ are the ISR-OFF and ISR-ON histogram contents with their
 Poisson errors. Up and down variations
 $C_{\mathrm{ISR}}^{\pm}(j) = C_{\mathrm{ISR}}(j)\cdot(1\pm\sigma_{\mathrm{rel}}(j))$
 are applied to the unfolded spectrum and the envelope is taken as $\Delta_{\mathrm{ISR}}(j)$.
-The uncertainty is purely MC-statistical in nature. The \textsc{Pythia8} generator
+The uncertainty is purely MC-statistical in nature. The \textsc{Pythia}~8.317 generator
 used here gives a less accurate ISR description than the \textsc{KORALZ} generator used
 in the ALEPH 2004 analysis~\cite{Heister:2003aj}; for a full measurement the modern
-equivalent, \textsc{KKMCee}, would be the natural choice, as noted in
+equivalent, \textsc{KKMCee}~5.00.02, would be the natural choice, as noted in
 Sec.~\ref{sec:corrections_and_cov}. This difference in generator is not propagated as an
 additional systematic in the current release.
 
