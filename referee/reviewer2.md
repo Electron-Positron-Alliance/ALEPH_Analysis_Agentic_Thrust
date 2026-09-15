@@ -6,6 +6,9 @@ Dear Authors, Thanks for this very interesting work.
 
 Abstract
 - "entirely" seems in contrast with "under expert physicist direction"
+  - **Response.** Reworded. The abstract now states what the agents produce (all analysis code,
+    execution, and note writing) and what the physicist does (directs and reviews), rather than
+    asserting the two at once.
 - "spectrum" > "thrust spectrum"
   - **Response.** Changed.
 
@@ -220,6 +223,8 @@ Sec 8.
   isn't lower thrust where hard gluon emissions are relevant ?
 - Fig 17. The difference at low values look mostly like fluctuations. At higher values there is maybe a shift of T to lower values for the new models ?
 - 8.5 Do we have any idea of how large / relevant could be the difference of ISR effects evaluated with pythia and koralz ?
+  - **NEEDS DATA MACHINE.** Answering this needs a KORALZ sample run through the same ISR
+    correction; we have only the Pythia-based estimate. To be checked before submission.
 - 8.7 could you add some justification to combine in quadrature ?
 - Fig 18 : What is the nature of the asymmetric NES uncertainties ?
   - **Response.** The scale variation is symmetric by construction, so the asymmetry is a
