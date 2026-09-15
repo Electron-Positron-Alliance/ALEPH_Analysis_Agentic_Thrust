@@ -21,7 +21,9 @@ Here are some comments about the text itself:
 - page 5 lines 13-14 Section 1 was before, not in the remainder of the document
   - **Response.** Removed the Sec. 1 entry; the list now starts at Sec. 3. Sec. 1 is introduced separately, earlier in Sec. 2.
 - page 5 start of Section 3 “This internal note” if you wish to publish it is a paper (this error is recurring)
-  - **Response.** Reworded 16 self-references to "this work". Three remain, in Sec. 11 and App. C, which we address together with your comment on those sections.
+  - **Response.** Reworded 16 self-references to "this work", and deleted the sentence carrying a
+    seventeenth, which presented the document as an internal note rather than a publication. Two
+    remain, both in App. C, which we address together with your comment on that appendix.
 - page 6 lines 4 - 5 this is a repetition of page 3
   - **Response.** Removed. The graduate-student analogy appeared in both Sec. 2 and Sec. 3 and
     is now made once, in Sec. 2.
