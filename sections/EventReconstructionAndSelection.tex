@@ -216,27 +216,30 @@ charged-energy modeling near the hadronic-selection boundary at 15 GeV, and
 $\cos\theta_{\mathrm{Sph}}$ tests whether accepted event topology is similarly contained in
 detector acceptance for data and MC.
 
-The two generator-level references in these panels, \texttt{tgen} and
-\texttt{tgenBefore}, apply no object-level selection and count particles identically;
-they differ only in which events are retained. \texttt{tgen} holds the generator record of
-the events written to the reconstructed after-cut sample and \texttt{tgenBefore} that of all
-generated events, so \texttt{tgen} is a subset. The events missing from it are removed by
-polar-angle acceptance rather than by particle content, which is why the two normalized
-multiplicity and charged-energy spectra very nearly coincide and only
-$\cos\theta_{\mathrm{Sph}}$ separates them. Both generator-level curves also show an even--odd modulation in
-$N_{\mathrm{trk}}$, with even values favoured: charge conservation ties the parity of the
-charged multiplicity to the summed charge of the counted particles, which vanishes for most
-generated events. The conversion-electron cleaning removes one member of each identified pair
-from the multiplicity count and so dilutes the modulation without removing it. It is absent at
-detector level, where charged-track inefficiency randomizes the parity.
-% AUTHOR DECISION NEEDED: the conversion-electron cleaning in Analyze.cxx sets
+% AUTHOR DECISION NEEDED: the conversion-electron cleaning glossed below (Analyze.cxx) sets
 % saveParticle=false for the second member of the pair and pops the first from the saved
 % particle list, but the first stays in NTrk, TotalTrkEnergy and EVis. So the event-selection
 % counters and the particle list used for the thrust sum disagree by one track per identified
-% pair (0.87 pairs/event at generator level). At reco the charged-track selection then
-% re-sets saveParticle=true, so the second member is kept after all and only the first is
-% dropped. Confirm whether removing the pair from both, or from neither, was intended.
+% pair (0.87 pairs/event at generator level). At reco the charged-track selection then re-sets
+% saveParticle=true, so the second member is kept after all and only the first is dropped.
+% The cleaning is also applied to the archived MC only, never to data. Confirm whether removing
+% the pair from both, or from neither, was intended.
 % See analysis/Studies/Phase2_Checks_2026-03-03/scripts/gen_vs_genbefore.py.
+
+The two generator-level references in these panels, \texttt{tgen} and \texttt{tgenBefore},
+apply no object-level selection and count particles identically; they differ only in which
+events are retained. \texttt{tgen} holds the generator record of the events written to the
+reconstructed after-cut sample and \texttt{tgenBefore} that of all generated events, so
+\texttt{tgen} is a subset. The events missing from it are removed by polar-angle acceptance
+rather than by particle content, which is why the two normalized multiplicity and
+charged-energy spectra very nearly coincide and only $\cos\theta_{\mathrm{Sph}}$ separates
+them. Both generator-level curves also show an even--odd modulation in $N_{\mathrm{trk}}$,
+with even values favoured: the charged multiplicity has the same parity as the summed charge
+of the counted particles, and charge conservation makes that sum vanish for most generated
+events. Identified photon-conversion pairs, removed from the archived MC as adjacent
+opposite-charge electron candidates close in $\theta$ and $\phi$, take one track out of the
+multiplicity count and so dilute the modulation without removing it. The modulation is absent
+at detector level, where charged-track inefficiency randomizes the parity.
 
 Overall agreement in the high-statistics regions supports the response-model baseline used for IBU.
 The visible differences are concentrated in lower-populated tails and near selection boundaries,
