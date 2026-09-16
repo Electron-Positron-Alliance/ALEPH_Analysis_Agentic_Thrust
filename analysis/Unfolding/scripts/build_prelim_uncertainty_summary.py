@@ -1106,8 +1106,11 @@ def make_final_plot(
     pad2.Draw()
     pad2.cd()
 
-    # Build ratio in ALEPH binning so ROOT propagates uncertainties from
-    # both histograms with native TH1 error handling.
+    # Build the ratio in ALEPH binning. Our total uncertainty is already drawn as
+    # the grey band around unity, so it must NOT also enter the error bars: each
+    # uncertainty appears exactly once, and the bars carry ALEPH's alone. The two
+    # are correlated anyway (same detector, overlapping data, related simulation),
+    # so combining them in quadrature would not be meaningful.
     h_nom_total = nominal.Clone("h_nom_total_for_ratio")
     h_nom_total.SetDirectory(0)
     for i, e in enumerate(total_abs, start=1):
@@ -1121,9 +1124,14 @@ def make_final_plot(
     h_nom_on_aleph.SetDirectory(0)
 
     # Requested ratio definition: ALEPH / Unfolded.
+    h_ratio_den = h_nom_on_aleph.Clone("h_nominal_on_aleph_bins_noerr")
+    h_ratio_den.SetDirectory(0)
+    for ibin in range(1, h_ratio_den.GetNbinsX() + 1):
+        h_ratio_den.SetBinError(ibin, 0.0)
+
     h_ratio = h_aleph.Clone("h_ratio_aleph_over_unfolded")
     h_ratio.SetDirectory(0)
-    h_ratio.Divide(h_aleph, h_nom_on_aleph)
+    h_ratio.Divide(h_aleph, h_ratio_den)
 
     # Gray band around 1 using unfolded total relative uncertainty.
     h_ratio_band = h_nom_on_aleph.Clone("h_ratio_unfold_unc_band")
@@ -1511,12 +1519,20 @@ def make_correction_stages_plot(
 
     ratio_hists_cs = []
 
+    # Denominator with errors stripped: dividing by h_aleph directly would add
+    # ALEPH's uncertainty to every curve's error bars, so each stage would inherit
+    # it on top of its own. Each uncertainty is shown once instead.
+    h_aleph_den = h_aleph.Clone("h_cs_aleph_den_noerr")
+    h_aleph_den.SetDirectory(0)
+    for ibin in range(1, h_aleph_den.GetNbinsX() + 1):
+        h_aleph_den.SetBinError(ibin, 0.0)
+
     def draw_ratio_over_aleph(h_num, rname, color, marker):
         h_rb = rebin_to_aleph(h_num, rname + "_rb")
         h_rb.SetDirectory(0)
         h_r = h_aleph.Clone(rname + "_ratio")
         h_r.SetDirectory(0)
-        h_r.Divide(h_rb, h_aleph)
+        h_r.Divide(h_rb, h_aleph_den)
         apply_style(h_r, color=color, marker=marker, line_style=1, is_data=True)
         style_ratio(h_r, x_title)
         h_r.GetYaxis().SetTitle("Ratio to ALEPH")
