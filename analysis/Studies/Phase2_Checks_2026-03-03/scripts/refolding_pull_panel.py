@@ -28,6 +28,18 @@ import os
 import sys
 
 import ROOT
+
+# Input locations come from analysis/inputs.json via paths.py, not from a fixed
+# directory, so a rerun does not silently read another run's ntuples.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+
+
+def _temp(name):
+    try:
+        import paths
+        return paths.temp(name)
+    except Exception:
+        return os.path.join("DataProcessing", "temp", name)
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 ROOT.TH1.AddDirectory(False)  # prevent histograms from being owned by TFile directories
@@ -41,10 +53,10 @@ N_BINS  = 50
 def parse_args():
     p = argparse.ArgumentParser(description="Refolding pull panel")
     p.add_argument("--input-data",
-                   default="DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+                   default=_temp("LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root"),
                    help="Data ROOT file (t tree, reco level)")
     p.add_argument("--input-mc-nominal",
-                   default="DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
+                   default=_temp("alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root"),
                    help="MC reco ROOT file for nominal unfolded result (t tree)")
     p.add_argument("--iter-files", nargs="+", default=[],
                    help="Additional iteration ROOT files as key=path pairs, "

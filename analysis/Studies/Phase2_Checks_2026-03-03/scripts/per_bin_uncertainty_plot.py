@@ -15,7 +15,7 @@ build_prelim_uncertainty_summary.py.  Y-axis limited to 50%.
 
 Usage (from repo root):
     python Studies/Phase2_Checks_2026-03-03/scripts/per_bin_uncertainty_plot.py \
-        [--result-dir Studies/PreliminaryResult/2026-02-17_thrust_iter5/] \
+        [--result-dir <run dir; defaults to run_dir from inputs.json>] \
         [--outdir     Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/]
 
 Author: AI agent (Claude), physicist direction: Anthony Badea
@@ -24,6 +24,7 @@ Date: 2026-03-04
 
 import argparse
 import os
+import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -33,10 +34,22 @@ import numpy as np
 import pandas as pd
 
 import ROOT
+
+# Input locations come from analysis/inputs.json via paths.py, not from a fixed
+# run directory, so a rerun does not silently read another run's results.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+
+
+def _run(*parts):
+    try:
+        import paths
+        return os.path.join(paths.get("run_dir"), *parts)
+    except Exception:
+        return os.path.join("Studies", "PreliminaryResult", *parts)
 ROOT.gROOT.SetBatch(True)
 ROOT.TH1.AddDirectory(False)
 
-DEFAULT_RESULT_DIR = "Studies/PreliminaryResult/2026-03-05_thrust_iter5/"
+DEFAULT_RESULT_DIR = _run()
 DEFAULT_OUTDIR = "Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/"
 
 T_MIN_DISPLAY = 0.55
