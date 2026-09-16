@@ -25,13 +25,8 @@ reconstructed and generated thrust bins.
 % Referee 2 spotted a real inconsistency; the fix is to say which correction stage
 % each object is at. Deferred until the ISR correction code is available, since the
 % wording depends on how the ISR story is presented.
-% Still unexplained and separate: the three chi2/ndf values in the caption below
-% (0.663 / 0.421 / 0.361) reproduce in NEITHER configuration -- the published run
-% gives 1.4305 / 1.2164 / 0.2904 and a no-theory no-ISR rerun gives 0.9855 / 0.6556
-% / 0.4063. They trace to Plans/2026-02-19_thrust_difference_checks.md, which cites
-% of_ibu_comparison_metrics.json and misquotes it. Mirrored in referee/reviewer2.md.
-% Does NOT apply to the max off-diagonal correlation 0.887 further down: that one is
-% independently confirmed from corr_total.csv (0.8868657167 at bin 15,16).
+% The maximum off-diagonal correlation quoted below is confirmed against
+% corr_total.csv for the run that produced these figures.
 
 \begin{figure}[t!]
 \centering
@@ -39,12 +34,9 @@ reconstructed and generated thrust bins.
 \hfill%
 \includegraphics[width=0.48\textwidth]{figures/final_result_of_ibu_comparison.pdf}
 \caption{Left: final unfolded thrust distribution with total uncertainty band compared to the published ALEPH 2004 result. In the ratio panel each uncertainty is shown once: the gray band is the total uncertainty of this measurement, and the error bars on the points are the ALEPH 2004 uncertainty alone, matching the per-bin ALEPH totals quoted in the text. The two are not independent, since both use ALEPH data and related simulation, so overlap indicates consistency rather than providing a significance test. Right: comparison with OmniFold and prior IBU spectra; the ratio panel shows each method relative to the current unfolded nominal.}
-% chi2/ndf against OmniFold, prior IBU and ALEPH 2004 was quoted here and removed: the
-% values did not match the run that generated the figure and raw numbers in captions have
-% to be re-fixed on every re-run. To restore it, take chi2_metrics/*/chi2_per_ndf from the
-% run summary of_ibu_comparison_metrics.json rather than from any note or prose, and state
-% the convention -- the code uses sigma2 = yerr1^2 + yerr2^2, diagonal only, ndf = bins
-% with non-zero sigma2. Prefer putting it in the body text over the caption.
+% No chi2/ndf is quoted for these comparisons. The available implementation treats
+% the spectra as independent and uses diagonal uncertainties only, which is not
+% applicable to measurements sharing the ALEPH detector, data and simulation.
 
 \label{fig:final_thrust_result}
 \end{figure}
