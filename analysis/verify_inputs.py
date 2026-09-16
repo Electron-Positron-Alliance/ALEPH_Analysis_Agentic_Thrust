@@ -15,34 +15,33 @@ but no stage-1 run yet is correct, not broken.
 import os
 import sys
 
-ALEPH = os.environ.get("ALEPH_DATA", os.path.expanduser(
-    "~/Documents/Documents/ALEPH/ALEPH"))
-LIVE = os.environ.get("ALEPH_LIVE", os.path.expanduser(
-    "~/Documents/Documents/ALEPH/ALEPH_Analysis_Agentic_Thrust"))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths  # noqa: E402
+
+# Input locations come from inputs.json via paths.py, which is the single source
+# of truth; only unfold-ee-logtau is not a key there, so it keeps an env var.
 LOGTAU = os.environ.get("ALEPH_LOGTAU", os.path.expanduser(
     "~/Documents/Documents/ALEPH/unfold-ee-logtau"))
 
 # Table 1 of the manuscript: (tree, total entries)
 RAW = [
-    (f"{ALEPH}/LEP1Data1994_recons_aftercut-MERGED.root", "t", 1_365_440),
-    (f"{ALEPH}/alephMCRecoAfterCutPaths_1994.root", "t", 771_597),
-    (f"{ALEPH}/alephMCRecoAfterCutPaths_1994.root", "tgen", 771_597),
-    (f"{ALEPH}/alephMCRecoAfterCutPaths_1994.root", "tgenBefore", 973_769),
+    (paths.get("raw_data_file"), "t", 1_365_440),
+    (paths.get("raw_mc_file"), "t", 771_597),
+    (paths.get("raw_mc_file"), "tgen", 771_597),
+    (paths.get("raw_mc_file"), "tgenBefore", 973_769),
 ]
 # Derived ntuples: (tree, total, passEventSelection==1)
 DERIVED = [
-    (f"{LIVE}/DataProcessing/temp/"
-     "LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+    (paths.temp("LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root"),
      "t", 1_365_440, 1_326_312),
-    (f"{LIVE}/DataProcessing/temp/"
-     "alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
+    (paths.temp("alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root"),
      "t", 771_597, 751_861),
 ]
 EXTERNAL = [
-    (f"{ALEPH}/HEPData-ins636645-v1-Table_54.csv", "ALEPH 2004 reference"),
+    (paths.get("aleph2004_csv"), "ALEPH 2004 reference"),
     (f"{LOGTAU}/Results/ibu_results.npz", "prior IBU"),
     (f"{LOGTAU}/Results/unfold_thrust_ee_ZPole_ALEPH.h5", "prior OmniFold"),
-    (f"{LOGTAU}/arxivPaperResults2025/theory_reweighting/training-bf3b5fc3",
+    (paths.get("theory_weights_dir"),
      "theory weights (tag used by the published run)"),
 ]
 

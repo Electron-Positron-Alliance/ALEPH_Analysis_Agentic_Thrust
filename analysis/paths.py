@@ -21,6 +21,8 @@ Usage:
     require("raw_data_file")         # same as get(), but errors if missing on disk
 """
 
+from __future__ import annotations
+
 import json
 import os
 import re

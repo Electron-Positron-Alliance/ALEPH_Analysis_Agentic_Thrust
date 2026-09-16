@@ -63,6 +63,9 @@ source "$HERE/.venv/bin/activate"
 # PyROOT lives in the ROOT install, not the venv.
 _SITE="$ROOTSYS/lib/python$_RPY_MINOR/site-packages"
 export PYTHONPATH="${_SITE}:${_RLIB}${PYTHONPATH:+:$PYTHONPATH}"
+# Linux needs $ROOTSYS/lib on the loader path too, or `import ROOT` aborts in
+# TROOT::InitInterpreter with "undefined symbol: CreateInterpreter".
+export LD_LIBRARY_PATH="${_RLIB}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export ROOTSYS
 
 # RooUnfold must be built against this same ROOT. build/ links libCore.6.36.

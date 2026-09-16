@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "Input locations on ucyoung01 (Linux). Select with ALEPH_INPUTS=<this file>.",
+    "inputs.json is left alone so it keeps resolving on the macOS workstation.",
+    "Same schema as inputs.json: ~ and $ENVVAR expand, ${key} references an earlier key."
+  ],
+
+  "aleph_data_dir": "/home/badea/e+e-/aleph/samples/skim/2PCpaper",
+  "temp_dir": "/home/badea/e+e-/aleph/thrust/data_agentic_thrust/processed/2026-09-16",
+
+  "raw_data_file": "${aleph_data_dir}/LEP1Data1994_recons_aftercut-MERGED.root",
+  "raw_mc_file": "${aleph_data_dir}/alephMCRecoAfterCutPaths_1994.root",
+  "aleph2004_csv": "/home/badea/e+e-/aleph/HEPData/ins636645/HEPData-ins636645-v1-Table_54.csv",
+
+  "theory_weights_dir": "/home/badea/e+e-/aleph/thrust/UnfoldThrustResults/theory_reweighting/training-bf3b5fc3",
+
+  "_isr_comment": [
+    "Unlike the macOS workstation, the 2.5M-event PYTHIA ISR-off/ISR-on samples ARE present",
+    "here, so the correction is rebuilt from source rather than applied from a cache.",
+    "Verified: C_ISR in [0.99,1.00) = 1.1996 at both 42x[0.58,1.0] and 50x[0.5,1.0] binning.",
+    "isr_cache_file points at this run's own output; it does not exist until the run writes it."
+  ],
+  "isr0_file": "/home/badea/e+e-/aleph/old/pythia8/isr0_ALL.root",
+  "isr1_file": "/home/badea/e+e-/aleph/old/pythia8/isr1_ALL.root",
+  "isr_cache_file": "${run_dir}/isr_cache/isr_correction_cache.root",
+
+  "run_dir": "/home/badea/e+e-/aleph/thrust/worktrees/reprocess-2026-09-16/analysis/Studies/PreliminaryResult/2026-09-16_thrust_iter5"
+}
