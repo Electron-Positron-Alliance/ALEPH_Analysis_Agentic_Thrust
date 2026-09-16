@@ -17,7 +17,7 @@ before presenting the combination model and numerical results.
 \label{sec:stat_uncertainty}
 
 The statistical uncertainty arises from Poisson fluctuations in the
-$1{,}326{,}312$ selected hadronic-event data sample. It is propagated analytically by
+$1{,}326{,}376$ selected hadronic-event data sample. It is propagated analytically by
 RooUnfold (\texttt{RooUnfold::kCovariance}) through the IBU iteration chain,
 without toy-MC sampling, yielding a full statistical covariance matrix
 $\mathrm{Cov}^{(\mathrm{stat})}_{ij}$. The per-bin fractional uncertainty
@@ -215,11 +215,14 @@ The theory envelope is taken as the maximum absolute shift across the three gene
              |\delta_{\mathrm{herwig}}(j)|,
              |\delta_{\mathrm{sherpa}}(j)|\right).
 \end{equation}
-All three generators agree well with the nominal at high thrust ($T>0.95$)
-but diverge progressively at lower thrust, where multi-jet configurations and hard,
-wide-angle gluon emission dominate and the parton-shower and matrix-element matching
-differ between generators. The theory envelope is the dominant uncertainty
-contribution across the central measurement range, as shown in
+The three generators diverge progressively at lower thrust, where multi-jet
+configurations and hard, wide-angle gluon emission dominate and the parton-shower
+and matrix-element matching differ between generators; there the reweighted
+generator-level spectra move coherently and by similar amounts. The envelope also
+rises in the last bin, $0.99\le T<1.00$, where the reweighted spectra are least
+well constrained: the bin sits at the edge of the two-jet limit, and the shift
+there is not smoothly connected to its neighbours. The theory envelope is the
+dominant uncertainty contribution across the central measurement range, as shown in
 Figure~\ref{fig:unc_comp_theory}.
 
 \begin{figure}[t!]
