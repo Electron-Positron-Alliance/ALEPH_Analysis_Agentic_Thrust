@@ -137,13 +137,19 @@ uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio.
 
 \begin{figure}[t!]
 \centering
-\includegraphics[width=\textwidth]{figures/corr_matrices_per_source.pdf}
+\includegraphics[width=0.32\textwidth]{figures/corr_source_stat.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/corr_source_iter.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/corr_source_exp.pdf}\\
+\includegraphics[width=0.32\textwidth]{figures/corr_source_theory.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/corr_source_hadronic.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/corr_source_isr.pdf}
 \caption{Per-source correlation matrices for the six independent uncertainty
 components: statistical (top left), unfolding-iteration (top center), experimental
 (top right), theory (bottom left), hadronic correction (bottom center), and ISR
 correction (bottom right). All matrices use the same color scale ($-1$ to $+1$,
-red/blue). The theory component shows the strongest and most extended off-diagonal
-structure, dominating the total correlation matrix.}
+red/blue) and the thrust-bin index increases upwards on both axes, so the diagonal
+runs from bottom left to top right. The theory component shows the strongest and
+most extended off-diagonal structure, dominating the total correlation matrix.}
 \label{fig:corr_matrices_per_source}
 \end{figure}
 
@@ -179,13 +185,22 @@ bin-local MC-statistical origin.
 
 \begin{figure}[t!]
 \centering
-\includegraphics[width=\textwidth]{figures/cov_matrices_per_source.pdf}
+\includegraphics[width=0.32\textwidth]{figures/cov_source_stat.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/cov_source_iter.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/cov_source_exp.pdf}\\
+\includegraphics[width=0.32\textwidth]{figures/cov_source_theory.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/cov_source_hadronic.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/cov_source_isr.pdf}
 \caption{Per-source covariance matrices for the six independent uncertainty
 components: statistical (top left), unfolding-iteration (top center), experimental
 (top right), theory (bottom left), hadronic correction (bottom center), and ISR
-correction (bottom right). Each panel uses a symmetric color scale centered on zero
-(red: positive, blue: negative). The theory component dominates the total covariance
-in both magnitude and off-diagonal extent.}
+correction (bottom right). All panels share one symmetric color scale centered on
+zero (red: positive, blue: negative), and the thrust-bin index increases upwards on
+both axes. Because the endpoint bin carries a variance orders of magnitude above the
+rest, a shared linear scale leaves the remaining structure close to the zero colour;
+the correlation matrices of Fig.~\ref{fig:corr_matrices_per_source} show that
+structure directly, and the per-bin magnitudes are shown in the breakdown plots of
+Sec.~\ref{sec:uncertainty_breakdown}.}
 \label{fig:cov_matrices_per_source}
 \end{figure}
 

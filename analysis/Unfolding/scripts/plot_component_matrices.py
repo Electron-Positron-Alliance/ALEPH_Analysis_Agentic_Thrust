@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 """
-Per-source covariance and correlation matrix figures.
+Per-source covariance and correlation matrix figures, one panel per file.
 
-Produces the three figures that had no producer anywhere in the repo
-(analysis/README.md listed them as not reproducible):
+Writes one single-panel figure per uncertainty source plus the total, so the
+multipanel layout is assembled in LaTeX (subfigure) rather than baked into the
+PDF. That keeps each panel independently sizeable and re-orderable:
 
-  corr_matrices_per_source.pdf  -- 2x3 grid, correlation per uncertainty source
-  cov_matrices_per_source.pdf   -- 2x3 grid, covariance per uncertainty source
-  cov_matrix_total.pdf          -- single panel, total covariance
+  corr_source_{stat,iter,exp,theory,hadronic,isr}.pdf
+  cov_source_{stat,iter,exp,theory,hadronic,isr}.pdf
+  cov_matrix_total.pdf
+
+The y axis increases upwards, so bin 1 is at the bottom and the diagonal runs
+from bottom-left to top-right.
 
 Reads the matrices build_prelim_uncertainty_summary.py writes into <summary>:
 cov_{stat,iter,exp,theory,hadronic,isr,total}.csv and corr_total.csv, each a
@@ -68,47 +72,34 @@ def symmetric_limit(matrices):
 
 def draw_panel(ax, matrix, title, vlim):
     nb = matrix.shape[0]
+    # origin="lower" with extent y from 0 to nb puts bin 1 at the bottom, so the
+    # y axis increases upwards and the diagonal runs bottom-left to top-right.
     im = ax.imshow(
         matrix,
-        origin="upper",
+        origin="lower",
         cmap="RdBu_r",
         vmin=-vlim,
         vmax=vlim,
-        extent=(0, nb, nb, 0),
+        extent=(0, nb, 0, nb),
         interpolation="nearest",
     )
-    ax.set_title(title, fontsize=8)
-    ax.set_xlabel("Thrust bin", fontsize=7)
-    ax.set_ylabel("Thrust bin", fontsize=7)
-    ax.tick_params(labelsize=6)
+    ax.set_title(title, fontsize=10)
+    ax.set_xlabel("Thrust bin", fontsize=9)
+    ax.set_ylabel("Thrust bin", fontsize=9)
+    ax.tick_params(labelsize=8)
     return im
 
 
-def grid_figure(matrices, titles, vlim, suptitle, cbar_label, out_path):
-    fig, axes = plt.subplots(2, 3, figsize=(11.0, 7.3))
-    for ax, matrix, title in zip(axes.flat, matrices, titles):
-        im = draw_panel(ax, matrix, title, vlim)
-    fig.suptitle(suptitle, color="tab:blue", fontsize=10, y=0.985)
-    fig.text(0.5, 0.945, ALEPH_LABEL, ha="center", fontsize=8)
-    fig.tight_layout(rect=(0, 0, 0.90, 0.925))
-    cax = fig.add_axes([0.92, 0.15, 0.015, 0.7])
-    cb = fig.colorbar(im, cax=cax)
-    cb.set_label(cbar_label, fontsize=8)
-    cb.ax.tick_params(labelsize=6)
-    fig.savefig(out_path)
-    plt.close(fig)
-    print(f"wrote {out_path}")
-
-
-def single_figure(matrix, vlim, title, cbar_label, out_path):
-    fig, ax = plt.subplots(figsize=(5.9, 5.05))
+def panel_figure(matrix, vlim, title, cbar_label, out_path):
+    """One matrix, one file. Multipanel assembly happens in LaTeX."""
+    fig, ax = plt.subplots(figsize=(5.0, 3.9))
     im = draw_panel(ax, matrix, title, vlim)
-    fig.text(0.5, 0.965, ALEPH_LABEL, ha="center", fontsize=8)
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
     cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-    cb.set_label(cbar_label, fontsize=8)
-    cb.ax.tick_params(labelsize=6)
-    fig.savefig(out_path)
+    cb.set_label(cbar_label, fontsize=9)
+    cb.ax.tick_params(labelsize=8)
+    fig.text(0.5, 0.965, ALEPH_LABEL, ha="center", fontsize=8)
+    # bbox_inches="tight" so the colorbar tick labels are not clipped at the edge
+    fig.savefig(out_path, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {out_path}")
 
@@ -137,15 +128,18 @@ def main():
                 f"but cov_stat.csv is {nb}x{nb}"
             )
 
-    corrs = [correlation_from_covariance(c) for c in covs]
-    grid_figure(corrs, titles, 1.0, "Per-source correlation matrices",
-                "Correlation", os.path.join(outdir, "corr_matrices_per_source.pdf"))
-    grid_figure(covs, titles, symmetric_limit(covs), "Per-source covariance matrices",
-                "Covariance", os.path.join(outdir, "cov_matrices_per_source.pdf"))
+    # One shared covariance scale across sources so panels stay comparable.
+    cov_lim = symmetric_limit(covs)
+    for (stem, title), cov in zip(SOURCES, covs):
+        key = stem.replace("cov_", "")
+        panel_figure(correlation_from_covariance(cov), 1.0, title, "Correlation",
+                     os.path.join(outdir, f"corr_source_{key}.pdf"))
+        panel_figure(cov, cov_lim, title, "Covariance",
+                     os.path.join(outdir, f"cov_source_{key}.pdf"))
 
     cov_total = load_matrix(args.summary_dir, "cov_total")
-    single_figure(cov_total, symmetric_limit([cov_total]), "Total covariance matrix",
-                  "Covariance", os.path.join(outdir, "cov_matrix_total.pdf"))
+    panel_figure(cov_total, symmetric_limit([cov_total]), "Total covariance matrix",
+                 "Covariance", os.path.join(outdir, "cov_matrix_total.pdf"))
 
     # corr_total.csv is written by the summary builder; cross-check that the
     # correlation derived here from cov_total agrees with it.
