@@ -2,16 +2,22 @@
 """
 Per-source covariance and correlation matrix figures, one panel per file.
 
-Writes one single-panel figure per uncertainty source plus the total, so the
-multipanel layout is assembled in LaTeX (subfigure) rather than baked into the
-PDF. That keeps each panel independently sizeable and re-orderable:
+Writes one single-panel figure per uncertainty source, so the multipanel layout is
+assembled in LaTeX rather than baked into the PDF. That keeps each panel
+independently sizeable and re-orderable:
 
   corr_source_{stat,iter,exp,theory,hadronic,isr}.pdf
-  cov_source_{stat,iter,exp,theory,hadronic,isr}.pdf
-  cov_matrix_total.pdf
 
 The y axis increases upwards, so bin 1 is at the bottom and the diagonal runs
 from bottom-left to top-right.
+
+Covariance matrices are deliberately NOT plotted. A covariance adds nothing to the
+correlation plus the per-bin magnitudes, since
+Cov_ij = rho_ij sqrt(Cov_ii Cov_jj), and it cannot be shown on one linear scale:
+the endpoint bin's variance exceeds the median off-diagonal entry by three to five
+orders of magnitude, so every other element renders at the zero colour. The
+covariances are exported as cov_*.csv instead. The total is still loaded here, to
+keep the corr_total cross-check below.
 
 Reads the matrices build_prelim_uncertainty_summary.py writes into <summary>:
 cov_{stat,iter,exp,theory,hadronic,isr,total}.csv and corr_total.csv, each a
@@ -128,18 +134,12 @@ def main():
                 f"but cov_stat.csv is {nb}x{nb}"
             )
 
-    # One shared covariance scale across sources so panels stay comparable.
-    cov_lim = symmetric_limit(covs)
     for (stem, title), cov in zip(SOURCES, covs):
         key = stem.replace("cov_", "")
         panel_figure(correlation_from_covariance(cov), 1.0, title, "Correlation",
                      os.path.join(outdir, f"corr_source_{key}.pdf"))
-        panel_figure(cov, cov_lim, title, "Covariance",
-                     os.path.join(outdir, f"cov_source_{key}.pdf"))
 
     cov_total = load_matrix(args.summary_dir, "cov_total")
-    panel_figure(cov_total, symmetric_limit([cov_total]), "Total covariance matrix",
-                 "Covariance", os.path.join(outdir, "cov_matrix_total.pdf"))
 
     # corr_total.csv is written by the summary builder; cross-check that the
     # correlation derived here from cov_total agrees with it.

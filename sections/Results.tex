@@ -155,7 +155,7 @@ most extended off-diagonal structure, dominating the total correlation matrix.}
 
 \FloatBarrier
 
-\subsection{Per-source covariance matrices}
+\subsection{Covariance matrices}
 \label{sec:covariance_matrix}
 
 The covariance matrices encode both the per-bin uncertainty magnitudes and the
@@ -170,58 +170,32 @@ six component covariances:
 + \mathrm{Cov}^{(\mathrm{had})}_{ij}
 + \mathrm{Cov}^{(\mathrm{ISR})}_{ij}.
 \end{equation}
-Figure~\ref{fig:cov_matrices_per_source} shows the per-component covariance matrices;
-Fig.~\ref{fig:cov_matrix_total} shows the total.
+
+The covariance matrices are not shown graphically. A covariance carries no
+information beyond the correlation matrices of
+Fig.~\ref{fig:corr_matrices_per_source} together with the per-bin magnitudes of
+Sec.~\ref{sec:uncertainty_breakdown}, since
+$\mathrm{Cov}_{ij}=\rho_{ij}\sqrt{\mathrm{Cov}_{ii}\mathrm{Cov}_{jj}}$, and it
+cannot be displayed usefully on a single linear scale: the endpoint bin carries a
+variance between three and five orders of magnitude above the median off-diagonal
+entry, so every other element renders at the zero colour.
 
 The component covariance magnitudes directly reflect the per-bin uncertainty sizes
 shown in the breakdown plots of Sec.~\ref{sec:uncertainty_breakdown}. The theory
-covariance (bottom left in Fig.~\ref{fig:cov_matrices_per_source}) has the largest
-absolute values and the most extended off-diagonal structure, as expected from the
-dominant and spectrally coherent theory shifts. The experimental covariance has
-sub-leading magnitude but non-trivial off-diagonal entries driven by the coherent
-neutral-response variations. The statistical and iteration covariances are comparatively
-small; the ISR correction produces a near-diagonal covariance consistent with its
-bin-local MC-statistical origin.
+covariance has the largest absolute values and the most extended off-diagonal
+structure, as expected from the dominant and spectrally coherent theory shifts. The
+experimental covariance has sub-leading magnitude but non-trivial off-diagonal
+entries driven by the coherent neutral-response variations. The statistical and
+iteration covariances are comparatively small; the ISR correction produces a
+near-diagonal covariance consistent with its bin-local MC-statistical origin.
 
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.32\textwidth]{figures/cov_source_stat.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/cov_source_iter.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/cov_source_exp.pdf}\\
-\includegraphics[width=0.32\textwidth]{figures/cov_source_theory.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/cov_source_hadronic.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/cov_source_isr.pdf}
-\caption{Per-source covariance matrices for the six independent uncertainty
-components: statistical (top left), unfolding-iteration (top center), experimental
-(top right), theory (bottom left), hadronic correction (bottom center), and ISR
-correction (bottom right). All panels share one symmetric color scale centered on
-zero (red: positive, blue: negative), and the thrust-bin index increases upwards on
-both axes. Because the endpoint bin carries a variance orders of magnitude above the
-rest, a shared linear scale leaves the remaining structure close to the zero colour;
-the correlation matrices of Fig.~\ref{fig:corr_matrices_per_source} show that
-structure directly, and the per-bin magnitudes are shown in the breakdown plots of
-Sec.~\ref{sec:uncertainty_breakdown}.}
-\label{fig:cov_matrices_per_source}
-\end{figure}
-
-The total covariance matrix (Fig.~\ref{fig:cov_matrix_total}) is the primary product
-exported for theory use. Its off-diagonal structure is dominated by the theory
-covariance across the central thrust range, with additional contributions from the
-experimental component. Theory consumers are encouraged to use the fit-window total
-covariance (covering $0.505\le T<1.00$, 45 bins) for $\alpha_s$ extractions rather
-than the full-range matrix, to avoid the regions of large uncertainty and poor
-MC-model control near the kinematic boundaries.
-
-\begin{figure}[t!]
-\centering
-\includegraphics[width=0.72\textwidth]{figures/cov_matrix_total.pdf}
-\caption{Total covariance matrix, combining all six uncertainty components.
-The off-diagonal structure is dominated by theory correlations across the central
-thrust range. The full covariance matrix must be used in any downstream fit;
-diagonal uncertainties alone would underestimate the true statistical power of
-the result. The fit-window version ($0.505\le T<1.00$) is recommended for
-$\alpha_s$ extractions.}
-\label{fig:cov_matrix_total}
-\end{figure}
+The total covariance matrix is the primary product exported for theory use, and is
+released as a machine-readable table rather than as a figure. Its off-diagonal
+structure is dominated by the theory covariance across the central thrust range,
+with additional contributions from the experimental component. Theory consumers are
+encouraged to use the fit-window total covariance (covering $0.505\le T<1.00$, 45
+bins) for $\alpha_s$ extractions rather than the full-range matrix, to avoid the
+regions of large uncertainty and poor MC-model control near the kinematic
+boundaries.
 
 \FloatBarrier
