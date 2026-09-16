@@ -53,10 +53,11 @@ fi
 #   root-config  analysis/DataProcessing/Makefile builds Analyze.exe with
 #                `root-config --cflags/--libs`
 #   hadd         runAnalyze.py:233 merges per-division output when --ndivs > 1
-# APPENDED, not prepended, and set before the venv is activated: $ROOTSYS is a
-# whole conda env, and putting it first shadows the venv's python, after which
-# `import ROOT` fails.
-export PATH="$PATH:$ROOTSYS/bin"
+# PREPENDED, and set before the venv is activated: a system ROOT in /usr/bin
+# otherwise wins, and building against one ROOT while PyROOT imports another
+# silently mixes versions. The venv is activated after this and prepends its
+# own bin, so its python still shadows any interpreter $ROOTSYS/bin may hold.
+export PATH="$ROOTSYS/bin:$PATH"
 
 source "$HERE/.venv/bin/activate"
 
