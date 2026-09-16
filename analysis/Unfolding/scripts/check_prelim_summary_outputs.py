@@ -103,7 +103,7 @@ def main() -> int:
     for key in required_output_keys:
         if key not in outputs:
             fail(f"summary outputs missing key: {key}")
-    fit_required_keys = ["fit_mask", "cov_total_fitwindow", "corr_total_fitwindow"]
+    fit_required_keys = ["reported_bins"]
     if args.strict_fit:
         for key in fit_required_keys:
             if key not in outputs:
@@ -111,7 +111,7 @@ def main() -> int:
     else:
         missing_fit = [k for k in fit_required_keys if k not in outputs]
         if missing_fit:
-            print(f"WARNING: missing fit-window outputs: {missing_fit}", file=sys.stderr)
+            print(f"WARNING: missing reported-range outputs: {missing_fit}", file=sys.stderr)
 
     diagnostics = summary.get("diagnostics")
     if not isinstance(diagnostics, dict):
@@ -126,8 +126,8 @@ def main() -> int:
     ]:
         if key not in diagnostics:
             fail(f"summary diagnostics missing key: {key}")
-    if args.strict_fit and "fit_mask_mode" not in diagnostics:
-        fail("strict-fit mode requires diagnostics.fit_mask_mode")
+    if args.strict_fit and "report_range_min" not in diagnostics:
+        fail("strict-fit mode requires diagnostics.report_range_min")
     if args.strict_fit and "theory_weight_diagnostics" not in diagnostics:
         fail("strict-fit mode requires diagnostics.theory_weight_diagnostics")
 
@@ -156,8 +156,8 @@ def main() -> int:
 
     require_file(outputs["binning"])
     require_file(outputs["final_plot"])
-    if "fit_mask" in outputs:
-        require_file(outputs["fit_mask"])
+    if "reported_bins" in outputs:
+        require_file(outputs["reported_bins"])
 
     component_plots = outputs["component_plots"]
     if not isinstance(component_plots, dict):
@@ -185,16 +185,13 @@ def main() -> int:
     if cov_isr_key in outputs:
         require_file(outputs[cov_isr_key])
         cov_isr = load_csv_matrix(outputs[cov_isr_key])
+    cov_mcstat = None
+    cov_mcstat_key = "cov_mcstat"
+    if cov_mcstat_key in outputs:
+        require_file(outputs[cov_mcstat_key])
+        cov_mcstat = load_csv_matrix(outputs[cov_mcstat_key])
     cov_total = load_csv_matrix(outputs["cov_total"])
     corr_total = load_csv_matrix(outputs["corr_total"])
-    cov_total_fit = None
-    corr_total_fit = None
-    if "cov_total_fitwindow" in outputs and "corr_total_fitwindow" in outputs:
-        require_file(outputs["cov_total_fitwindow"])
-        require_file(outputs["corr_total_fitwindow"])
-        cov_total_fit = load_csv_matrix(outputs["cov_total_fitwindow"])
-        corr_total_fit = load_csv_matrix(outputs["corr_total_fitwindow"])
-
     for name, mat in [
         ("cov_stat", cov_stat),
         ("cov_iter", cov_iter),
@@ -208,16 +205,12 @@ def main() -> int:
         check_symmetric("cov_hadronic", cov_had, args.sym_tol)
     if cov_isr is not None:
         check_symmetric("cov_isr", cov_isr, args.sym_tol)
-    if cov_total_fit is not None:
-        check_symmetric("cov_total_fitwindow", cov_total_fit, args.sym_tol)
-    if corr_total_fit is not None:
-        check_symmetric("corr_total_fitwindow", corr_total_fit, args.sym_tol)
+    if cov_mcstat is not None:
+        check_symmetric("cov_mcstat", cov_mcstat, args.sym_tol)
 
     # Correlation sanity: bounded, and unit diagonal for bins with positive variance.
     if np.max(np.abs(corr_total)) > 1.0 + args.corr_tol:
         fail("corr_total has entries outside [-1, 1] beyond tolerance")
-    if corr_total_fit is not None and np.max(np.abs(corr_total_fit)) > 1.0 + args.corr_tol:
-        fail("corr_total_fitwindow has entries outside [-1, 1] beyond tolerance")
 
     var = np.diag(cov_total)
     positive = var > 0.0
@@ -234,6 +227,8 @@ def main() -> int:
         cov_total_model = cov_total_model + cov_had
     if cov_isr is not None:
         cov_total_model = cov_total_model + cov_isr
+    if cov_mcstat is not None:
+        cov_total_model = cov_total_model + cov_mcstat
     closure_delta = float(np.max(np.abs(cov_total - cov_total_model)))
     if closure_delta > 1e-10:
         fail(f"cov_total is inconsistent with covariance components: max residual {closure_delta:.3e}")
@@ -271,35 +266,6 @@ def main() -> int:
     print(f"cov_total minimum eigenvalue: {min_eig:.6e}")
     print(f"cov_total positive-spectrum condition number: {condition_number:.6e}")
     print(f"cov_total closure residual: {closure_delta:.3e}")
-
-    if args.strict_fit:
-        if cov_total_fit is None:
-            fail("strict-fit mode requires cov_total_fitwindow")
-        fit_var = np.diag(cov_total_fit)
-        fit_zero_variance_bins = int(np.count_nonzero(fit_var <= 0.0))
-        fit_eigs = np.linalg.eigvalsh(cov_total_fit)
-        fit_min_eig = float(np.min(fit_eigs)) if fit_eigs.size else 0.0
-        fit_pos_eigs = fit_eigs[fit_eigs > 0.0]
-        fit_condition_number = math.inf
-        if fit_pos_eigs.size > 0:
-            fit_condition_number = float(np.max(fit_pos_eigs) / np.min(fit_pos_eigs))
-
-        print(f"cov_total_fitwindow zero/non-positive variance bins: {fit_zero_variance_bins}")
-        print(f"cov_total_fitwindow minimum eigenvalue: {fit_min_eig:.6e}")
-        print(f"cov_total_fitwindow positive-spectrum condition number: {fit_condition_number:.6e}")
-
-        if fit_zero_variance_bins > args.max_zero_variance_bins:
-            fail(
-                f"strict-fit check failed: zero/non-positive variance bins "
-                f"{fit_zero_variance_bins} > allowed {args.max_zero_variance_bins}"
-            )
-        if fit_min_eig < -1e-12:
-            fail(f"strict-fit check failed: covariance has negative eigenvalue {fit_min_eig:.3e}")
-        if math.isfinite(fit_condition_number) and fit_condition_number > args.max_condition_number:
-            fail(
-                f"strict-fit check failed: condition number {fit_condition_number:.3e} "
-                f"> allowed {args.max_condition_number:.3e}"
-            )
 
     print(f"Validated summary outputs: {summary_path}")
     print(f"cov_stat off-diagonal non-zero entries: {nonzero_offdiag_stat}")

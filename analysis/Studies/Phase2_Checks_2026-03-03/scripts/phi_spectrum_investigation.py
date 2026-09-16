@@ -23,6 +23,18 @@ import os
 import sys
 
 import ROOT
+
+# Input locations come from analysis/inputs.json via paths.py, not from a fixed
+# directory, so a rerun does not silently read another run's ntuples.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+
+
+def _temp(name):
+    try:
+        import paths
+        return paths.temp(name)
+    except Exception:
+        return os.path.join("DataProcessing", "temp", name)
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptTitle(0)
@@ -42,13 +54,13 @@ PWFLAGS = {
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--input-data",
-                   default="DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+                   default=_temp("LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root"),
                    help="Data reco ROOT file (tree: t)")
     p.add_argument("--input-mc-reco",
-                   default="DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
+                   default=_temp("alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root"),
                    help="MC reco ROOT file (tree: t)")
     p.add_argument("--input-mc-gen",
-                   default="DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgen.root",
+                   default=_temp("alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgen.root"),
                    help="MC gen ROOT file (tree: tgen)")
     p.add_argument("--reco-tree",  default="t")
     p.add_argument("--gen-tree",   default="tgen")

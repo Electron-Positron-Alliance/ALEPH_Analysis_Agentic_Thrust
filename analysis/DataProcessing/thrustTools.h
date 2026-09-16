@@ -1,11 +1,12 @@
 #ifndef THRUSTTOOLS
 #define THRUSTTOOLS
 
-//c++ dependencies
+// c++ dependencies
 #include <vector>
 #include <iostream>
+#include <cstdint>
 
-//ROOT dependencies
+// ROOT dependencies
 #include "TVector3.h"
 #include "TMath.h"
 
@@ -36,17 +37,17 @@ inline bool checkEtaThrustPIs1(TVector3 thrust, TVector3 p)
   return TMath::Abs(thrust0 - thrust1) < minDel && TMath::Abs(thrust0 - thrust2) < minDel && TMath::Abs(thrust1 - thrust2) < minDel;
 }
 
-//this is actually rapidity w/ mass given
+// this is actually rapidity w/ mass given
 inline double rapFromThrust(TVector3 thrust, TVector3 p, float mass, bool doPerpThrust = false) {
   if (doPerpThrust) thrust = getPerpVector(thrust);
   //  Double_t minDel = 0.01;
   //  if(mass < minDel && checkEtaThrustPIs1(thrust, p)) return 99.;
-  float pl = p * (thrust.Unit()); //logitudinal momentum component
-  float E = TMath::Power(p.Mag2() + mass * mass, 0.5); //energy
+  float pl = p * (thrust.Unit()); // longitudinal momentum component
+  float E = TMath::Power(p.Mag2() + mass * mass, 0.5); // energy
   double rap = 0.5 * TMath::Log((E + pl) / (E - pl));
   if (rap > 99.) rap = 99.;
   else if (rap < -99.) rap = -99.;
-  return rap;//rapidity
+  return rap; // rapidity
 }
 
 inline double etaFromThrust(TVector3 thrust, TVector3 p, bool doPerpThrust = false) {
@@ -62,12 +63,12 @@ inline double etaFromThrust(TVector3 thrust, TVector3 p, bool doPerpThrust = fal
 
 inline double phiFromThrust(TVector3 thrust, TVector3 p, bool doPerpThrust = false) {
   if (doPerpThrust) thrust = getPerpVector(thrust);
-  TVector3 pt = p - ((p * thrust.Unit()) * (thrust.Unit())); //pt vector
+  TVector3 pt = p - ((p * thrust.Unit()) * (thrust.Unit())); // pt vector
   TVector3 z = TVector3(0, 0, 1);
-  TVector3 phiOrigin = thrust.Unit().Cross((thrust.Unit().Cross(z)));//vector that will be phi=0 (in plane of thrust and beam line
-  double phi = pt.Angle(phiOrigin);//get phi from 0 to pi
+  TVector3 phiOrigin = thrust.Unit().Cross((thrust.Unit().Cross(z))); // vector that will be phi=0 (in plane of thrust and beam line
+  double phi = pt.Angle(phiOrigin); // get phi from 0 to pi
 
-  //determine sign of phi based on cross product of pt and origin
+  // determine sign of phi based on cross product of pt and origin
   if ( (phiOrigin.Cross(pt.Unit()))*thrust >= 0) return phi;
   else return -phi;
 }
@@ -183,9 +184,9 @@ TVector3 getSpecialThrustBelle(int n, float *px, float *py, float *pz, Short_t *
   return thrustBelleSTD(momenta.begin(), momenta.end(), SelfFunc(TVector3()));
 }
 
-//based on code from herwig: http://herwig.hepforge.org/svn/tags/herwig-2-0-beta/Analysis/EventShapes.cc
-//ported by A. Baty
-//n is number of particles, px,py,pz are arrays of momentum components
+// based on code from herwig: http://herwig.hepforge.org/svn/tags/herwig-2-0-beta/Analysis/EventShapes.cc
+// ported by A. Baty
+// n is number of particles, px,py,pz are arrays of momentum components
 TVector3 getThrustHerwig(int n, float *px, float *py, float *pz, bool doWeight = false, bool doInvertWeight = false, float* weight = NULL, bool doMET = false, Short_t *pwflag = NULL) {
   TVector3 thrust = TVector3(0, 0, 0);
   float pSum = 0;
@@ -213,16 +214,16 @@ TVector3 getThrustHerwig(int n, float *px, float *py, float *pz, bool doWeight =
   }
 
   if (n <= 0) return thrust;
-  else if (n == 1) { //thrust is just the particle
+  else if (n == 1) { // thrust is just the particle
     thrust = TVector3(px[0], py[0], pz[0]);
   }
-  else if (n == 2) { //special case for 2 particles
+  else if (n == 2) { // special case for 2 particles
     bool pick0 = TMath::Power(px[0], 2) + TMath::Power(py[0], 2) + TMath::Power(pz[0], 2) >= TMath::Power(px[1], 2) + TMath::Power(py[1], 2) + TMath::Power(pz[1], 2);
 
     if (pick0) thrust = TVector3(px[0], py[0], pz[0]);
     else thrust = TVector3(px[1], py[1], pz[1]);
   }
-  else if (n == 3) { //special case for 3 particles: select the highest-magnitude particle as thrust axis
+  else if (n == 3) { // special case for 3 particles: select the highest-magnitude particle as thrust axis
     bool pick0Over1 = TMath::Power(px[0], 2) + TMath::Power(py[0], 2) + TMath::Power(pz[0], 2) >= TMath::Power(px[1], 2) + TMath::Power(py[1], 2) + TMath::Power(pz[1], 2);
 
     if (pick0Over1) {
@@ -239,17 +240,17 @@ TVector3 getThrustHerwig(int n, float *px, float *py, float *pz, bool doWeight =
     }
   }
   else if (n > 3) {
-    //make vector of TVector3's of each particle
+    // make vector of TVector3's of each particle
     std::vector< TVector3 > pVec;
     for (int i = 0; i < n; i++) {
       if (pwflag != NULL && pwflag[i] < 0) continue;
       pVec.push_back(TVector3(px[i], py[i], pz[i]));
     }
-    //std::cout << pVecs.at(0).x();
-    //reset n because it might be smaller from skipping neutrinos
+    // std::cout << pVecs.at(0).x();
+    // reset n because it might be smaller from skipping neutrinos
     if (pwflag != NULL) n = pVec.size();
 
-    //add MET vector to list
+    // add MET vector to list
     if (doMET) {
       n = n + 1;
       pVec.push_back(-met);
@@ -258,14 +259,14 @@ TVector3 getThrustHerwig(int n, float *px, float *py, float *pz, bool doWeight =
 
     TVector3 cross;
     float t = 0;
-    for (int i = 1; i < n; i++) { //loop through all possible cross products of 2 unique vectors
+    for (int i = 1; i < n; i++) { // loop through all possible cross products of 2 unique vectors
       for (int j = 0; j < i; j++) {
         cross = pVec.at(i).Cross(pVec.at(j));
         TVector3 ptot = TVector3(0, 0, 0);
 
-        for (int k = 0; k < n; k++) { //loop through all 3rd particles not used for the cross product
+        for (int k = 0; k < n; k++) { // loop through all 3rd particles not used for the cross product
           if (k != i && k != j) {
-            if (pVec.at(k)*cross > 0) { //if dot product is >0
+            if (pVec.at(k)*cross > 0) { // if dot product is >0
               ptot += pVec.at(k);
             }
             else {
@@ -274,7 +275,7 @@ TVector3 getThrustHerwig(int n, float *px, float *py, float *pz, bool doWeight =
           }
         }
 
-        std::vector< TVector3 > cpm;//add or subtract in last 2 vectors used for cross product
+        std::vector< TVector3 > cpm; // add or subtract in last 2 vectors used for cross product
         cpm.push_back(ptot - pVec.at(j) - pVec.at(i));
         cpm.push_back(ptot - pVec.at(j) + pVec.at(i));
         cpm.push_back(ptot + pVec.at(j) - pVec.at(i));
@@ -309,7 +310,7 @@ TVector3 getThrustHerwig(int n, float *px, float *py, float *pz, bool doWeight =
   return thrust;
 }
 
-//almost a straight copy of above, but filter for pwflag==0 (tracks)
+// almost a straight copy of above, but filter charged tracks (pwflag in {0,1,2}) when doCharged, neutrals (pwflag > 2) otherwise
 TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t *pwflag, bool doCharged = true) {
   float nTrk = 0;
   float pSum = 0;
@@ -323,7 +324,7 @@ TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t 
   TVector3 thrust = TVector3(0, 0, 0);
   if (nTrk <= 0) return thrust;
 
-  if (nTrk == 1) { //thrust is just the particle
+  if (nTrk == 1) { // thrust is just the particle
     for (int t = 0; t < n; t++) {
       if ((pwflag[t] == 0 || pwflag[t] == 1 || pwflag[t] == 2) && doCharged) {
         TVector3 thrust = TVector3(px[t], py[t], pz[t]);
@@ -338,7 +339,7 @@ TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t 
     }
   }
 
-  if (nTrk == 2) { //special case for 2 particles
+  if (nTrk == 2) { // special case for 2 particles
     int n1 = -1, n2 = -1;
     for (int t = 0; t < n; t++) {
       if (doCharged) {
@@ -363,7 +364,7 @@ TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t 
     }
   }
 
-  if (nTrk == 3) { //combine lowest 2 magnitude momentum, then use same algo as n=2
+  if (nTrk == 3) { // combine lowest 2 magnitude momentum, then use same algo as n=2
     int n1 = -1, n2 = -1, n3 = -1;
     for (int t = 0; t < n; t++) {
       if (doCharged) {
@@ -379,24 +380,24 @@ TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t 
     }
     if (TMath::Power(px[n1], 2) + TMath::Power(py[n1], 2) + TMath::Power(pz[n1], 2) >= TMath::Power(px[n2], 2) + TMath::Power(py[n2], 2) + TMath::Power(pz[n2], 2)) {
       if (TMath::Power(px[n1], 2) + TMath::Power(py[n1], 2) + TMath::Power(pz[n1], 2) >= TMath::Power(px[n3], 2) + TMath::Power(py[n3], 2) + TMath::Power(pz[n3], 2)) {
-        TVector3 thrust = TVector3(px[n1], py[n1], pz[n1]); //n1 is largest p
+        TVector3 thrust = TVector3(px[n1], py[n1], pz[n1]); // n1 is largest p
         thrust.SetMag(thrust.Mag() / pSum);
         return thrust;
       }
       else {
-        TVector3 thrust = TVector3(px[n3], py[n3], pz[n3]); //n3 is largest p
+        TVector3 thrust = TVector3(px[n3], py[n3], pz[n3]); // n3 is largest p
         thrust.SetMag(thrust.Mag() / pSum);
         return thrust;
       }
     }
     else {
       if (TMath::Power(px[n2], 2) + TMath::Power(py[n2], 2) + TMath::Power(pz[n2], 2) >= TMath::Power(px[n3], 2) + TMath::Power(py[n3], 2) + TMath::Power(pz[n3], 2)) {
-        TVector3 thrust = TVector3(px[n2], py[n2], pz[n2]); //n3 is largest p
+        TVector3 thrust = TVector3(px[n2], py[n2], pz[n2]); // n3 is largest p
         thrust.SetMag(thrust.Mag() / pSum);
         return thrust;
       }
       else {
-        TVector3 thrust = TVector3(px[n3], py[n3], pz[n3]); //n3 is largest p
+        TVector3 thrust = TVector3(px[n3], py[n3], pz[n3]); // n3 is largest p
         thrust.SetMag(thrust.Mag() / pSum);
         return thrust;
       }
@@ -404,7 +405,7 @@ TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t 
   }
 
   if (nTrk > 3) {
-    //make vector of TVector3's of each particle
+    // make vector of TVector3's of each particle
     std::vector< TVector3 > pVec;
     for (int i = 0; i < n; i++) {
       if (!(pwflag[i] == 0 || pwflag[i] == 1 || pwflag[i] == 2) && doCharged) continue;
@@ -412,18 +413,18 @@ TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t 
       TVector3 v = TVector3(px[i], py[i], pz[i]);
       pVec.push_back(v);
     }
-    //std::cout << pVecs.at(0).x();
+    // std::cout << pVecs.at(0).x();
 
     TVector3 cross;
     float t = 0;
-    for (unsigned int i = 1; i < pVec.size(); i++) { //loop through all possible cross products of 2 unique vectors
+    for (unsigned int i = 1; i < pVec.size(); i++) { // loop through all possible cross products of 2 unique vectors
       for (unsigned int j = 0; j < i; j++) {
         cross = pVec.at(i).Cross(pVec.at(j));
         TVector3 ptot = TVector3(0, 0, 0);
 
-        for (unsigned int k = 0; k < pVec.size(); k++) { //loop through all 3rd particles not used for the cross product
+        for (unsigned int k = 0; k < pVec.size(); k++) { // loop through all 3rd particles not used for the cross product
           if (k != i && k != j) {
-            if (pVec.at(k)*cross > 0) { //if dot product is >0
+            if (pVec.at(k)*cross > 0) { // if dot product is >0
               ptot += pVec.at(k);
             }
             else {
@@ -432,7 +433,7 @@ TVector3 getSpecialThrustHerwig(int n, float *px, float *py, float *pz, Short_t 
           }
         }
 
-        std::vector< TVector3 > cpm;//add or subtract in last 2 vectors used for cross product
+        std::vector< TVector3 > cpm; // add or subtract in last 2 vectors used for cross product
         cpm.push_back(ptot - pVec.at(j) - pVec.at(i));
         cpm.push_back(ptot - pVec.at(j) + pVec.at(i));
         cpm.push_back(ptot + pVec.at(j) - pVec.at(i));
@@ -503,26 +504,26 @@ TVector3 getSpecialThrust(int n, float *px, float *py, float *pz, Short_t *pwfla
   return thrustAxis;
 }
 
-//Thrust major as defined in http://cds.cern.ch/record/690637/files/ep-2003-084.pdf, p.14
-//Simple Algo:
+// Thrust major as defined in http://cds.cern.ch/record/690637/files/ep-2003-084.pdf, p.14
+// Simple Algo:
 // Take thrust and subtract off thrust component of all particles
 // Then just call standard getThrust to find maximum in plane
 // Note that this implementation will handle standard and charged thrust (add boolean, if charged not used set pwflag to null
 TVector3 getThrustMajor(TVector3 thrust, int n, float *px, float *py, float *pz, Short_t *pwflag, THRUST::algorithm algo = THRUST::HERWIG, bool doCharged = false)
 {
-  //check first that we are safely calling doCharged
+  // check first that we are safely calling doCharged
   if (doCharged && pwflag == NULL) {
     std::cout << "THRUSTTOOLS.H: GETTHRUSTMAJOR ERROR: Calling with \'doCharged\' option but with pwflag set to NULL. return 0 vector" << std::endl;
     return TVector3(0, 0, 0);
   }
 
-  //check that we have already calculated thrust, if not get thrust
+  // check that we have already calculated thrust, if not get thrust
   if (thrust.Px() < 0.001 && thrust.Py() < 0.001 && thrust.Pz() < 0.001) {
     if (doCharged) thrust = getSpecialThrust(n, px, py, pz, pwflag, true, algo);
     else thrust = getThrust(n, px, py, pz, algo);
   }
 
-  //renormalize thrust to unity for correct projections
+  // renormalize thrust to unity for correct projections
   thrust.SetMag(1.);
 
   const int nInternal = n;
@@ -531,7 +532,7 @@ TVector3 getThrustMajor(TVector3 thrust, int n, float *px, float *py, float *pz,
   float pzInternal[nInternal];
   double pSum = 0.;
 
-  //Now set all particles to their corresponding thrust-perp projections
+  // Now set all particles to their corresponding thrust-perp projections
   for (int i = 0; i < n; ++i) {
     TVector3 temp(px[i], py[i], pz[i]);
     if (doCharged) {
@@ -577,7 +578,7 @@ TVector3 getThrustMajor(TVector3 thrust, int n, float *px, float *py, float *pz,
     }
   }
 
-  //we have found the direction of the vector but the magnitude is wrong; reloop to fix the magnitude
+  // we have found the direction of the vector but the magnitude is wrong; reloop to fix the magnitude
   thrustMajorAxis.SetMag(1.);
   double thrustMajorProj = 0.;
 
@@ -597,22 +598,22 @@ TVector3 getThrustMajor(TVector3 thrust, int n, float *px, float *py, float *pz,
 
 TVector3 getThrustMinor(TVector3 thrust, TVector3 thrustMajor, int n, float *px, float *py, float *pz, Short_t *pwflag, THRUST::algorithm algo = THRUST::HERWIG, bool doCharged = false)
 {
-  //check first that we are safely calling doCharged
+  // check first that we are safely calling doCharged
   if (doCharged && pwflag == NULL) {
     std::cout << "THRUSTTOOLS.H: GETTHRUSTMINOR ERROR: Calling with \'doCharged\' option but with pwflag set to NULL. return 0 vector" << std::endl;
     return TVector3(0, 0, 0);
   }
 
-  //check that we have already calculated thrust, if not get thrust
+  // check that we have already calculated thrust, if not get thrust
   if (thrust.Px() < 0.001 && thrust.Py() < 0.001 && thrust.Pz() < 0.001) {
     if (doCharged) thrust = getSpecialThrust(n, px, py, pz, pwflag, algo);
     else thrust = getThrust(n, px, py, pz, algo);
   }
 
-  //check that we have already calculated thrustMajor, if not get thrustMajor
+  // check that we have already calculated thrustMajor, if not get thrustMajor
   if (thrustMajor.Px() < 0.001 && thrustMajor.Py() < 0.001 && thrustMajor.Pz() < 0.001) thrustMajor = getThrustMajor(thrust, n, px, py, pz, pwflag, algo, doCharged);
 
-  //Get thrustMinor and renormalize to 1 for correct projections, then calculate magnitude
+  // Get thrustMinor and renormalize to 1 for correct projections, then calculate magnitude
   TVector3 thrustMinorAxis = thrust.Cross(thrustMajor);
   thrustMinorAxis.SetMag(1.);
   double thrustMinorProj = 0.;
@@ -630,6 +631,39 @@ TVector3 getThrustMinor(TVector3 thrust, TVector3 thrustMajor, int n, float *px,
 
   thrustMinorAxis.SetMag(thrustMinorProj / pSum);
   return thrustMinorAxis;
+}
+
+// Thrust over the selected momenta with a per-raw-index removal mask applied.
+// Shared by the groomed-ISR and photon-conversion cleaning studies, which each
+// build a mask over the raw particle record and want thrust recomputed on the
+// surviving selected particles.
+//   selPx/Py/Pz : the (scheme-modified) selected momenta
+//   rawIdx      : rawIdx[it] is the original particle index of selected item it
+//   mask        : mask[rawIdx] != 0 drops that particle
+// Returns 1.0 when fewer than two particles survive (matching the study code).
+inline float maskedThrust(const std::vector<float>& selPx,
+                          const std::vector<float>& selPy,
+                          const std::vector<float>& selPz,
+                          const std::vector<int>& rawIdx,
+                          const std::vector<uint8_t>& mask) {
+  const int nSel = (int)selPx.size();
+  const int nMask = (int)mask.size();
+  std::vector<float> cpx;
+  std::vector<float> cpy;
+  std::vector<float> cpz;
+  cpx.reserve(nSel);
+  cpy.reserve(nSel);
+  cpz.reserve(nSel);
+  for (int it = 0; it < nSel; ++it) {
+    int iP = rawIdx[it];
+    if (iP >= 0 && iP < nMask && mask[iP]) continue;
+    cpx.push_back(selPx[it]);
+    cpy.push_back(selPy[it]);
+    cpz.push_back(selPz[it]);
+  }
+  int nc = (int)cpx.size();
+  if (nc < 2) return 1.0f;
+  return getThrust(nc, cpx.data(), cpy.data(), cpz.data(), THRUST::OPTIMAL).Mag();
 }
 
 #endif

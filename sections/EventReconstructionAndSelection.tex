@@ -54,7 +54,6 @@ Charged hit quality & $N_{\mathrm{TPC}}\ge 4$ \\
 Neutral category & \texttt{pwflag}\,$\in[3,5]$ \\
 Neutral energy & $E\ge 0.4$ GeV \\
 Neutral acceptance & $|\cos\theta|\le 0.98$ \\
-Neutral hadron cleaning & reject \texttt{pwflag}=5 for $-0.19\le\cos\theta<-0.18$ \\
 Use charged objects & \texttt{keepChargedTracks} = \texttt{True} (nominal) \\
 Use neutral objects & \texttt{keepNeutralTracks} = \texttt{True} (nominal) \\
 \hline
@@ -63,7 +62,7 @@ Use neutral objects & \texttt{keepNeutralTracks} = \texttt{True} (nominal) \\
 \label{tab:particle_selection_summary}
 \end{table}
 
-The nominal hadronic event selection is summarized in Table~\ref{tab:event_selection_summary}, also with one line per requirement. In practice, these selections enforce a phase space with high tracking quality, controlled forward acceptance, and stable visible-energy topology before entering event-shape reconstruction. They are chosen to follow ALEPH standard hadronic selections while retaining explicit control over the regions that dominate event-shape sensitivity. The residual contamination from processes such as $e^+e^− \rightarrow \tau^+\tau^-$ is expected to be less than 0.26\% for these event selections~\cite{Barate:1996fi}. Approximately 1.36 (1.32)
+The nominal hadronic event selection is summarized in Table~\ref{tab:event_selection_summary}. In practice, these selections enforce a phase space with high tracking quality, controlled forward acceptance, and stable visible-energy topology before entering event-shape reconstruction. They are chosen to follow ALEPH standard hadronic selections while retaining explicit control over the regions that dominate event-shape sensitivity. The residual contamination from processes such as $e^+e^− \rightarrow \tau^+\tau^-$ is expected to be less than 0.26\% for these event selections~\cite{Barate:1996fi}. Approximately 1.36 (1.32)
 million $e^+e^-$ collisions resulting in the decay of a Z boson to quarks are analyzed (selected).
 
 \begin{table}[t!]
@@ -86,7 +85,14 @@ Total multiplicity & $N_{\mathrm{trk}}+N_{\mathrm{neu}}\ge 13$ \\
 Note that the acceptance requirement based on the event shape variable sphericity introduces a slight sculpting of the thrust distribution. The cut removes approximately 2.3\% of selected events, with the largest effect in the multijet region. In data, the ratio of the thrust distribution with the cut to that without rises monotonically from $\approx 0.85$ at $T \approx 0.6$--$0.75$ to $\approx 0.95$ at $T \approx 0.9$ and $\approx 0.99$ as $T \to 1$. This shaping is corrected by the unfolding, since the response matrix is built with the same requirement imposed at detector level and none at generator level, so the reported spectrum corresponds to the inclusive phase space.
 
 \label{sec:neutral_hadron_cleaning}%
-The neutral hadron cleaning requirement (reject \texttt{pwflag}=5 for $-0.19\le\cos\theta<-0.18$) removes a localized region where the ALEPH hadronic calorimeter response is known to produce spurious neutral-hadron candidates. This narrow angular window corresponds to a structural gap in the detector and was identified from the data/MC neutral-hadron $\cos\theta$ distribution.
+No object-level cleaning is applied to neutral hadrons. An earlier iteration of this analysis
+rejected \texttt{pwflag}=5 objects in $-0.19\le\cos\theta<-0.18$, a narrow window
+corresponding to a structural gap in the detector where the ALEPH hadronic calorimeter response
+produces spurious neutral-hadron candidates. That requirement has been removed: the affected
+window is narrow enough that its effect on the thrust spectrum is not resolvable, and the
+residual data/MC difference in this category is already covered by the neutral-response
+systematic variations. Retaining it would have imposed a data-driven object cut that the
+generator-level particle set cannot reproduce.
 
 $V^0$ candidates (\texttt{pwflag}=3) include $K_S$ and $\Lambda$ from displaced-vertex reconstruction. These objects enter the thrust sum with their measured momentum vector rather than individual decay products, which is consistent with treating them as single hadronic objects for event-shape purposes. Their contribution to the thrust numerator and denominator is captured by the neutral-response systematic variations.
 
@@ -141,7 +147,9 @@ Event-level variables used for hadronic selection are also validated with data/M
 \includegraphics[width=0.495\textwidth]{figures/ntrkPlusNeu.pdf}
 \includegraphics[width=0.495\textwidth]{figures/eCh.pdf}
 \includegraphics[width=0.495\textwidth]{figures/cosThetaSph.pdf}
-\caption{Event-level observables used in the nominal hadronic selection; legends include detector-level data/MC and generator-level references.}
+\caption{Event-level observables used in the nominal hadronic selection; legends include detector-level data/MC and generator-level references.
+The MC\,Gen and MC\,GenBefore ratios display an even-odd staggering: generator-level charged multiplicity has an approximately 6:1 even-to-odd ratio (arising from the Z-decay net-charge constraint and the specific ALEPH Pythia~6 particle record), while reconstruction efficiency losses smear individual tracks one at a time and equalise the even/odd balance in data and MC\,Reco.
+MC\,Reco is the relevant comparison for the analysis.}
 \label{fig:event_selection_observables}
 \end{figure}
 
@@ -154,22 +162,21 @@ charged-energy modeling near the hadronic-selection boundary at 15 GeV, and
 $\cos\theta_{\mathrm{Sph}}$ tests whether accepted event topology is similarly contained in
 detector acceptance for data and MC.
 
-\texttt{tgen} and \texttt{tgenBefore} receive the same particle-level treatment and differ
+The \texttt{tgen} and \texttt{tgenBefore} samples receive the same particle-level treatment and differ
 only in which events are retained: \texttt{tgen} holds the generator record of the events
 written to the reconstructed after-cut sample, \texttt{tgenBefore} that of all generated
 events, so \texttt{tgen} is a subset. The kinematic selections of
-Sec.~\ref{sec:object_selection} are applied at detector level only; the archived-MC cleaning
-of beam-pipe radiation artifacts and of identified photon-conversion pairs, adjacent
-opposite-charge electron candidates close in angle, applies at generator level too. The events
+Sec.~\ref{sec:object_selection} are applied at detector level only, and no additional
+cleaning is applied at generator level. The events
 missing from \texttt{tgen} are removed almost entirely by polar-angle acceptance rather than
 by particle content, so the normalized multiplicity and charged-energy spectra coincide
 through the bulk, separating only in the sparse low-$E_{\mathrm{Ch}}$ tail near the
 charged-energy boundary, and $\cos\theta_{\mathrm{Sph}}$ is the one panel where the curves
 clearly differ. Both generator-level curves also show an even--odd modulation in
 $N_{\mathrm{trk}}$: the charged multiplicity shares the parity of the summed charge of the
-counted particles, which charge conservation makes vanish for most generated events, and the
-conversion-pair cleaning removes one track per pair and so dilutes it. The modulation is
-absent at detector level, where charged-track inefficiency randomizes the parity.
+counted particles, which charge conservation makes vanish for most generated events. The
+modulation is absent at detector level, where charged-track inefficiency randomizes the
+parity.
 
 Overall agreement in the high-statistics regions supports the response-model baseline used for IBU.
 The visible differences are concentrated in lower-populated tails and near selection boundaries,

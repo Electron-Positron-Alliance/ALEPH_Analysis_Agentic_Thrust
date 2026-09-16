@@ -11,18 +11,26 @@ from typing import List
 
 import ROOT
 
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
+
+def _summary(name: str) -> str:
+    """Default to <run_dir>/summary/<name> from inputs.json rather than a fixed run."""
+    try:
+        import paths
+        return os.path.join(paths.get("run_dir"), "summary", name)
+    except Exception:
+        return os.path.join("Studies", "PreliminaryResult", "summary", name)
+
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--corr-csv",
-                   default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/corr_total.csv",
-                   help="Path to corr_total.csv")
-    p.add_argument("--binning-csv",
-                   default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/binning.csv",
-                   help="Path to binning.csv")
-    p.add_argument("--output-pdf",
-                   default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/summary/matrix_total_correlation_final.pdf",
-                   help="Output PDF path")
+    p.add_argument("--corr-csv", default=_summary("corr_total.csv"),
+                   help="Path to corr_total.csv (default: run_dir/summary from inputs.json)")
+    p.add_argument("--binning-csv", default=_summary("binning.csv"),
+                   help="Path to binning.csv (default: run_dir/summary from inputs.json)")
+    p.add_argument("--output-pdf", default=_summary("matrix_total_correlation_final.pdf"),
+                   help="Output PDF path (default: run_dir/summary from inputs.json)")
     p.add_argument("--title", default="Total correlation matrix (final result)")
     return p.parse_args()
 

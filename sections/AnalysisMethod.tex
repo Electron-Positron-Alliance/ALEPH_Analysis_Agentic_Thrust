@@ -44,7 +44,8 @@ The nominal regularization is
 N_{\mathrm{iter}}=5,
 \end{equation}
 with $N_{\mathrm{iter}}=4$ and $6$ propagated as unfolding-regularization systematic branches.
-The iteration-choice diagnostics, including refolded spectra at $N=4,5,6,10,100$ compared with detector-level data, confirm that the closure-shape $\chi^2/\mathrm{ndf}$ is stable and that the iteration-to-iteration change in the unfolded spectrum is small for $N_{\mathrm{iter}}\in\{4,5,6\}$.
+The iteration-choice diagnostics, including refolded spectra at $N=4,5,6,10,100$ compared with detector-level data, confirm that the closure-shape $\chi^2/\mathrm{ndf}$ is stable for $N_{\mathrm{iter}}\in\{4,5,6\}$.
+The spread in the unfolded thrust spectrum across this range is below $1\%$ in 37 of the 42 reported bins (median $0.3\%$), rising to at most $6.6\%$ near the two-jet edge ($T\lesssim0.62$) where the steeply falling spectrum amplifies regularization sensitivity.
 
 The response matrix has a diagonal fraction of $f_{\mathrm{diag}}=0.33$, meaning approximately two-thirds of events migrate out of their generated thrust bin at reconstruction level. This level of bin-to-bin migration is expected for thrust at ALEPH given the finite charged-particle momentum resolution and the sensitivity of thrust to soft particles near the event boundary. It implies that the unfolding correction is non-trivial and that the choice of regularization strength meaningfully affects the result. This provides confidence that $N_{\mathrm{iter}}=5$ sits in a well-regularized plateau rather than near an instability. The propagated $N_{\mathrm{iter}}=4,6$ systematic covers residual regularization-bias uncertainty at the level documented in Sec.~\ref{sec:systematics}.
 
@@ -84,9 +85,22 @@ The usable binning resolution is characterized using matched reco--gen event pai
 \end{figure}
 
 \subsection{Systematics variations}
+\label{sec:systematics_execution_map}
 
-Systematic uncertainties are evaluated by rerunning unfolding with variation-specific inputs or theory weights, then converting each variation into a signed shift relative to nominal.
-The combination structure is summarized in Table~\ref{fig:systematics_execution_chart}. Its input branches are \texttt{iter4}/\texttt{iter6}, unfolding passes at $N_{\mathrm{iter}}=4$ and $6$; \texttt{ntpc7}, \texttt{pt04}, \texttt{ech10} and \texttt{with\_met}, the track and event selection variations; and \texttt{nes\_up}/\texttt{nes\_down} and \texttt{ner}, the neutral energy-scale and removal-efficiency variations, all defined in Table~\ref{tab:exp_systematics}. The experimental subtotal and the final total are formed by quadrature of their sub-components. The \texttt{no\_neutrals} branch is a cross-check only.
+Systematic branches are executed by rerunning unfolding with variation-specific inputs or theory weights, then converting each branch into a signed shift relative to nominal.
+The combination structure is summarized in Table~\ref{fig:systematics_execution_chart}.
+Eight systematic branches feed into the total:
+\begin{itemize}
+  \item \texttt{iter4}/\texttt{iter6}: unfolding passes at $N_{\mathrm{iter}}=4$ and $6$.
+  \item \texttt{ntpc7}: tightened TPC hit requirement ($N_{\mathrm{TPC}}>7$, nominal $>4$).
+  \item \texttt{pt04}: raised charged-$p_T$ threshold ($>0.4$~GeV, nominal $>0.2$~GeV).
+  \item \texttt{ech10}: loosened charged-energy cut ($>10$~GeV, nominal $>15$~GeV).
+  \item \texttt{with\_met}: missing transverse energy added as a pseudo-particle.
+  \item \texttt{nes\_up}/\texttt{nes\_down}: neutral energies scaled up and down, probing ECAL energy-scale uncertainty.
+  \item \texttt{ner}: neutral objects randomly removed, probing reconstruction efficiency.
+\end{itemize}
+The experimental subtotal and the final total are formed by quadrature of their sub-components.
+The \texttt{no\_neutrals} branch is a cross-check only.
 
 \input{tables/systematics_execution_chart_figure}
 
@@ -108,7 +122,7 @@ C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{g
 \end{equation}
 This factor is applied to enable comparisons with state-of-the-art theory calculations which do not include QED ISR. The correction is derived from standalone \textsc{Pythia}~8.317 samples generated with ISR switched off and on~\cite{Bierlich:2022pfr}. \textsc{Pythia}~8.317 is chosen here for simplicity; a higher-order generator such as \textsc{KKMCee}~5.00.02 would be preferred for a full thrust measurement~\cite{Jadach:2022mbe}. The ratio histograms are pre-computed once into a cache file and applied identically to the nominal and all systematic variation branches, so that the ISR correction cancels in the systematic shifts and its residual uncertainty (from finite MC statistics on the ratio) is propagated as a separate component $\Delta_{\mathrm{ISR}}$ (Sec.~\ref{sec:isr_uncertainty}).
 
-For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the data and response histograms through the IBU iteration chain without toy MC sampling. The resulting covariance matrix is read from the unfolding output and transformed to the normalized differential-thrust basis used in this work. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and fit-window covariance products are exported together with full-range matrices by \texttt{build\_prelim\_uncertainty\_summary.py}.
+For the nominal run, the data statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates Poisson uncertainties in the measured data through the IBU iteration chain without toy MC sampling. The response matrix's own finite statistics are not included by that call and are propagated separately by a Poisson bootstrap over the simulated events, as described in Sec.~\ref{sec:stat_uncertainty}. The resulting covariance matrices are read from the unfolding output and transformed to the normalized differential-thrust basis used in this work. Non-statistical component covariances are built with a configurable model (nominal: \texttt{template\_correlated}), and all covariance products are exported over the reported bins by \texttt{build\_prelim\_uncertainty\_summary.py}.
 
 Response and matrix visualizations are exported by the matrix-plot helper script. Full provenance metadata for the run, including git commit, ROOT version, RooUnfold version, environment fingerprint, response diagnostics, theory-weight coverage, and all computed uncertainty metrics, is written to a structured JSON summary file. This file is the primary machine-readable record of the result and is the canonical reference for any numeric claims in Sec.~\ref{sec:results}.
 

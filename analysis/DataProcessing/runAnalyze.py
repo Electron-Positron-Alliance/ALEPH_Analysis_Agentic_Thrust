@@ -49,8 +49,14 @@ DEFAULT_SELECTION = {
     'keepChargedTracks': True,
     'keepNeutralTracks': True,
     'doMET': False,
-    'NES': -1, # neutral particle energy scale (NES) variation
-    'NER': -1, # neutral particle efficiency variation via random throwing (NER)
+    # Per-pwflag neutral systematics. -1 disables. Photons (pwflag 4) and
+    # neutral hadrons (pwflag 5) are independent; V0s (pwflag 3) are never
+    # scaled or dropped, being reconstructed from charged decay tracks.
+    'NES_PHOTON': -1,
+    'NES_HADRON': -1,
+    'NEE_PHOTON': -1,
+    'NEE_HADRON': -1,
+    'excludeNeutral1to2GeV': False,
 }
 
 
@@ -128,19 +134,23 @@ def create_selection_variations():
     with_met['doMET'] = True
     variations.append(('with_met', with_met))
 
-    # Neutral particle energy scale up
+    # Neutral particle energy scale up. Photons and neutral hadrons are moved
+    # together to keep one nes_up/nes_down pair, as NEUTRAL_VARS expects.
     nes_up = DEFAULT_SELECTION.copy()
-    nes_up["NES"] = 1.05
+    nes_up["NES_PHOTON"] = 1.05
+    nes_up["NES_HADRON"] = 1.05
     variations.append(('nes_up', nes_up))
 
     # Neutral particle energy scale down
     nes_down = DEFAULT_SELECTION.copy()
-    nes_down["NES"] = 0.95
+    nes_down["NES_PHOTON"] = 0.95
+    nes_down["NES_HADRON"] = 0.95
     variations.append(('nes_down', nes_down))
 
     # Neutral particle efficiency variation
     ner = DEFAULT_SELECTION.copy()
-    ner["NER"] = 0.025
+    ner["NEE_PHOTON"] = 0.025
+    ner["NEE_HADRON"] = 0.025
     variations.append(('ner', ner))
 
     return variations
@@ -154,7 +164,8 @@ def run_analyze_job(job_config):
         f"-o {job_config['output_file']}",
         f"-c \"{job_config['config_string']}\"",
         f"--divide {job_config['total_divisions']}",
-        f"--thisdiv {job_config['current_division']}"
+        f"--thisdiv {job_config['current_division']}",
+        f"--mass-scheme {job_config['mass_scheme']}"
     ]
 
     if job_config.get("nevents", -1) != -1:
@@ -167,7 +178,10 @@ def run_analyze_job(job_config):
     print(f"[{job_config['selection_name']}] {cmd}")
 
     if not job_config.get("dry_run", False):
-        return os.system(cmd)
+        rc = os.waitstatus_to_exitcode(os.system(cmd))
+        if rc != 0:
+            print(f"!! [{job_config['selection_name']}] Analyze.exe exited {rc}")
+        return rc
     return 0
 
 
@@ -215,7 +229,8 @@ def run_tree_jobs(ops, file_config, sel_name, selection, tree_name):
             "current_division": division,
             "dry_run": ops.dryrun,
             "debug": ops.debug,
-            "nevents": ops.nevents
+            "nevents": ops.nevents,
+            "mass_scheme": ops.mass_scheme
         })
 
     print(f"  Running {ops.ndivs} divisions for tree {tree_name}...")
@@ -254,6 +269,8 @@ def parse_arguments():
     parser.add_argument("-n", "--nevents", type=int, default=-1, help="Number of events to process")
     parser.add_argument("--ndivs", type=int, default=1, help="Number of divisions to partition the input file into")
     parser.add_argument("-j", "--ncpu", type=int, default=1, help="Number of cores for multiprocessing")
+    parser.add_argument("--mass-scheme", default="none", choices=["none", "e", "p"],
+                        help="Mass scheme passed to Analyze.exe (default: none)")
     parser.add_argument("--dryrun", action="store_true", help="Print commands without executing them")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument("--nominalOnly", action="store_true", help="Only run the nominal selection variation")

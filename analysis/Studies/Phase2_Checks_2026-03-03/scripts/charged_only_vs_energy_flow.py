@@ -18,6 +18,18 @@ import sys
 
 import ROOT
 
+# Input locations come from analysis/inputs.json via paths.py, not from a fixed
+# run directory, so a rerun does not silently read another run's results.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+
+
+def _run(*parts):
+    try:
+        import paths
+        return os.path.join(paths.get("run_dir"), *parts)
+    except Exception:
+        return os.path.join("Studies", "PreliminaryResult", *parts)
+
 
 def diff_xsec_clone(h, name):
     """Normalize histogram to differential cross-section: (1/N) dN/dT / bin_width."""
@@ -83,12 +95,12 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument(
         "--nominal",
-        default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/nominal/unfolded_nominal_iter5.root",
+        default=_run("nominal", "unfolded_nominal_iter5.root"),
         help="Energy-flow (nominal) unfolded ROOT file",
     )
     p.add_argument(
         "--no-neutrals",
-        default="Studies/PreliminaryResult/2026-02-17_thrust_iter5/experimental/unfolded_no_neutrals.root",
+        default=_run("experimental", "unfolded_no_neutrals.root"),
         help="Charged-only unfolded ROOT file",
     )
     p.add_argument(

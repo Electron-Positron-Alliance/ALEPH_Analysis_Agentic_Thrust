@@ -11,6 +11,7 @@ live repo at `ALEPH/ALEPH_Analysis_Agentic_Thrust`.
 | 1. ntuples | `DataProcessing/runAnalyze.py` (+ `*.h`) | the 3 derived ROOT files |
 | 2. validation plots | `DataProcessing/plotting/plot.py` | 57 figures (`pwflagN_*`, `ntrk`, `ntrkPlusNeu`, `eCh`, `cosThetaSph`) |
 | 3. unfolding + result | `Unfolding/unfold_thrust.py`, `Unfolding/scripts/*.py` | 7 figures, all tables and metrics |
+| 3b. component matrices | `Unfolding/scripts/plot_component_matrices.py` | `corr_matrices_per_source`, `cov_matrices_per_source`, `cov_matrix_total` |
 | 4. cross-checks | `Studies/*/scripts/*.py` | 17 figures |
 
 Figure names in stage 2 are built as `f"pwflag{pw}_{qty}"` (`plotting/plot.py:57`),
@@ -160,6 +161,3 @@ before quoting any number out of a summary.
 
 - **theory uncertainty** and **ISR correction** — need the PYTHIA 8.3 / Herwig 7.3 /
   Sherpa 2.2 `tgenBefore` samples, which are not in the open dataset.
-- **Figs. 21–23** (`corr_matrices_per_source`, `cov_matrices_per_source`,
-  `cov_matrix_total`) — **no producer script exists anywhere**. Regenerating them,
-  which Referee 2 asks for, means writing the producer.

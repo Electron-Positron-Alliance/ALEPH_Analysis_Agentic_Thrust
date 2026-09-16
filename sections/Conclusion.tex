@@ -3,25 +3,29 @@
 
 A complete thrust baseline measurement has been produced with Iterative Bayesian
 Unfolding on archived ALEPH 1994 data at $\sqrt{s}\simeq91.2$~GeV. The analysis
-propagates six independent uncertainty components --- statistical, unfolding
+propagates seven independent uncertainty components --- data statistical,
+response MC statistical, unfolding
 regularization, experimental detector, theory modeling, hadronic event-selection
 correction, and ISR correction --- and combines them in quadrature to form a full
 covariance matrix suitable for precision phenomenology. The implementation of the
 ISR correction, following the prescription of both published ALEPH event-shape
 analyses~\cite{Barate:1996fi,Heister:2003aj}, brings the measured thrust distribution
-into good agreement with the published ALEPH 2004 result ($\chi^2/\mathrm{ndf}=0.36$
-over 42 bins), with the only notable discrepancy at the $T\to 1$ dijet endpoint where
-MC modeling uncertainties are largest and normalization conventions differ.
+into good agreement with the published ALEPH 2004 result, with the only notable
+discrepancy at the $T\to 1$ dijet endpoint where MC modeling uncertainties are
+largest and normalization conventions differ.
+% No chi2/ndf is quoted against ALEPH 2004. A goodness-of-fit statistic needs the
+% correlation between the two measurements, which share the ALEPH detector,
+% overlapping data and related simulation; that correlation is not available.
 
 The precision QCD motivation for this work is the persistent $e^{+}e^{-}$ $\alpha_s$
 tension: recent thrust-based extractions yield $\alpha_s(m_Z)\simeq0.1136$,
 approximately $3.5\sigma$ below the world average $0.1180$~\cite{Benitez:2024nav,ParticleDataGroup:2022pth}.
 The covariance and correlation products from this baseline are designed as direct
-inputs to precision $\alpha_s$ fits. The full-range and fit-window covariance matrices,
+inputs to precision $\alpha_s$ fits. The total and per-component covariance matrices,
 central values, component-level uncertainty plots, and individual signed-shift branches
 are bundled as version-controlled release products, with provenance metadata recording
-the git commit, software versions, and key analysis parameters. Theory consumers are
-encouraged to use the fit-window covariance products for extractions.
+the git commit, software versions, and key analysis parameters. The covariance products
+cover the 42 reported bins, $0.58\le T<1.00$.
 
 This establishes a first end-to-end repository baseline for thrust with IBU and defines
 the template for extension to C-parameter and heavy-jet mass, including future

@@ -289,6 +289,26 @@ def build_response(
     return response, h_reco, h_gen, h_resp_counts, matched, matched_weight_sum
 
 
+def make_response_bootstrap_lookup(tree_gen, id_branch, seed, base_lookup):
+    """Poisson(1) weight per matched gen event, multiplied into any existing weight.
+
+    Returns base_lookup unchanged when seed < 0, so the nominal path is untouched.
+    """
+    if seed < 0:
+        return base_lookup
+    rng = ROOT.TRandom3(seed)
+    out = {}
+    for i in range(tree_gen.GetEntries()):
+        tree_gen.GetEntry(i)
+        ev_id = int(getattr(tree_gen, id_branch))
+        w = float(rng.Poisson(1.0))
+        if base_lookup is not None:
+            w *= float(base_lookup.get(ev_id, 1.0))
+        out[ev_id] = w
+    print(f"  response bootstrap: seed={seed}, {len(out)} gen events Poisson(1)-weighted")
+    return out
+
+
 def matrix_to_th2(name, title, mat, bins, xmin, xmax):
     h2 = make_h2(name, title, bins, xmin, xmax)
     nrows = mat.GetNrows()
@@ -626,6 +646,11 @@ def main():
     apply_hadronic_event_correction = bool(
         get_cfg(cfg, "apply_hadronic_event_correction", default=True)
     )
+    # Response-only MC-statistics bootstrap. When >= 0, every matched gen event gets
+    # a Poisson(1) weight, so re-unfolding many seeds gives the response's finite-
+    # statistics covariance. Deliberately NOT passed to the hadronic correction: the
+    # tgenBefore/tgen statistics are already a separate component (cov_hadronic).
+    response_bootstrap_seed = int(get_cfg(cfg, "response_bootstrap_seed", default=-1))
     apply_isr_correction = bool(get_cfg(cfg, "apply_isr_correction", default=False))
     isr_corr_file = get_cfg(cfg, "isr_corr_file", default=None)
 
@@ -740,7 +765,9 @@ def main():
         xmax=xmax,
         axis_label=axis_label,
         RooUnfoldResponse=RooUnfoldResponse,
-        gen_weight_lookup=theory_weight_lookup_gen,
+        gen_weight_lookup=make_response_bootstrap_lookup(
+            tree_gen, id_branch, response_bootstrap_seed, theory_weight_lookup_gen
+        ),
         gen_default_weight=1.0,
     )
 
