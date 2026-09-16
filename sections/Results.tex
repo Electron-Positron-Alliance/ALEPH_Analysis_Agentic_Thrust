@@ -5,7 +5,7 @@ The thrust baseline result is obtained from the 1994 workflow with Iterative Bay
 Unfolding at nominal $N_{\mathrm{iter}}=5$, including the hadronic event correction,
 ISR correction, and all configured systematic reruns.
 All 14 nominal and systematic unfolding jobs completed successfully.
-The response matrix diagonal fraction is 0.332, indicating substantial migration between
+The response matrix diagonal fraction is 0.326, indicating substantial migration between
 reconstructed and generated thrust bins.
 
 \subsection{Final unfolded thrust distribution}
@@ -52,7 +52,7 @@ reconstructed and generated thrust bins.
 Figure~\ref{fig:final_thrust_result} (left) shows the unfolded spectrum with the total
 uncertainty band and comparison to the published ALEPH 2004 result. Agreement is good
 across the bulk of the spectrum ($0.62\le T<0.99$), with the largest discrepancy at
-the endpoint ($0.99<T<1.00$, ratio $1.30\pm0.27$). This is physically expected: the
+the endpoint ($0.99<T<1.00$, ratio $1.18\pm0.39$). This is physically expected: the
 dijet limit is sensitive to MC modeling of soft hadrons, and the hadronic correction
 $C_{\mathrm{had}}(j)$ and ISR correction $C_{\mathrm{ISR}}(j)$ carry growing
 uncertainties there. Normalization convention differences between the current analysis
@@ -66,7 +66,7 @@ The total correlation matrix for the combined result is shown in
 Fig.~\ref{fig:final_total_correlation_matrix_sys}. The off-diagonal structure is
 non-trivial: strong positive correlations appear in the high-thrust region where the
 theory and hadronic-correction components dominate and their shifts are coherent across
-bins. The maximum off-diagonal correlation is $|\rho_{ij}|=0.887$, confirming that the
+bins. The maximum off-diagonal correlation is $|\rho_{ij}|=0.832$, confirming that the
 full covariance matrix --- rather than diagonal uncertainties alone --- must be used in
 any downstream fit or comparison.
 
@@ -130,7 +130,7 @@ correlations of all seven components. Generator-reweighting shifts are coherent 
 large thrust ranges because the parton-shower and hadronization changes affect the
 whole spectral shape rather than individual bins, making the theory covariance the
 dominant driver of off-diagonal structure in the total matrix. The hadronic correction
-shows modest correlations commensurate with its ${\sim}3\%$ magnitude
+shows modest correlations commensurate with its ${\sim}2\%$ magnitude
 in the central range. The ISR correction is nearly diagonal, consistent
 with its sub-percent contribution and the bin-local nature of the MC-statistical
 uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio. The response MC statistical component
@@ -196,7 +196,7 @@ The total covariance matrix is the primary product exported for theory use, and 
 released as a machine-readable table rather than as a figure. Its off-diagonal
 structure is dominated by the theory covariance across the central thrust range,
 with additional contributions from the experimental component. Theory consumers are
-encouraged to use the fit-window total covariance (covering $0.505\le T<1.00$, 45
+encouraged to use the fit-window total covariance (covering $0.540\le T<1.00$, 44
 bins) for $\alpha_s$ extractions rather than the full-range matrix, to avoid the
 regions of large uncertainty and poor MC-model control near the kinematic
 boundaries.
