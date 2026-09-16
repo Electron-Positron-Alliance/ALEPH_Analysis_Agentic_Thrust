@@ -25,6 +25,15 @@ $\Delta_{\mathrm{stat}}(j)=\sqrt{\mathrm{Cov}^{(\mathrm{stat})}_{jj}}/U_j^{\math
 is small and nearly uniform across the spectrum, typically below $2\%$ in the
 central range, owing to the high statistics of the 1994 ALEPH dataset.
 
+Monte Carlo statistical uncertainties enter the budget through the two corrections
+derived from finite simulated samples: the MC statistical uncertainty of the
+ISR-off and ISR-on samples is propagated onto $C_{\mathrm{ISR}}(j)$, and the
+archived-MC statistical uncertainty of $N_{\mathrm{genBefore}}$ and
+$N_{\mathrm{gen}}$ is propagated onto the hadronic event-selection correction
+$C_{\mathrm{had}}(j)$; the finite statistics of the response matrix itself are not
+propagated, since \texttt{RooUnfold::kCovariance} transports the measured data
+covariance only.
+
 The unfolding regularization uncertainty is closely related: two additional unfolding
 passes at $N_{\mathrm{iter}}=4$ and $N_{\mathrm{iter}}=6$ quantify the sensitivity
 of the result to the regularization choice. The iteration envelope
