@@ -118,11 +118,13 @@ Sec 6
 
 Sec 6.3
 - Fig 1 Can you comment on why we have enhancements at costheta=0 (also for gen) ?
-  What are the peaks at p=E=45 GeV and why are they not there at gen level ?
-  - **To-do**
+  - The enhancements near cos(theta)=0 or theta=pi/2. **To-do**
+
+- Fig 1 What are the peaks at p=E=45 GeV and why are they not there at gen level ?
+  - The peaks at p=E=45 GeV  **To-do**
 
 - Fig 3 the phi structure, only at gen level, is suprising, can you comment on that ?
-  - **To-do**
+  - This is believed to be artifact of how the archived MC was processed and is being investigated still. We checked the impact of removing this contribution and the impact is negligible. 
 
 - Fig 4 : the peaks here at E~p=45 GeV for V0 collection should also be explained (and why they are only in the reco)
   - **To-do**
@@ -151,7 +153,7 @@ Sec 6.4
   - "Before" refers to the detector-level event selection, not to particle-level cuts; the two trees receive identical particle-level treatment, the kinematic selections being applied at detector level only. In the archived ntuples \texttt{tgen} is an exact subset of \texttt{tgenBefore}, and the missing events are removed almost entirely by polar-angle acceptance, with only weak dependence on multiplicity, so $\cos\theta_{\mathrm{Sph}}$ is the only panel where the two clearly separate; a small depletion also survives in the sparse low-$E_{\mathrm{Ch}}$ tail. Stated in Sec. 6.4.
 
 - What is also strange is the up-down oscillating pattern in the MC/Data for the (upper-left) Ntrk plot : how is that happening ?
-  - The modulation is in the generator-level curves, not in data or MC reco. Charge conservation fixes the parity of the charged multiplicity to that of the summed charge, which vanishes for most generated events. **To-do** verify this plot
+  - The modulation is in the generator-level curves, not in data or MC reco. This is perhaps a confusing plot because Ntrk is really a detector level quantity while at gen this is really N_charged particles. Since the incoming state is charge neutral, then the charged particles are made in pairs and charge conservation holds. So at gen level charge conservation requires that the particles are made in pairs at gen level so this makes a the gen plot only have filled even bins. The odd bins then result from ISR events where scattered leptons can be stored as a final state particle or other such features.
 
 - define "IBU" on page 20
   - IBU is defined in Sec. 2: "Iterative Bayesian Unfolding (IBU) implemented in RooUnfold".
@@ -173,10 +175,9 @@ Sec 7.3
   - Added references where they are mentioned.
 
 - Can you quantify better how small is the iteration-to-iteration change ?
-  - **To-do**
+  - Added numbers quoting the spread from the iteration variation.
 
-- Can you quantify how much is the migration driven separately by the charged particle momentum resolution, and by the soft particles acceptance ?
-  I would guess the latter is dominant.
+- Can you quantify how much is the migration driven separately by the charged particle momentum resolution, and by the soft particles acceptance ? I would guess the latter is dominant.
   - **To-do**
 
 - Fig 10. What are the (huge) error bars on the efficiency plot ?
@@ -186,13 +187,13 @@ Sec 7.3
   - Yes a bias is seen at the detector level which broadens the thrust distribution. The measurements in general will act to broaden the thrsut since it makes the events more isotropic, leading to a bias towards higher thrust values. The caption is updated to be more concise as well.
 
 - Table 6. Several entries in the table are not very clear or have not been defined, like input labels "ntpc7, pt04, ech10, with met  "
-  - Table 7 now defines those variations. **To-do** clean up this presentation.
+  - Cleaned this up so that there is a paragraph with bulleted list defining the labels and table 7 is deleted.
 
 - Sec 7.6 previously it was stated that "The ISR correction is not yet implemented in the current analysis and represents a systematic gap relative to the published results;"  but here is seems it is implemented. Can you clarify ?
   - The Sec. 5 sentence was stale and has been corrected. The ISR correction is applied, as Sec. 7.6 describes.
 
 - Why is the ISR uncertainty only taken from the finite MC statistics ?
-  - This was done for simplicity and we agree that for a full thrust result the ISR uncertainty would need to include MC variations or a data-driven uncertainty. **To-do**: do we want to do anything here?
+  - This was done for simplicity and we agree that for a full thrust result the ISR uncertainty would need to include MC variations or a data-driven uncertainty.
 
 
 
@@ -200,10 +201,10 @@ Sec 7.3
 ---------------------------------------------
 Sec 8.
 - I'm wondering how the MC stat fluctuations (that should be larger than the data ones) are being taken into account. Can you elaborate ?
-  - The MC statistical uncertainty is included by adding in quadrature the per-bin stat uncertainty to the overall stat uncertainty. **To-do**
+  - Thank you for pointing this point. The MC statistical uncertainty was only included from the uncertainty on the generator level archived MC used for the hadronic event selection correct. Now a toys based bootstrap is implemented to derive an uncertainty on the response matrix as well.
 
 - Fig 14. Could be nice to show also a zoom of the y axis on both plots to show better the uncertainties in the higher T regions.
-  - Figure updated. **Check on this**
+  - Figure updated.
 
 - Why does the unfolding uncertainty flip sign several times across the T range ?
   - The $N_{\mathrm{iter}}=4$ and $6$ passes bracket the nominal, so their shifts have
@@ -227,7 +228,7 @@ Sec 8.
   - From quick checks of privately generated MC this amounts to order ~10% in the peak region. For this agentic study pythia8 was ok to use, but for the full precision measurement we will use KKMCee which is the modern implementation of koralz and has higher perturbative accuracy.
 
 - 8.7 could you add some justification to combine in quadrature ?
-  - Added that we add it in quadrature. This will be carried out further in the future. **To-do** check if we can do this quickly.
+  - Included sentences: The quadrature sum is used since the components originate from distince sources and the covariance cross terms are expected to be small. This will be further assessed in follow up event shape measurements.
 
 - Fig 18 : What is the nature of the asymmetric NES uncertainties ?
   - The scale variation is symmetric by construction, so the asymmetry is a non-linear response rather than an asymmetric input. It is concentrated at low thrust; across the fit window the up and down branches are much closer in size, as Fig. 18 shows. The variation scales neutral momenta and leaves the neutral multiplicity essentially unchanged, so it is not driven by objects migrating across the selection threshold.
@@ -244,13 +245,13 @@ Sec 9.1
   - Fixed.
 
 - Fig 19. How is it that the ALEPH measurements seem to have larger uncertainties over most of the bins ?  Can you comment on that ?
-  - We believe that our theory uncertainty may be estimated differently than the ALEPH procedure and are investigating this in the handling of the archived sample. **Check on this**
+  - The uncertainties shown in the ratio were the quadrature sum of the ALEPH and the agentic measurement since it was automatically propagated in the ratio. This is fixed now. In general the uncertainties are of comparable scale. We continue to investigate differences that can originate from the archived data processing or the handling of the theory uncertainties. 
 
 - Table 9 : Are the ALEPH uncertainties the same as plotted in Fig 19 ? Just looking at the endpoint bin the table quotes 15% but the plot seems to show 20-25%
   - The table had the correct uncertainties. The ratio panel in Figure 19 was showing aleph/ours and the points had the quadrature sum of the two measurement errors. This is fixed.
 
 - Fig 21. Would it be better to have these plots with the y axis upwards as usual (like in Fig 20) ?
-  - Updated. **Check on this**
+  - Updated. 
 
 - Fig 22-23 visual information in these plots is very scarce,  they are almost completely uniform, can you try to improve that  ?
-  - Removed, leaving only the correlation matrices that are richer. **Check on this**
+  - Removed, leaving only the correlation matrices that are richer.
