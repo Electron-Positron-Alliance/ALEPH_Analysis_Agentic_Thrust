@@ -3,7 +3,7 @@
 
 Here are some comments about the text itself:
 - You should write ALEPH archived data on all histograms
-  - **TO-DO**
+  - Done.
 
 - page 1 precision QCD is not where theoretical uncertainties become limiting.
   - Definitely for some important physics the QCD based uncertainties became extremely important, e.g. alphaS uncertainty for Higgs decays, non-perturbative uncertainties, parton shower uncertainties. We reworded to make that clear. 
