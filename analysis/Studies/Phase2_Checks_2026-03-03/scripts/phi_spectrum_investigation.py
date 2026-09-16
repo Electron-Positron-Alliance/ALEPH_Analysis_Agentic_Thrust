@@ -125,7 +125,7 @@ def draw_phi_comparison(hists, labels, colors, outpath, title="",
     alabel.SetNDC(True)
     alabel.SetTextSize(0.040)
     alabel.SetTextFont(42)
-    alabel.DrawLatex(0.12, 0.945, "ALEPH e^{+}e^{-},  #sqrt{s}=91.2 GeV")
+    alabel.DrawLatex(0.12, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
 
     # Plot title (right-aligned)
     if title:

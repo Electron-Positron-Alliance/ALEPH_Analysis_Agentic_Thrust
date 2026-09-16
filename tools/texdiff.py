@@ -16,6 +16,10 @@ Design notes / safety rules:
     segment, so a table row or an equation body can never be broken.
   * Segments containing display math or verbatim-like environments are marked
     at segment granularity rather than word granularity.
+  * Display-math nesting is tracked ACROSS lines, because \begin{equation} and
+    its body are separate lines. A math body never receives \DIFadd/\DIFdel
+    (text-mode macros); it gets \DIFaddmath/\DIFdelmath, and a deletion whose
+    environment is gone from NEW is re-wrapped in its own \[...\].
 
 Output: for each changed file, a copy with \DIFadd{...} / \DIFdel{...} markup.
 The preamble is injected into main.tex.
@@ -37,6 +41,10 @@ PREAMBLE = r"""
 \providecommand{\DIFaddend}{}
 \providecommand{\DIFdelbegin}{}
 \providecommand{\DIFdelend}{}
+% Math-mode variants: \uwave and \sout are text-mode only, so display-math
+% bodies are coloured instead of underlined/struck.
+\providecommand{\DIFaddmath}[1]{{\protect\color{blue}#1}}
+\providecommand{\DIFdelmath}[1]{{\protect\color{red}#1}}
 %% ---- end diff markup ----
 """
 
@@ -80,6 +88,131 @@ NEVER_MARK_CMDS = {
 # A line containing any of these is structural: it cannot be struck through as
 # a unit, so deletions are dropped and insertions emitted unmarked.
 TABULAR_LINE_RE = re.compile(r"(&|\\\\\s*$|\\multicolumn|\\multirow|\\hline|\\cline)")
+
+# --- environment tracking -------------------------------------------------
+#
+# Markup decisions need to know which environments are open at a given line,
+# and one line on its own does not say: \begin{equation}, its body and
+# \end{equation} are three separate lines, so a body line carries no sign that
+# it is math. Both sides are tracked, because the question for every deletion
+# is "does the environment this old line lived in still exist where the
+# deletion lands?" -- if NEW commented the whole block out, it does not.
+
+ENV_BEGIN_RE = re.compile(r"\\begin\s*\{([^}]*)\}")
+ENV_END_RE = re.compile(r"\\end\s*\{([^}]*)\}")
+# (?<!\\) so that the row-spacing form "\\[2pt]" is not read as display math.
+MATH_OPEN_RE = re.compile(r"(?<!\\)\\\[")
+MATH_CLOSE_RE = re.compile(r"(?<!\\)\\\]")
+
+# Environments whose body is math mode. \DIFadd and \DIFdel are built on
+# \uwave and \sout, which are text-mode only: inside math they give
+# "Missing $ inserted". Those lines get \DIFaddmath / \DIFdelmath instead.
+MATH_ENVS = frozenset("""
+    math displaymath equation eqnarray align alignat flalign gather multline
+    split aligned gathered array matrix pmatrix bmatrix vmatrix cases
+    smallmatrix
+""".split())
+
+# Environments whose content cannot be rendered outside them: a \caption needs
+# its float, a row needs its tabular. If OLD had one and NEW does not -- the
+# block was deleted or commented out wholesale -- the deletion cannot be shown
+# at all, and emitting it gives "\caption outside float" or a stray row.
+UNRENDERABLE_ENVS = frozenset("""
+    figure table tabular tabularx wrapfigure wraptable subfigure minipage
+    tikzpicture lstlisting verbatim
+""".split())
+
+NOT_ENV, ENV_BODY, ENV_DELIM = 0, 1, 2
+
+# Deletions dropped because their environment is gone from NEW: real changes
+# that cannot appear in diff.pdf, so they are reported rather than swallowed.
+DROPPED = []
+
+# Plumbing inside a dropped float. Its loss is implied by the float's own
+# removal, so it is not worth naming in the warning -- only prose and captions
+# are, because those are what a reader would look for in diff.pdf.
+FLOAT_PLUMBING_RE = re.compile(
+    r"^\s*\\(centering|label|includegraphics|hline|toprule|midrule|bottomrule"
+    r"|rowcolor|captionsetup)\b[^%]*$")
+
+
+def strip_comment(line):
+    r"""Drop a trailing % comment. An escaped \% is not a comment."""
+    return re.sub(r"(?<!\\)%.*$", "", line)
+
+
+def in_math(stack):
+    """Is a line with this environment stack in math mode?
+
+    Tests the whole stack, not the innermost name: an array inside an equation
+    is still math.
+    """
+    return any(name in MATH_ENVS for name in stack)
+
+
+def orphaned(stack, ctx):
+    """Can OLD content from `stack` be rendered where `ctx` is what is open?"""
+    return any(name in UNRENDERABLE_ENVS and name not in ctx for name in stack)
+
+
+def env_lines(text):
+    r"""Track environment nesting line by line.
+
+    Returns (codes, stacks, math):
+      codes[i]   NOT_ENV / ENV_BODY / ENV_DELIM (the line opens or closes one)
+      stacks[i]  environment names open BEFORE line i. len == nlines + 1, so an
+                 index one past the last line is legal -- that is where a
+                 deletion at the end of a file lands.
+      math[i]    the line is display math: inside a math environment, or a
+                 delimiter of one.
+
+    Commented-out markup counts for nothing: a \begin{equation} behind a % opens
+    no environment. That is exactly the case that used to leave a bare math body
+    inside \DIFdel.
+    """
+    codes, stacks, math, stack = [], [], [], []
+    for line in text.split("\n"):
+        src = strip_comment(line)
+        events = [(m.start(), 1, m.group(1).rstrip("*").strip())
+                  for m in ENV_BEGIN_RE.finditer(src)]
+        events += [(m.start(), -1, m.group(1).rstrip("*").strip())
+                   for m in ENV_END_RE.finditer(src)]
+        events += [(m.start(), 1, "math") for m in MATH_OPEN_RE.finditer(src)]
+        events += [(m.start(), -1, "math") for m in MATH_CLOSE_RE.finditer(src)]
+        events.sort()
+        stacks.append(tuple(stack))
+        codes.append(ENV_DELIM if events else (ENV_BODY if stack else NOT_ENV))
+        math.append(in_math(stack) or any(n in MATH_ENVS for _p, _d, n in events))
+        for _pos, delta, name in events:
+            if delta == 1:
+                stack.append(name)
+            elif name in stack:
+                # pop to the matching name; a stray \end must not desynchronise
+                while stack.pop() != name:
+                    pass
+    stacks.append(tuple(stack))
+    return codes, stacks, math
+
+
+def wrap_math(macro, line, standalone):
+    r"""Mark one line of display math with a math-safe macro.
+
+    standalone re-opens display math around the line. That is for a deletion
+    whose \begin{equation} ... \end{equation} is gone from NEW: the delimiters
+    are dropped as structural, so without this the body would land in running
+    text and every _ and \frac in it would be a "Missing $ inserted" error.
+    """
+    core = line.strip()
+    if not core:
+        return line
+    if not _brace_balanced(core):
+        GUARDED.append(core[:60])
+        return line if macro == "DIFaddmath" else ""
+    # a % inside the run would comment out our own closing brace
+    sep = "\n" if re.search(r"(?<!\\)%", core) else ""
+    marked = "\\%s{%s%s}" % (macro, core, sep)
+    return "\\[" + marked + "\\]" if standalone else marked
+
 
 CMD_HEAD_RE = re.compile(r"^\\([A-Za-z@]+)\*?")
 
@@ -312,35 +445,101 @@ def diff_line(old, new):
 
 
 def diff_file(old_text, new_text):
-    """Line-level diff, with word-level markup inside changed lines.
+    r"""Line-level diff, with word-level markup inside changed lines.
 
     Line granularity at the top level is what keeps tabular material safe: a
     deleted table row is dropped rather than struck through, because
-    \\multicolumn cannot survive inside \\DIFdel and a half-struck row has the
+    \multicolumn cannot survive inside \DIFdel and a half-struck row has the
     wrong number of & separators.
+
+    Display-math lines are routed to \DIFaddmath / \DIFdelmath, and deletions
+    whose environment is gone from NEW are dropped: both are decided from the
+    cross-line environment state, not from the line's own text.
     """
     ol, nl = old_text.split("\n"), new_text.split("\n")
-    sm = SequenceMatcher(None, ol, nl, autojunk=False)
+    ocode, ostack, omath = env_lines(old_text)
+    ncode, nstack, nmath = env_lines(new_text)
     out = []
+
+    def ctx_at(at):
+        """What NEW has open where a deletion landing before line `at` goes."""
+        return nstack[min(at, len(nl))]
+
+    def del_line(k, at):
+        line = ol[k]
+        if omath[k]:
+            if ocode[k] == ENV_DELIM:
+                return  # \begin/\end of a removed display block: structural
+            # Re-open display math only when the environment that held this
+            # body is not open where the deletion lands.
+            out.append(wrap_math("DIFdelmath", line, not in_math(ctx_at(at))))
+            return
+        if orphaned(ostack[k], ctx_at(at)):
+            if (line.strip() and ocode[k] != ENV_DELIM
+                    and not FLOAT_PLUMBING_RE.match(line)):
+                DROPPED.append(line.strip()[:60])
+            return
+        if line.strip() and not TABULAR_LINE_RE.search(line):
+            marked = mark_run("DIFdel", atomise(line))
+            # A deleted comment marks up to nothing. Appending "" would put a
+            # blank line in the output, and a blank line inside an equation is
+            # a \par in math mode: "Missing $ inserted".
+            if marked.strip():
+                out.append(marked)
+        # structural / blank deleted lines: dropped
+
+    def add_line(k):
+        line = nl[k]
+        if nmath[k]:
+            # a \begin{equation} line cannot be wrapped at all; a body line
+            # takes the math-safe macro. Its own environment is in NEW, so the
+            # line is never standalone.
+            marked = (line if ncode[k] == ENV_DELIM
+                      else wrap_math("DIFaddmath", line, False))
+            # An old and a new formula in one display run together into a
+            # single unreadable line. The gap goes INSIDE the preceding
+            # \DIFdelmath so that the faithfulness check, which deletes that
+            # whole group, still reproduces the new source exactly.
+            if (out and marked.startswith("\\DIFaddmath{")
+                    and out[-1].startswith("\\DIFdelmath{")
+                    and out[-1].endswith("}")):
+                out[-1] = out[-1][:-1] + "\\qquad}"
+            out.append(marked)
+        elif line.strip() and not TABULAR_LINE_RE.search(line):
+            out.append(mark_run("DIFadd", atomise(line)))
+        else:
+            out.append(line)
+
+    sm = SequenceMatcher(None, ol, nl, autojunk=False)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
         if tag == "equal":
             out.extend(nl[j1:j2])
         elif tag == "delete":
-            for line in ol[i1:i2]:
-                if line.strip() and not TABULAR_LINE_RE.search(line):
-                    out.append(mark_run("DIFdel", atomise(line)))
-                # structural / blank deleted lines: dropped
+            for k in range(i1, i2):
+                del_line(k, j1)
         elif tag == "insert":
-            for line in nl[j1:j2]:
-                if line.strip() and not TABULAR_LINE_RE.search(line):
-                    out.append(mark_run("DIFadd", atomise(line)))
-                else:
-                    out.append(line)
+            for k in range(j1, j2):
+                add_line(k)
         else:
             olds, news = ol[i1:i2], nl[j1:j2]
+            # Math, or an old line whose environment is gone: word-level markup
+            # cannot be used, so those lines fall back to whole-line del + add,
+            # which keeps each side in a legal mode.
+            special = [k for k in range(i1, i2)
+                       if omath[k] or orphaned(ostack[k], ctx_at(j1))]
             if len(olds) == len(news):
-                for o, n in zip(olds, news):
-                    out.append(n if o == n else diff_line(o, n))
+                for k in range(i1, i2):
+                    j = j1 + (k - i1)
+                    if k in special or nmath[j]:
+                        del_line(k, j)
+                        add_line(j)
+                    else:
+                        out.append(nl[j] if ol[k] == nl[j] else diff_line(ol[k], nl[j]))
+            elif special or any(nmath[j1:j2]):
+                for k in range(i1, i2):
+                    del_line(k, j1)
+                for j in range(j1, j2):
+                    add_line(j)
             else:
                 # unequal block: word-diff the joined text if neither side is
                 # tabular, else fall back to emitting the new lines
@@ -413,6 +612,32 @@ def repair_singletons(text):
             else:
                 repl = inner_add
             text = text[:k] + repl + text[aend:]
+            fixed += 1
+
+    # A lone \DIFadd{\caption{...}} -- an inserted caption, with no deletion
+    # beside it for the loop above to pair it with. \uwave around a \caption
+    # boxes the whole float caption and gives "Missing \endgroup inserted", so
+    # the markup moves inside the braces. This runs after the pairing loop, so
+    # anything left here is genuinely unpaired.
+    for name in REPAIR_CMDS:
+        pat = "\\DIFadd{\\" + name + "{"
+        at = 0
+        while True:
+            k = text.find(pat, at)
+            if k == -1:
+                break
+            aopen = k + len("\\DIFadd")
+            aend = _match_brace(text, aopen)
+            if aend == -1:
+                break
+            inner = text[aopen + 1 : aend - 1]          # \cmd{B}
+            sb = split_cmd_arg(inner)
+            if sb:
+                repl = sb[0] + wrap("DIFadd", [sb[1]]) + sb[2]
+            else:
+                repl = inner                            # keep it, unmarked
+            text = text[:k] + repl + text[aend:]
+            at = k + len(repl)
             fixed += 1
 
     # Emitting a never-mark command bare can leave a stray space after a
@@ -513,6 +738,12 @@ def main():
         print(f"       simplify the surrounding command if the highlight matters:")
         for g in GUARDED:
             print(f"         {g!r}")
+    if DROPPED:
+        print(f"  WARN {len(DROPPED)} deleted line(s) DROPPED: the figure, table or")
+        print(f"       tabular that held them is gone from the new version, so they")
+        print(f"       cannot be shown struck through anywhere; see `git diff`:")
+        for d in DROPPED:
+            print(f"         {d!r}")
     for rel in added:
         print(f"  NOTE {rel}: new file - every line marked as added")
     for rel, nlines, still_input in removed:

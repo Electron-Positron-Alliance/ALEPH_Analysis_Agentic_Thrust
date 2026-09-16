@@ -1,0 +1,32 @@
+{
+  "_comment": [
+    "Single source of truth for where this analysis's inputs live.",
+    "Every path may use ~ and $ENVVAR, and may reference an earlier key as ${key}.",
+    "Override the whole file with ALEPH_INPUTS=/path/to/inputs.json, or any single",
+    "key with its upper-case environment variable (e.g. TEMP_DIR=..., ISR0_FILE=...).",
+    "Consumers: paths.py, Unfolding/unfold_config.json, DataProcessing/plotting/PlotConfig.py,",
+    "Unfolding/scripts/run_thrust_prelim_workflow.py."
+  ],
+
+  "aleph_data_dir": "~/Documents/Documents/ALEPH/ALEPH",
+  "temp_dir": "~/Documents/Documents/ALEPH/unfold-ee-logtau/DataProcessing/temp",
+
+  "raw_data_file": "${aleph_data_dir}/LEP1Data1994_recons_aftercut-MERGED.root",
+  "raw_mc_file": "${aleph_data_dir}/alephMCRecoAfterCutPaths_1994.root",
+  "aleph2004_csv": "${aleph_data_dir}/HEPData-ins636645-v1-Table_54.csv",
+
+  "theory_weights_dir": "~/Documents/Documents/ALEPH/unfold-ee-logtau/arxivPaperResults2025/theory_reweighting/training-bf3b5fc3",
+
+  "_isr_comment": [
+    "The 2.5M-event PYTHIA 8.316 ISR-off/ISR-on samples are not ALEPH open data and are",
+    "NOT present on this machine (the pythia8316 example dir is gone). The correction",
+    "survives only as the cached ratio histograms below, which is enough to APPLY it.",
+    "Rebuilding it needs the samples regenerated; temp_isr{0,1}_* are 1000-event smoke",
+    "tests, not the production samples. Use --skip-isr and isr_cache_file instead."
+  ],
+  "isr0_file": "~/code/pythia8316/examples/isr0_ALL.root",
+  "isr1_file": "~/code/pythia8316/examples/isr1_ALL.root",
+  "isr_cache_file": "~/Documents/Documents/ALEPH/ALEPH_Analysis_Agentic_Thrust/Studies/PreliminaryResult/2026-02-17_thrust_iter5/isr_cache/isr_correction_cache.root",
+
+  "run_dir": "~/Documents/Documents/ALEPH/ALEPH_Analysis_Agentic_Thrust/Studies/PreliminaryResult/2026-02-17_thrust_iter5"
+}

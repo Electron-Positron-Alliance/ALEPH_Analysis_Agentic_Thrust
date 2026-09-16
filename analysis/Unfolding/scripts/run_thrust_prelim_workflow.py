@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import platform
+import shutil
 import subprocess
 import sys
 from datetime import date, datetime, timezone
@@ -16,10 +17,20 @@ from datetime import date, datetime, timezone
 # The ISR samples are PYTHIA-generated and are not part of the ALEPH open data,
 # so they only exist on the workstation. Overridable, and skippable entirely with
 # --skip-isr, which is what makes an open-data-only reproduction possible.
-ISR0_FILE = os.environ.get(
-    "ISR0_FILE", "/Users/anthonybadea/code/pythia8316/examples/isr0_ALL.root")
-ISR1_FILE = os.environ.get(
-    "ISR1_FILE", "/Users/anthonybadea/code/pythia8316/examples/isr1_ALL.root")
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
+
+def _inputs(key: str, default: str | None = None) -> str | None:
+    """Look a path up in analysis/inputs.json; fall back if it is unavailable."""
+    try:
+        import paths
+        return paths.get(key)
+    except Exception:
+        return default
+
+
+ISR0_FILE = _inputs("isr0_file")
+ISR1_FILE = _inputs("isr1_file")
 ISR_TREE = "tgenBefore"
 ISR_BRANCH = "thrust"  # stores T directly; fill histogram with thrust expression as-is
 
@@ -57,14 +68,25 @@ def parse_args():
              "samples are PYTHIA-generated and not part of the open dataset. "
              "Note --skip-theory alone does NOT skip ISR.",
     )
+    p.add_argument(
+        "--isr-cache-file",
+        default=_inputs("isr_cache_file"),
+        help=(
+            "Use an already-computed isr_correction_cache.root instead of building "
+            "one from the PYTHIA ISR-off/ISR-on samples. This is the only way to "
+            "APPLY the ISR correction without the raw samples, which are not ALEPH "
+            "open data. Default: isr_cache_file from analysis/inputs.json."
+        ),
+    )
     p.add_argument("--skip-plots", action="store_true")
     p.add_argument("--fail-fast", action="store_true")
     p.add_argument(
         "--theory-weights-dir",
-        default=None,
+        default=_inputs("theory_weights_dir"),
         help=(
             "Directory containing theory reweighting arrays "
-            "(required unless --skip-theory is set)."
+            "(default: theory_weights_dir from analysis/inputs.json; "
+            "required unless --skip-theory is set)."
         ),
     )
     return p.parse_args()
@@ -202,6 +224,16 @@ def load_cfg(cfg_path: str) -> dict:
 
 
 def resolve_cfg_path(cfg_path: str, value: str) -> str:
+    # ${key} references resolve against analysis/inputs.json, the same way
+    # unfold_thrust.py resolves them, so the driver and the unfolder agree.
+    if "${" in value:
+        try:
+            import paths
+            value = paths.substitute(value)
+        except Exception as exc:
+            raise ValueError(
+                f"cannot expand '{value}' from the config: {exc}"
+            ) from exc
     if os.path.isabs(value):
         return value
     return os.path.abspath(os.path.join(os.path.dirname(cfg_path), value))
@@ -339,10 +371,30 @@ def main():
     ensure_exists(nominal_reco, "nominal reco MC")
     ensure_exists(nominal_gen, "nominal gen MC")
 
+    # ISR correction, three ways. Applying it only needs the cached ratio
+    # histograms; the 2.5M-event PYTHIA ISR-off/ISR-on samples are needed ONLY to
+    # rebuild that cache, and they are not part of the ALEPH open data.
+    isr_cache_path = None
     if args.skip_isr:
         print("==> --skip-isr: no ISR correction will be applied")
-        isr_cache_path = None
+    elif args.isr_cache_file and os.path.exists(args.isr_cache_file):
+        dest_dir = os.path.join(outdir, "isr_cache")
+        os.makedirs(dest_dir, exist_ok=True)
+        dest = os.path.join(dest_dir, "isr_correction_cache.root")
+        src = os.path.abspath(args.isr_cache_file)
+        if src != os.path.abspath(dest):
+            shutil.copy2(src, dest)
+        isr_cache_path = dest
+        print(f"==> ISR correction APPLIED from existing cache: {src}")
+        print("    (raw PYTHIA ISR samples NOT required for this path)")
     else:
+        # >>> RAW ISR FILES REQUIRED HERE <<<
+        # This is the only branch that reads isr0_file / isr1_file. Reaching it
+        # without those samples is a hard failure by design -- silently dropping
+        # the correction would change the published spectrum.
+        print("==> No ISR cache available; rebuilding from raw PYTHIA samples")
+        print(f"    RAW ISR FILES REQUIRED: {ISR0_FILE}")
+        print(f"                            {ISR1_FILE}")
         isr_cache_path = precompute_isr_correction(
             isr0_file=ISR0_FILE,
             isr1_file=ISR1_FILE,

@@ -175,7 +175,7 @@ def draw_overlay(h_all, h_matched, h_miss, xlabel, outpath):
     alabel.SetNDC(True)
     alabel.SetTextSize(0.040)
     alabel.SetTextFont(42)
-    alabel.DrawLatex(0.14, 0.945, "ALEPH e^{+}e^{-},  #sqrt{s}=91.2 GeV")
+    alabel.DrawLatex(0.14, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
 
     c.SaveAs(outpath)
     c.Close()
@@ -210,7 +210,7 @@ def draw_efficiency(h_num, h_den, outpath):
     alabel.SetNDC(True)
     alabel.SetTextSize(0.040)
     alabel.SetTextFont(42)
-    alabel.DrawLatex(0.14, 0.945, "ALEPH e^{+}e^{-},  #sqrt{s}=91.2 GeV")
+    alabel.DrawLatex(0.14, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
 
     c.SaveAs(outpath)
     c.Close()
