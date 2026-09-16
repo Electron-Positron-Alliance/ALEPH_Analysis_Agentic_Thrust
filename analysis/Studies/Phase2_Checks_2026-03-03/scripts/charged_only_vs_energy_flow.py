@@ -159,7 +159,7 @@ def main():
     leg.Draw()
 
     pad1.cd()
-    myText(0.18, 0.925, "ALEPH  e^{+}e^{-},  #sqrt{s} = 91.2 GeV", size=0.048)
+    myText(0.18, 0.925, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", size=0.048)
 
     # ---------------------------------------------------------------- ratio pad
     c.cd()

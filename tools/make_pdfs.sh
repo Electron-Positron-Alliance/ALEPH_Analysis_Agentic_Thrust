@@ -116,14 +116,19 @@ def mb(s, i):
         i += 1
     return -1
 def resolve(t):
-    for macro in ("DIFadd", "DIFdel"):
+    # math variants first: they are longer names, and \DIFaddmath{ does not
+    # contain \DIFadd{ so the order only matters for readability
+    for macro in ("DIFaddmath", "DIFdelmath", "DIFadd", "DIFdel"):
         pat = "\\" + macro + "{"
         while True:
             k = t.find(pat)
             if k == -1: break
             o = k + len("\\" + macro); e = mb(t, o)
             if e == -1: break
-            t = t[:k] + (t[o+1:e-1] if macro == "DIFadd" else "") + t[e:]
+            t = t[:k] + (t[o+1:e-1] if macro.startswith("DIFadd") else "") + t[e:]
+    # a standalone \DIFdelmath -- one whose environment is gone from the new
+    # version -- carries its own \[...\]; removing the body leaves the shell
+    t = re.sub(r"\\\[\s*\\\]", "", t)
     return t
 def norm(s):
     s = re.sub(r"\s+", " ", s)
@@ -136,13 +141,18 @@ def norm(s):
     s = re.sub(r"\s+([{}])", r"\1", s)
     return re.sub(r"([{}])\s+", r"\1", s).strip()
 dif, new = sys.argv[1], sys.argv[2]
-ok = bad = 0
+ok = bad = skipped = 0
 for root, _, files in os.walk(dif):
     for fn in sorted(files):
         if not fn.endswith(".tex"): continue
         rel = os.path.relpath(os.path.join(root, fn), dif)
         dt = open(os.path.join(dif, rel), encoding="utf-8").read()
-        if "DIFadd" not in dt and "DIFdel" not in dt: continue
+        if "DIFadd" not in dt and "DIFdel" not in dt: continue  # covers *math
+        if not os.path.exists(os.path.join(new, rel)):
+            # File deleted since OLD: texdiff writes its old body marked as
+            # deleted, so there is no new source to reproduce. texdiff already
+            # reports these; skipping is not a silent pass.
+            skipped += 1; continue
         got = resolve(dt)
         if rel == "main.tex":
             got = re.sub(r"%% ---- diff markup.*?%% ---- end diff markup ----", "", got, flags=re.S)
@@ -151,6 +161,7 @@ for root, _, files in os.walk(dif):
         else:
             bad += 1; print(f"    MISMATCH {rel}")
 print(f"    {ok} changed files reproduce the current source exactly"
+      + (f"; {skipped} deleted file(s) not checked" if skipped else "")
       + (f"; {bad} MISMATCHED - inspect before sending" if bad else ""))
 sys.exit(1 if bad else 0)
 PY

@@ -141,7 +141,7 @@ def draw_pull_panel(h_data, refold_hists, labels, colors, outpath):
     _albl.SetNDC(True)
     _albl.SetTextSize(0.050)
     _albl.SetTextFont(42)
-    _albl.DrawLatex(0.14, 0.930, "ALEPH e^{+}e^{-},  #sqrt{s}=91.2 GeV")
+    _albl.DrawLatex(0.14, 0.930, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
 
     # Lower pad: pulls
     pad2.cd()

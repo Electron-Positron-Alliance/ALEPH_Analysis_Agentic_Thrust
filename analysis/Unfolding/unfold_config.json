@@ -1,7 +1,7 @@
 {
-  "data_file": "../DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
-  "reco_mc_file": "../DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
-  "gen_mc_file": "../DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgen.root",
+  "data_file": "${temp_dir}/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+  "reco_mc_file": "${temp_dir}/alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
+  "gen_mc_file": "${temp_dir}/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgen.root",
 
   "data_tree": "t",
   "reco_tree": "t",

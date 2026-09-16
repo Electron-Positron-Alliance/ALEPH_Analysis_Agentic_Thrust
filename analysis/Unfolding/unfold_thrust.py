@@ -107,13 +107,28 @@ def apply_overrides(cfg, overrides):
     return cfg
 
 
+def _expand_input_placeholders(cfg):
+    """
+    Expand ${key} references in config values against analysis/inputs.json.
+
+    Keeps machine-specific input locations in one file instead of spread across
+    per-script paths. A config with no ${...} is unaffected, and a missing
+    inputs.json is not fatal unless a placeholder actually needs resolving.
+    """
+    if not any(isinstance(v, str) and "${" in v for v in cfg.values()):
+        return cfg
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    import paths
+    return {k: paths.substitute(v) for k, v in cfg.items()}
+
+
 def load_config(path, overrides):
     require_file(path)
     with open(path, "r", encoding="utf-8") as f:
         cfg = json.load(f)
     if not isinstance(cfg, dict):
         raise ValueError("Config must be a JSON object")
-    return apply_overrides(cfg, overrides)
+    return apply_overrides(_expand_input_placeholders(cfg), overrides)
 
 
 def get_cfg(cfg, key, default=None, required=False):

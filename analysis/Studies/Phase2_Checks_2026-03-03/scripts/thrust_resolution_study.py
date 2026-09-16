@@ -121,12 +121,19 @@ def match_and_fill(reco_lookup, gen_file, gen_tree, h2d, h_profile_means, h_prof
 def draw_2d(h2d, outpath):
     c = ROOT.TCanvas("c2d", "", 800, 700)
     c.SetRightMargin(0.15)
+    c.SetTopMargin(0.08)
     h2d.Draw("COLZ")
     # Zero line
     line = ROOT.TLine(T_MIN, 0, T_MAX, 0)
     line.SetLineColor(ROOT.kRed)
     line.SetLineWidth(2)
     line.Draw()
+    # ALEPH label, drawn in the top margin to clear the COLZ palette
+    lbl = ROOT.TLatex()
+    lbl.SetNDC(True)
+    lbl.SetTextFont(42)
+    lbl.SetTextSize(0.037)
+    lbl.DrawLatex(0.12, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
     c.SaveAs(outpath)
     c.Close()
 
@@ -144,6 +151,12 @@ def draw_profile(h, ylabel, outpath, ref_line=None):
         line.Draw()
     h.GetYaxis().SetTitle(ylabel)
     h.GetXaxis().SetTitle("T_{gen}")
+    # ALEPH label
+    lbl = ROOT.TLatex()
+    lbl.SetNDC(True)
+    lbl.SetTextFont(42)
+    lbl.SetTextSize(0.040)
+    lbl.DrawLatex(0.14, 0.93, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
     c.SaveAs(outpath)
     c.Close()
 

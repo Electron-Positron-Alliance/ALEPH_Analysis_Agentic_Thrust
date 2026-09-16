@@ -1,10 +1,18 @@
+import os
+import sys
+
 import ROOT
+
+# Input locations come from analysis/inputs.json via paths.py, not from
+# absolute paths baked in here.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from paths import temp  # noqa: E402
 
 # config
 config = []
 config.append({
     # "file" : "/data/abadea/e+e-/aleph/unfold-ee-logtau/DataProcessing/20250625/2/LEP1Data1994_recons_aftercut-MERGED_thrust_no_event_sel_t.root",
-    "file" : "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_no_event_sel_t.root",
+    "file" : temp("LEP1Data1994_recons_aftercut-MERGED_thrust_no_event_sel_t.root"),
     "legend" : "All uncorrected data", # Data 1994
     "color" : ROOT.kBlack,
     "DrawOption" : "PE",
@@ -15,7 +23,7 @@ config.append({
 })
 config.append({
     # "file" : "/data/abadea/e+e-/aleph/unfold-ee-logtau/DataProcessing/20250625/2/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
-    "file" : "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/DataProcessing/temp/LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root",
+    "file" : temp("LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root"),
     "legend" : "Selected uncorrected data", # Data 1994
     "color" : ROOT.kBlack,
     "DrawOption" : "PE",
@@ -26,7 +34,7 @@ config.append({
 })
 config.append({
     # "file" : "/data/abadea/e+e-/aleph/unfold-ee-logtau/DataProcessing/20250625/2/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_t.root",
-    "file" : "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_t.root",
+    "file" : temp("alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_t.root"),
     "legend" : "All archived MC Reco.", # Archived MC
     "DrawOption" : "HIST",
     "color" : ROOT.kRed,
@@ -37,7 +45,7 @@ config.append({
 })
 config.append({
     # "file" : "/data/abadea/e+e-/aleph/unfold-ee-logtau/DataProcessing/20250625/2/alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
-    "file" : "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root",
+    "file" : temp("alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root"),
     "legend" : "Selected archived MC Reco.", # Archived MC
     "DrawOption" : "HIST",
     "color" : ROOT.kRed,
@@ -47,7 +55,7 @@ config.append({
     "LegendDraw" : "l"
 })
 config.append({
-    "file" : "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgen.root",
+    "file" : temp("alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgen.root"),
     "legend" : "Archived MC Gen.", # Archived MC
     "DrawOption" : "HIST",
     "color" : ROOT.kGreen,
@@ -58,7 +66,7 @@ config.append({
 })
 config.append({
     # "file" : "/data/abadea/e+e-/aleph/unfold-ee-logtau/DataProcessing/20250527/2/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgenBefore.root",
-    "file" : "/Users/anthonybadea/Documents/Documents/ALEPH/unfold-ee-logtau/DataProcessing/temp/alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgenBefore.root",
+    "file" : temp("alephMCRecoAfterCutPaths_1994_thrust_no_event_sel_tgenBefore.root"),
     "legend" : "Archived MC Gen. B.", # Archived MC
     "DrawOption" : "HIST",
     "color" : ROOT.kBlue,

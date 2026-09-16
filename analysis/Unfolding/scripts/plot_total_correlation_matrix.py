@@ -116,7 +116,7 @@ def draw_and_save(hist, out_pdf: str):
     label.SetTextSize(0.037)
     label.SetTextFont(42)
     # Two labels in top margin: ALEPH stamp (left) and plot title (right)
-    label.DrawLatex(0.12, 0.945, "ALEPH e^{+}e^{-}, #sqrt{s}=91.2 GeV")
+    label.DrawLatex(0.12, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
 
     c.SaveAs(out_pdf)
     c.Close()
