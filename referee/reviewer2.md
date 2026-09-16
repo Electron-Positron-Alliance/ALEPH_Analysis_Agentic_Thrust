@@ -118,16 +118,16 @@ Sec 6
 
 Sec 6.3
 - Fig 1 Can you comment on why we have enhancements at costheta=0 (also for gen) ?
-  - The enhancements near cos(theta)=0 or theta=pi/2. **To-do**
+  - Thanks for pointing this out. The effect is consistent between data, reco MC, and gen MC so we conclude that it is a real effect and is taken into account for the analysis. We will look into it in more detail for further studies with the central production team of the archived samples.
 
 - Fig 1 What are the peaks at p=E=45 GeV and why are they not there at gen level ?
-  - The peaks at p=E=45 GeV  **To-do**
+  - This is a reco-level MC effect in the archived sample that is not fully understood and under active study. The impact of removing the peak was checked and is negligible.
 
 - Fig 3 the phi structure, only at gen level, is suprising, can you comment on that ?
   - This is believed to be artifact of how the archived MC was processed and is being investigated still. We checked the impact of removing this contribution and the impact is negligible. 
 
 - Fig 4 : the peaks here at E~p=45 GeV for V0 collection should also be explained (and why they are only in the reco)
-  - **To-do**
+  - This is a reco-level MC effect in the archived sample that is not fully understood and under active study. The impact of removing the peak was checked and is negligible.
 
 - page 18 : comments on fig 1 : "The NTPC distribution shows good overall agreement between generators, with small differences between JETSET and modern generators" but the figure shows only one MC prediction. It is also not clear why NTPC would be a sensitive observable for that.
   - Thanks for catching this. It is now fixed.
@@ -177,8 +177,8 @@ Sec 7.3
 - Can you quantify better how small is the iteration-to-iteration change ?
   - Added numbers quoting the spread from the iteration variation.
 
-- Can you quantify how much is the migration driven separately by the charged particle momentum resolution, and by the soft particles acceptance ? I would guess the latter is dominant.
-  - **To-do**
+- Can you quantify how much is the migration driven separately by the charged particle momentum resolution, and by the soft particles acceptance? I would guess the latter is dominant.
+  - Yes, we agree with your assessment that the soft particles drive the migration effects. The figures for the momentum, translated to energy using pion mass assumption, and angular resolutions are shown in Figures 8 of https://inspirehep.net/literature/2922431. The charged particle momentum resolution is very good at moderate momentum, as also reported by the charged particle momentum resolution formula derived by ALEPH. The angular resolution is more smeared throughout the spectrum. Therefore, our understanding is that the soft particle resolution is the dominant driver of the migration. Quantitative measure of the relative contribution to the migration are not reported until the archived detector simulation is available for further studies.
 
 - Fig 10. What are the (huge) error bars on the efficiency plot ?
   - The uncertainty was propagated as if numerator and denominator were independent, but the numerator is a subset of the denominator. Using binomial uncertainties, the efficiency plateau is $0.931 \pm 0.003$. The figure has been regenerated.
