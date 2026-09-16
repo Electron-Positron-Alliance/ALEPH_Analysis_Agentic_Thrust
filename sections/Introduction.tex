@@ -16,7 +16,7 @@ pursued here: the physicist opened AI Agent (OpenAI Codex and Anthropic Claude C
 analysis goals, then iteratively prompted the AI agents to execute the full
 analysis workflow. No analysis code was written by hand; the physicist's role is
 analogous to advising a graduate student, providing expert direction, reviewing
-results, and iterating. The agent was supplied with context comprising the published ALEPH thrust paper~\cite{Heister:2003aj}, prior ROOT-based ALEPH analysis macros covering event selection and thrust calculation, internal analysis notes documenting the miniDST data format and detector calibration procedures, and the LEP open-data files themselves. No pre-written unfolding or systematic-uncertainty code was provided; instead, the physicist described the physics objectives and acceptance criteria in iterative
+results, and iterating. The agent was supplied with context comprising the published ALEPH thrust paper~\cite{Heister:2003aj}, prior ROOT-based ALEPH analysis macros covering event selection and thrust calculation, internal analysis notes documenting the miniDST data format and detector calibration procedures~\cite{ALEPH:docs}, and the LEP open-data files themselves. No pre-written unfolding or systematic-uncertainty code was provided; instead, the physicist described the physics objectives and acceptance criteria in iterative
 natural-language prompts written in English, and the agent constructed the corresponding implementations from those descriptions. This prompting strategy follows from the established understanding in the AI literature that few-shot examples and supplied context improve AI-assisted outputs~\cite{Brown:2020fewshot,Wei:2022cot}. A detailed inventory of the inputs and prompting approach is given in Sec.~\ref{sec:ai_agent}.
 Pursuing this theory--experimental interface for physics will inevitably deepen
 understanding of AI capabilities and their potential to improve AI systems for
@@ -60,7 +60,7 @@ This persistent tension, often referred to as the $e^{+}e^{-}$ $\alpha_{s}$ puzz
 
 The immediate objective of this work is to establish a robust detector-corrected
 thrust baseline using Iterative Bayesian Unfolding (IBU) implemented in RooUnfold,
-with complete validation and systematic propagation. The agent was asked to execute
+with complete validation and systematic propagation~\cite{DAgostini:1994zf, Adye:2011gm}. The agent was asked to execute
 the full analysis loop: data and simulation processing, unfolding orchestration,
 systematic propagation, figure production, and note maintenance with traceable links
 to code and outputs. This analysis is also part of a broader program of
