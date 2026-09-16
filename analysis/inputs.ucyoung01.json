@@ -6,7 +6,7 @@
   ],
 
   "aleph_data_dir": "/home/badea/e+e-/aleph/samples/skim/2PCpaper",
-  "temp_dir": "/home/badea/e+e-/aleph/thrust/data_agentic_thrust/processed/2026-09-16",
+  "temp_dir": "/home/badea/e+e-/aleph/thrust/agentic_thrust_artifacts/processed/2026-09-16",
 
   "raw_data_file": "${aleph_data_dir}/LEP1Data1994_recons_aftercut-MERGED.root",
   "raw_mc_file": "${aleph_data_dir}/alephMCRecoAfterCutPaths_1994.root",
@@ -24,5 +24,5 @@
   "isr1_file": "/home/badea/e+e-/aleph/old/pythia8/isr1_ALL.root",
   "isr_cache_file": "${run_dir}/isr_cache/isr_correction_cache.root",
 
-  "run_dir": "/home/badea/e+e-/aleph/thrust/worktrees/reprocess-2026-09-16/analysis/Studies/PreliminaryResult/2026-09-16_thrust_iter5"
+  "run_dir": "/home/badea/e+e-/aleph/thrust/agentic_thrust_artifacts/2026-09-16_thrust_iter5"
 }
