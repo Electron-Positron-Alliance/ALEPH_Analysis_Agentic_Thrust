@@ -2040,9 +2040,32 @@ def main():
         delta_isr = np.zeros_like(nom)
     isr_abs = delta_isr * nom_abs
     no_neutrals_abs = delta_no_neutrals * nom_abs
-    total_abs = np.sqrt(stat_abs**2 + exp_abs**2 + iter_abs**2 + theory_abs**2 + hadronic_abs**2 + isr_abs**2)
+
+    # Response-matrix MC statistics, from the Poisson bootstrap
+    # (run_response_bootstrap.py). Absent -> zero, so an open-data run without the
+    # toys still works. This is the response and efficiency only; the tgenBefore/tgen
+    # statistics stay in cov_hadronic and are not counted twice.
+    mcstat_csv = os.path.join(outdir, "cov_mcstat.csv")
+    if os.path.exists(mcstat_csv):
+        cov_mcstat_in = np.loadtxt(mcstat_csv, delimiter=",", ndmin=2)
+        if cov_mcstat_in.shape != (nbins, nbins):
+            raise ValueError(
+                f"{mcstat_csv} is {cov_mcstat_in.shape}, expected ({nbins}, {nbins})"
+            )
+        mcstat_abs = np.sqrt(np.clip(np.diag(cov_mcstat_in), 0.0, None))
+        print(f"Response MC-stat covariance loaded: {mcstat_csv}")
+    else:
+        cov_mcstat_in = np.zeros((nbins, nbins), dtype=np.float64)
+        mcstat_abs = np.zeros_like(stat_abs)
+        print("Response MC-stat covariance not found; component set to zero")
+
+    total_abs = np.sqrt(
+        stat_abs**2 + mcstat_abs**2 + exp_abs**2 + iter_abs**2
+        + theory_abs**2 + hadronic_abs**2 + isr_abs**2
+    )
 
     frac_stat = fractional_uncertainty(stat_abs, nom)
+    frac_mcstat = fractional_uncertainty(mcstat_abs, nom)
     frac_isr = fractional_uncertainty(isr_abs, nom)
     frac_iter = fractional_uncertainty(iter_abs, nom)
     frac_exp_track_event = fractional_uncertainty(exp_track_event_abs, nom)
@@ -2096,7 +2119,12 @@ def main():
         corr_template=corr_template,
         block_rho=args.block_correlation_rho,
     )
-    cov_total = cov_stat + cov_iter + cov_exp + cov_theory + cov_hadronic + cov_isr
+    # cov_mcstat is a measured sample covariance, so it enters as-is rather than
+    # through component_covariance_from_model.
+    cov_mcstat = cov_mcstat_in
+    cov_total = (
+        cov_stat + cov_mcstat + cov_iter + cov_exp + cov_theory + cov_hadronic + cov_isr
+    )
     corr_total = corr_from_cov(cov_total)
 
     # --- Bin masking: central reporting range and alpha_s fit window ---
@@ -2127,6 +2155,7 @@ def main():
 
     # --- Export covariance matrices and binning to CSV ---
     write_csv(os.path.join(outdir, "cov_stat.csv"), cov_stat)
+    write_csv(os.path.join(outdir, "cov_mcstat.csv"), cov_mcstat)
     write_csv(os.path.join(outdir, "cov_iter.csv"), cov_iter)
     write_csv(os.path.join(outdir, "cov_exp.csv"), cov_exp)
     write_csv(os.path.join(outdir, "cov_theory.csv"), cov_theory)
@@ -2380,6 +2409,7 @@ def main():
     corr_mean_offdiag_nonzero = float(np.mean(nz)) if nz.size else 0.0
 
     frac_all = {
+        "response_mc_stat": frac_mcstat,
         "iteration": frac_iter,
         "exp_track_event": frac_exp_track_event,
         "exp_neutral": frac_exp_neutral,
@@ -2429,6 +2459,7 @@ def main():
         "max_abs_fractional_central": max_abs_fractional_central,
         "outputs": {
             "cov_stat": os.path.join(outdir, "cov_stat.csv"),
+            "cov_mcstat": os.path.join(outdir, "cov_mcstat.csv"),
             "cov_iter": os.path.join(outdir, "cov_iter.csv"),
             "cov_exp": os.path.join(outdir, "cov_exp.csv"),
             "cov_theory": os.path.join(outdir, "cov_theory.csv"),

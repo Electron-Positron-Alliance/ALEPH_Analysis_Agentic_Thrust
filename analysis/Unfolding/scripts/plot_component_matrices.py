@@ -42,6 +42,7 @@ ALEPH_LABEL = r"ALEPH archived data, $e^{+}e^{-}$ $\sqrt{s}=91.2$ GeV"
 # (csv stem, panel title) in the panel order of the committed figures.
 SOURCES = [
     ("cov_stat", "Statistical"),
+    ("cov_mcstat", "Response MC statistical"),
     ("cov_iter", "Unfolding iteration"),
     ("cov_exp", "Experimental"),
     ("cov_theory", "Theory"),

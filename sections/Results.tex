@@ -112,41 +112,43 @@ Sec.~\ref{sec:stat_covariance}. For each component $c$, the correlation is
 \begin{equation}
 \rho^{(c)}_{ij} = \frac{\mathrm{Cov}^{(c)}_{ij}}{\sqrt{\mathrm{Cov}^{(c)}_{ii}\,\mathrm{Cov}^{(c)}_{jj}}}.
 \end{equation}
-Figure~\ref{fig:corr_matrices_per_source} shows all six components simultaneously,
+Figure~\ref{fig:corr_matrices_per_source} shows all seven components simultaneously,
 enabling direct comparison of their correlation structures.
 
-The statistical component (top left) shows the narrow-band correlation pattern
+The data statistical component shows the narrow-band correlation pattern
 characteristic of IBU: neighboring bins are positively correlated through the
 unfolding propagation, but correlations fall off quickly with bin separation. The
-iteration component (top center) shows a similar but slightly broader structure,
+iteration component shows a similar but slightly broader structure,
 reflecting the coherent response of the unfolding regularization to low-frequency
-spectral features. The experimental component (top right) has a more extended
+spectral features. The experimental component has a more extended
 positive-correlation band, driven by the coherent neutral-energy-response shifts
 (\texttt{nes\_up}, \texttt{nes\_down}) which move the thrust distribution in the
 same direction across a wide range of bins.
 
-The theory component (bottom left) shows the strongest and most extended off-diagonal
-correlations of all six components. Generator-reweighting shifts are coherent across
+The theory component shows the strongest and most extended off-diagonal
+correlations of all seven components. Generator-reweighting shifts are coherent across
 large thrust ranges because the parton-shower and hadronization changes affect the
 whole spectral shape rather than individual bins, making the theory covariance the
 dominant driver of off-diagonal structure in the total matrix. The hadronic correction
-(bottom center) shows modest correlations commensurate with its ${\sim}3\%$ magnitude
-in the central range. The ISR correction (bottom right) is nearly diagonal, consistent
+shows modest correlations commensurate with its ${\sim}3\%$ magnitude
+in the central range. The ISR correction is nearly diagonal, consistent
 with its sub-percent contribution and the bin-local nature of the MC-statistical
-uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio.
+uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio. The response MC statistical component
+has a narrow correlation band like the data statistical one, since both originate in
+bin-local Poisson fluctuations spread over neighbouring bins by the unfolding.
 
 \begin{figure}[t!]
 \centering
 \includegraphics[width=0.32\textwidth]{figures/corr_source_stat.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/corr_source_iter.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/corr_source_exp.pdf}\\
+\includegraphics[width=0.32\textwidth]{figures/corr_source_mcstat.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/corr_source_iter.pdf}\\
+\includegraphics[width=0.32\textwidth]{figures/corr_source_exp.pdf}%
 \includegraphics[width=0.32\textwidth]{figures/corr_source_theory.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/corr_source_hadronic.pdf}%
+\includegraphics[width=0.32\textwidth]{figures/corr_source_hadronic.pdf}\\
 \includegraphics[width=0.32\textwidth]{figures/corr_source_isr.pdf}
-\caption{Per-source correlation matrices for the six independent uncertainty
-components: statistical (top left), unfolding-iteration (top center), experimental
-(top right), theory (bottom left), hadronic correction (bottom center), and ISR
-correction (bottom right). All matrices use the same color scale ($-1$ to $+1$,
+\caption{Per-source correlation matrices for the seven independent uncertainty
+components, in reading order: data statistical, response MC statistical,
+unfolding-iteration, experimental, theory, hadronic correction, and ISR correction. All matrices use the same color scale ($-1$ to $+1$,
 red/blue) and the thrust-bin index increases upwards on both axes, so the diagonal
 runs from bottom left to top right. The theory component shows the strongest and
 most extended off-diagonal structure, dominating the total correlation matrix.}
@@ -160,10 +162,11 @@ most extended off-diagonal structure, dominating the total correlation matrix.}
 
 The covariance matrices encode both the per-bin uncertainty magnitudes and the
 bin-to-bin correlations for each source. The total covariance is the sum of all
-six component covariances:
+seven component covariances:
 \begin{equation}
 \mathrm{Cov}^{(\mathrm{tot})}_{ij} =
   \mathrm{Cov}^{(\mathrm{stat})}_{ij}
++ \mathrm{Cov}^{(\mathrm{MCstat})}_{ij}
 + \mathrm{Cov}^{(\mathrm{iter})}_{ij}
 + \mathrm{Cov}^{(\mathrm{exp})}_{ij}
 + \mathrm{Cov}^{(\mathrm{theory})}_{ij}

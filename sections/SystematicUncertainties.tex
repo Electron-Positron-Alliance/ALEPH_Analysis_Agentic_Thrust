@@ -7,9 +7,9 @@ signed bin-wise shift is
 \begin{equation}
 \delta_v(j)=\frac{U_v(j)-U_{\mathrm{nom}}(j)}{U_{\mathrm{nom}}(j)}.
 \end{equation}
-The sources are grouped into six independent components: statistical,
-unfolding-regularization, experimental detector, theory modeling,
-hadronic event-selection correction, and ISR correction.
+The sources are grouped into seven independent components: data statistical,
+response Monte Carlo statistical, unfolding-regularization, experimental detector,
+theory modeling, hadronic event-selection correction, and ISR correction.
 The sections below describe each component and its physics motivation
 before presenting the combination model and numerical results.
 
@@ -30,9 +30,13 @@ derived from finite simulated samples: the MC statistical uncertainty of the
 ISR-off and ISR-on samples is propagated onto $C_{\mathrm{ISR}}(j)$, and the
 archived-MC statistical uncertainty of $N_{\mathrm{genBefore}}$ and
 $N_{\mathrm{gen}}$ is propagated onto the hadronic event-selection correction
-$C_{\mathrm{had}}(j)$; the finite statistics of the response matrix itself are not
-propagated, since \texttt{RooUnfold::kCovariance} transports the measured data
-covariance only.
+$C_{\mathrm{had}}(j)$. The finite statistics of the response matrix itself are
+propagated separately, by giving every matched simulated event a Poisson weight and
+re-unfolding the data over 200 such replicas; the sample covariance of the resulting
+spectra is taken as $\mathrm{Cov}^{(\mathrm{MCstat})}_{ij}$. This is required because
+\texttt{RooUnfold::kCovariance} transports the measured data covariance only, and
+because the simulated sample is smaller than the data sample, so the response
+statistical term exceeds the data statistical term in every bin.
 
 The unfolding regularization uncertainty is closely related: two additional unfolding
 passes at $N_{\mathrm{iter}}=4$ and $N_{\mathrm{iter}}=6$ quantify the sensitivity
@@ -64,44 +68,9 @@ relative to the nominal $N_{\mathrm{iter}}=5$.}
 \label{sec:exp_systematics}
 
 Experimental systematic variations probe detector response effects that could
-bias the reconstructed thrust distribution. Seven branches are defined, divided
-into two sub-groups: track/event selection and neutral-object response,
-summarized in Table~\ref{tab:exp_systematics}.
-
-\begin{table}[t!]
-\centering
-\small
-\begin{tabularx}{0.97\textwidth}{p{0.15\textwidth}p{0.10\textwidth}p{0.46\textwidth}p{0.17\textwidth}}
-\hline
-Group & Branch & What is varied & Combination \\
-\hline
-Track/event & \texttt{ntpc7}
-  & TPC hit requirement $N_{\mathrm{TPC}}>7$ (nominal $>4$)
-  & \multirow{4}{=}{Quadrature of four shifts} \\[2pt]
- & \texttt{pt04}
-  & Charged $p_T>0.4$~GeV threshold (nominal $>0.2$~GeV)
-  & \\[2pt]
- & \texttt{ech10}
-  & Charged-energy cut $>10$~GeV (nominal $>15$~GeV)
-  & \\[2pt]
- & \texttt{with\_met}
-  & Missing-$E_T$ added as pseudo-particle
-  & \\[6pt]
-\hline
-Neutral response & \texttt{nes\_up/dn}
-  & Neutral energies scaled up/down; probes ECAL energy-scale
-  & Envelope then quadrature with \texttt{ner} \\[2pt]
- & \texttt{ner}
-  & Neutral objects randomly removed; probes reco efficiency
-  & Quadrature with \texttt{nes} envelope \\[2pt]
-\hline
-\end{tabularx}
-\normalsize
-\caption{Experimental systematic variations. Track/event branches are combined in
-quadrature; neutral-response branches as envelope+quadrature.
-$\Delta_{\mathrm{exp}}$ is the quadrature sum of the two sub-totals.}
-\label{tab:exp_systematics}
-\end{table}
+bias the reconstructed thrust distribution. Seven branches are defined (listed in
+Sec.~\ref{sec:systematics_execution_map}), divided into two sub-groups: track/event
+selection and neutral-object response.
 
 The four track/event variations are combined in quadrature:
 \begin{equation}
@@ -337,7 +306,7 @@ are also available.
 \subsection{Combination model}
 \label{sec:combination_model}
 
-The total bin uncertainty combines all six components in quadrature:
+The total bin uncertainty combines all seven components in quadrature:
 \begin{equation}
 \Delta_{\mathrm{tot}}(j)=\sqrt{\Delta_{\mathrm{stat}}^2(j)
 + \Delta_{\mathrm{iter}}^2(j) + \Delta_{\mathrm{exp}}^2(j)

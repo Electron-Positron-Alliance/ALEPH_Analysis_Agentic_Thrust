@@ -42,7 +42,7 @@ from per_bin_uncertainty_plot import (  # noqa: E402
 # 7e-12). Note cov_exp is the quadrature of the track/event and neutral groups,
 # not their envelope, so it differs from the envelope curves the per-bin figures
 # draw; cov_iter and cov_theory equal their envelopes exactly.
-COMPONENTS = ["stat", "iter", "exp", "theory", "hadronic", "isr", "total"]
+COMPONENTS = ["stat", "mcstat", "iter", "exp", "theory", "hadronic", "isr", "total"]
 
 # The paper reports the range common to both measurements (Results.tex: T >= 0.58).
 # Populated bins below it are emitted commented out, as in the committed tables.
@@ -129,20 +129,23 @@ def main():
         c = "" if lo >= T_REPORT_MIN - 1e-9 else "% "
         rows.append(
             f"{c}{{[{lo:.2f},{hi:.2f})}} & {fmt_value(nom[i])} & "
-            f"{pct(comp['stat'],i):.1f} & {pct(comp['iter'],i):.1f} & "
+            f"{pct(comp['stat'],i):.1f} & {pct(comp['mcstat'],i):.1f} & "
+            f"{pct(comp['iter'],i):.1f} & "
             f"{pct(comp['exp'],i):.1f} & {pct(comp['theory'],i):.1f} & "
             f"{pct(comp['hadronic'],i):.1f} & {pct(comp['isr'],i):.1f} & "
             f"{pct(comp['total'],i):.1f} \\\\"
         )
     write_table(
         os.path.join(args.outdir, "per_bin_uncertainty_table.tex"),
-        "\\begin{tabular}{c r c c c c c c c}\n\\hline\n"
-        "$T$ range & $(1/\\sigma)\\,\\mathrm{d}\\sigma/\\mathrm{d}T$ & Stat. & Iter. & Exp. & Theory & Had.\\ corr. & ISR & Total \\\\\n"
-        " & & [\\%] & [\\%] & [\\%] & [\\%] & [\\%] & [\\%] & [\\%] \\\\\n",
+        "\\begin{tabular}{c r c c c c c c c c}\n\\hline\n"
+        "$T$ range & $(1/\\sigma)\\,\\mathrm{d}\\sigma/\\mathrm{d}T$ & Stat. & MC stat. & Iter. & Exp. & Theory & Had.\\ corr. & ISR & Total \\\\\n"
+        " & & [\\%] & [\\%] & [\\%] & [\\%] & [\\%] & [\\%] & [\\%] & [\\%] \\\\\n",
         rows,
         "Per-bin fractional uncertainties for bins with non-zero unfolded spectrum. "
         "The second column is the nominal $(1/\\sigma)\\,\\mathrm{d}\\sigma/\\mathrm{d}T$; "
-        "the rest are fractional uncertainties in percent. \\textit{Exp.} is the total "
+        "the rest are fractional uncertainties in percent. \\textit{Stat.} is the data "
+        "statistical uncertainty and \\textit{MC stat.} the response-matrix statistical "
+        "uncertainty from the Poisson bootstrap. \\textit{Exp.} is the total "
         "experimental component, \\textit{Had.\\ corr.} the hadronic event-selection "
         "correction, and \\textit{ISR} the initial-state-radiation correction.",
         "tab:per_bin_uncertainty",
