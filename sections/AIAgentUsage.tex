@@ -18,23 +18,21 @@ provides feedback; the process is then repeated. Physics decisions remain
 analyst-owned, while the agent provides implementation speed, consistency
 checks, and documentation rigor. In practical terms, the agent is used to:
 \begin{itemize}
-\item execute and monitor multi-step workflows;
-\item enforce consistent plotting and note formatting conventions;
-\item connect analysis statements in this work to concrete script paths,
-      configuration keys, and produced artifacts;
-\item iterate quickly on uncertainty-view and validation presentation.
+\item write, execute, and monitor analysis code;
+\item enforce consistent plotting and note formatting conventions for communication of the work;
+\item maintain an unstanding of which analysis scripts and configurations correspond to which results;
+\item iterate quickly on ideas, tests, uncertainty estimation, and other time consuming tasks.
 \end{itemize}
 
-This model is intentionally conservative: the agent is treated as an
-accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker at this stage.
+This model is intentionally conservative: the agent is treated as an accelerator for engineering and documentation tasks, not as an autonomous scientific decision-maker at this stage.
 
 \subsection{Inputs and context supplied to agents}
 \label{sec:agent_inputs}
 
 The context supplied to the agent at the start of each session can be grouped into four categories.
 \begin{itemize}
-\item \textit{reference materials}: the published ALEPH thrust measurement~\cite{Heister:2003aj}, prior ROOT-based analysis macros for event selection and thrust calculation, and internal analysis notes documenting the miniDST format, detector calibration, and \texttt{pwflag} definitions.
-\item \textit{data inputs}: the LEP\,1 open-data miniDST files for the 1994 running period at $\sqrt{s}=91.2$~GeV, together with the corresponding ALEPH Monte Carlo simulation samples.
+\item \textit{reference materials}: the published ALEPH thrust measurement~\cite{Heister:2003aj}, prior ROOT-based analysis macros for event selection and thrust calculation, and internal analysis notes documenting the open data format, detector calibration, and \texttt{pwflag} definitions.
+\item \textit{data inputs}: the LEP\,1 open data files for the 1994 running period at $\sqrt{s}=91.2$~GeV, together with the corresponding ALEPH Monte Carlo simulation samples.
 \item \textit{physicist-written prompts}: each iteration began with a prompt specifying the physics objective (e.g.\ ``propagate the hadronic-event correction as an independent systematic component with per-bin envelope uncertainties''), acceptance criteria (e.g.\ ``refolded spectra must reproduce detector-level data within statistical precision''), and output-format expectations (figure style, table layout, note section to update).
 \item \textit{what was not supplied}: no pre-written unfolding code, no systematic-uncertainty framework, and no covariance-matrix infrastructure were provided. The agent constructed these from the physics descriptions in the prompts, using the reference code as stylistic guidance rather than as a template to copy. This distinction is important for assessing what the agent can build from first principles versus what it merely adapts from existing implementations.
 \end{itemize}
@@ -60,9 +58,8 @@ Distributions of $\cos\theta_{\mathrm{thrust}}$ and $\varphi$ were inspected for
 
 \textit{Unfolding.}
 Refolded spectra were required to reproduce the detector-level data within statistical precision.
-An iteration scan confirmed that the refolded-to-measured $\chi^{2}/\mathrm{ndf}$ is stable
-across the regularization variation passes at $N_{\mathrm{iter}}=4$, $5$ and $6$.
-Independent cross-checks with OmniFold~\cite{Andreassen:2019cjw} and a prior-sensitivity IBU variant were reviewed to ensure the baseline result is not an artifact of the nominal method.
+An iteration scan confirmed that the refolded-to-measured is stable as the regularization parameter is scanned.
+Independent cross-checks with a prior OmniFold~\cite{Andreassen:2019cjw} based study were reviewed to ensure the baseline result is not an artifact of the nominal method.
 
 \textit{Systematic uncertainties.}
 Each variation's impact on the unfolded distribution was inspected for bin-to-bin continuity and physical reasonableness.
@@ -71,8 +68,7 @@ The ${\sim}23\%$ difference between energy-flow and charged-only thrust was conf
 
 \textit{Final result.}
 The unfolded thrust distribution was compared to the ALEPH\,2004 published result over the 42~reported bins.
-Per-bin uncertainty breakdowns were examined for pathological bins, meaning bins whose total
-uncertainty exceeds the spectrum itself, particularly the endpoint region $T\in[0.99,1.00]$.
+Per-bin uncertainty breakdowns and correlation matrices are reported.
 
 \textit{Documentation.}
 All figure captions, table entries, and interpretive statements in this work were reviewed by the physicist for physics accuracy.
@@ -83,11 +79,8 @@ analysis steps are version-controlled, with code and configuration managed
 in a git repository so that any result can be traced to a specific commit
 and set of inputs. Workflow runs produce structured output artifacts,
 including summary files that capture the configuration used, the software
-versions, and checksums of key outputs (hashes of the exported spectra and covariance
-files). Physicist oversight at each review
-stage provides an additional layer of validation: discrepancies between
-expected and observed outputs are flagged before any result is promoted to
-the baseline. These controls together ensure that results are reproducible
+versions, and chashes of the exported spectra and covariance files. Physicist oversight at each review
+stage provides a layer of verification, with each step requiring explicit physicist approval before being promoted to the nominal result and the analysis to continue. These controls together ensure that results are reproducible
 independently of the AI agent's involvement and that the physicist retains
 full accountability for all scientific claims.
 

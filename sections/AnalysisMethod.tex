@@ -14,12 +14,7 @@ T = \max_{\hat{n}} \frac{\sum_i |\vec{p}_i \cdot \hat{n}|}{\sum_i |\vec{p}_i|},
 with all selected charged and neutral reconstructed objects from Sec.~\ref{sec:event_selection} entering the sum.
 We first adopt bins identical to the published ALEPH event-shape analysis~\cite{Heister:2003aj}, using 50 uniform bins over $0.5 \le T < 1.0$ (bin width $\Delta T = 0.01$), which enables a direct bin-by-bin comparison with the published ALEPH result. The thrust resolution study in Sec.~\ref{sec:thrust_resolution} informs the binning choice as well. The thrust is built using selected charged and neutral particles. Those objects are input to an optimization algorithm that iteratively determines the thrust axis. The algorithm we use is a clone of the \textsc{Herwig++} implementation~\cite{Brandt:1978zm, B_hr_2008, BUCKLEY20132803, rivet_thrust}, which is an exact calculation rather than one based on heuristics as is done by others~\cite{Belle2Thrust}.
 
-\input{tables/method_config_table}
-
-The nominal run uses $N_{\mathrm{iter}}=5$, where $N_{\mathrm{iter}}$ denotes the
-number of Iterative Bayesian Unfolding iterations, and applies the post-unfolding hadronic event correction from
-\texttt{tgenBefore/tgen}.
-The nominal branch is the only run with covariance enabled; variation branches are propagated through signed shifts relative to the nominal spectrum.
+The nominal run uses $N_{\mathrm{iter}}=5$, where $N_{\mathrm{iter}}$ denotes the number of IBU iterations, which serves as the regularization parameter, and applies the post-unfolding hadronic event correction from \texttt{tgenBefore/tgen}. The nominal branch is the only run with covariance enabled; variation branches are propagated through signed shifts relative to the nominal spectrum.
 
 \subsection{Response construction from matched MC}
 
@@ -30,13 +25,6 @@ Reconstructed MC entries with
 \item the miss term of the RooUnfold response.
 \end{itemize}
 
-% NEEDS DATA MACHINE before submission, two items. (1) Reconstruction inefficiency: the
-% response is built only from MC events passing the detector-level selection, so events
-% lost to inefficiency or acceptance are not represented in it at all and the miss term
-% carries only out-of-range reco values. Confirm whether the generator-level tree is
-% already restricted to selected events, and if not, whether an efficiency correction is
-% missing. (2) The fake rate is asserted as negligible but is not quantified anywhere.
-% Both mirrored in referee/reviewer1.md.
 The response is filled with MC events that pass the detector-level selection and the corresponding generator-level event. A selected event whose reconstructed thrust falls outside the unfolding range enters instead through RooUnfold's miss term, which supplies the efficiency factor $1/\epsilon_j$ appearing below. 
 
 \subsection{Iterative Bayesian Unfolding setup and iteration choice}
@@ -86,7 +74,8 @@ multiplicity, consistent with events failing the hadronic event selection.}
 \subsection{Thrust resolution study}
 \label{sec:thrust_resolution}
 
-The usable binning resolution is characterized using matched reco--gen event pairs. Figure~\ref{fig:thrust_resolution_2d} shows $(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ as a function of $T_{\mathrm{gen}}$. The resolution narrows toward $T\to1$, motivating finer binning in the high-thrust region. The previous ALEPH analyses~\cite{Heister:2003aj} chose bin sizes ``somewhat smaller than twice the corresponding detector resolution,'' and our IBU approach uses this principle to guide the finest bins.
+The usable binning resolution is characterized using matched reco--gen event pairs. Figure~\ref{fig:thrust_resolution_2d} shows $(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ as a function of $T_{\mathrm{gen}}$. The resolution narrows toward $T\to1$. To enable direct comparison, our work adopts the identical binning as the previous ALEPH analyses~\cite{Barate:1996fi, Heister:2003aj}. 
+% chose bin sizes ``somewhat smaller than twice the corresponding detector resolution,''
 
 \begin{figure}[t!]
 \centering
@@ -95,7 +84,7 @@ The usable binning resolution is characterized using matched reco--gen event pai
 \label{fig:thrust_resolution_2d}
 \end{figure}
 
-\subsection{Systematics execution map}
+\subsection{Systematics variations}
 \label{sec:systematics_execution_map}
 
 Systematic branches are executed by rerunning unfolding with variation-specific inputs or theory weights, then converting each branch into a signed shift relative to nominal.
@@ -127,11 +116,6 @@ C_{\mathrm{had}}(j) = \frac{N_{\mathrm{genBefore}}(j)}{N_{\mathrm{gen}}(j)},
 \end{equation}
 accounts for the efficiency of the selection at the generator level. The correction factor is derived from the archived \textsc{Pythia}~6 sample~\cite{Sjostrand:2000wi} and is applied so that the final spectrum restores the yield lost by the hadronic selection.
 
-% NEEDS DATA MACHINE before submission: Sec. 8.7 writes the per-bin total with a
-% Delta_ISR term, but Table 8 has no ISR column, Table 6's formula omits it and Fig. 18's
-% legend does not carry it. Now that this section states the correction is applied, the
-% gap is between the text and the tables rather than between two prose passages.
-% Regenerating those objects needs the isr0/isr1 samples. Mirrored in referee/reviewer2.md.
 The correction for Quantum Electrodynamics (QED) initial-state radiation (ISR) is applied,
 \begin{equation}
 C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{gen}}_{\mathrm{ISR}}(j)}.
