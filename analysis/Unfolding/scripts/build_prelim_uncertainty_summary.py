@@ -20,9 +20,8 @@ Covariance model for non-statistical components (configurable via --systematic_c
 
 Outputs (written to --outdir, default <base_dir>/summary/):
   cov_{stat,iter,exp,theory,hadronic,total}.csv  -- covariance matrices (N_bins x N_bins)
-  corr_total.csv, corr_total_fitwindow.csv       -- correlation matrices
-  cov_total_fitwindow.csv                        -- covariance sub-matrix for alpha_s fit window
-  binning.csv, fit_mask.csv                      -- bin edges, centers, fit-window membership
+  corr_total.csv                                 -- correlation matrix
+  binning.csv, reported_bins.csv                 -- bin edges, centers, reported-range membership
   uncertainty_components_*.pdf                   -- per-component fractional uncertainty plots
   final_result_uncertainty_breakdown.pdf         -- final result vs. published ALEPH comparison
   workflow_summary.json                          -- full provenance and numeric diagnostics
@@ -112,10 +111,13 @@ def parse_args():
         help="Off-diagonal correlation used when --systematic-cov-model=block",
     )
     p.add_argument(
-        "--fit-mask-mode",
-        choices=["nonzero", "central", "nonzero_and_central"],
-        default="nonzero",
-        help="Rule to define fit-window mask for theory-facing covariance products.",
+        "--report-range-min",
+        type=float,
+        default=0.58,
+        help=(
+            "Lower thrust edge of the reported range. Populated bins below it have "
+            "total uncertainties exceeding their own content and are not reported."
+        ),
     )
     p.add_argument(
         "--include-of-ibu-comparison",
@@ -738,26 +740,6 @@ def component_covariance_from_model(
         np.fill_diagonal(cov, np.square(vals))
         return cov
     raise ValueError(f"Unsupported covariance model: {model}")
-
-
-def build_fit_mask(
-    mode: str,
-    *,
-    nom: np.ndarray,
-    cov_total: np.ndarray,
-    centers: np.ndarray,
-    central_min: float,
-    central_max: float,
-) -> np.ndarray:
-    nonzero = (np.abs(nom) > 0.0) & (np.diag(cov_total) > 0.0)
-    central = (centers >= central_min) & (centers < central_max)
-    if mode == "nonzero":
-        return nonzero
-    if mode == "central":
-        return central
-    if mode == "nonzero_and_central":
-        return nonzero & central
-    raise ValueError(f"Unsupported fit mask mode: {mode}")
 
 
 def extract_theory_weight_diagnostics(theory_root_path: str) -> dict:
@@ -2137,21 +2119,19 @@ def main():
         raise ValueError(
             "central range selected no bins; choose a range that overlaps the thrust binning"
         )
-    fit_mask = build_fit_mask(
-        args.fit_mask_mode,
-        nom=nom,
-        cov_total=cov_total,
-        centers=centers,
-        central_min=args.central_range_min,
-        central_max=args.central_range_max,
+    # Reported range: populated bins at or above --report-range-min. The two
+    # populated bins below 0.58 carry total uncertainties of 158% and 365%, so they
+    # are excluded; this also aligns the released covariance with the per-bin tables
+    # and with ALEPH 2004's 42 bins.
+    reported_mask = (
+        (np.abs(nom) > 0.0) & (np.diag(cov_total) > 0.0) & (centers >= args.report_range_min)
     )
-    fit_idx = np.where(fit_mask)[0]
-    if fit_idx.size == 0:
+    if not reported_mask.any():
         raise ValueError(
-            f"fit mask mode '{args.fit_mask_mode}' selected no bins; adjust mode/range configuration"
+            f"--report-range-min={args.report_range_min} selected no populated bins"
         )
-    cov_total_fit = cov_total[np.ix_(fit_idx, fit_idx)]
-    corr_total_fit = corr_from_cov(cov_total_fit)
+    reported_idx = np.where(reported_mask)[0]
+    print(f"Reported range: {int(reported_mask.sum())} bins, T >= {args.report_range_min}")
 
     # --- Export covariance matrices and binning to CSV ---
     write_csv(os.path.join(outdir, "cov_stat.csv"), cov_stat)
@@ -2163,8 +2143,6 @@ def main():
     write_csv(os.path.join(outdir, "cov_isr.csv"), cov_isr)
     write_csv(os.path.join(outdir, "cov_total.csv"), cov_total)
     write_csv(os.path.join(outdir, "corr_total.csv"), corr_total)
-    write_csv(os.path.join(outdir, "cov_total_fitwindow.csv"), cov_total_fit)
-    write_csv(os.path.join(outdir, "corr_total_fitwindow.csv"), corr_total_fit)
 
     with open(os.path.join(outdir, "binning.csv"), "w", encoding="utf-8") as f:
         f.write("bin,low,high,center,nominal_diffxsec\n")
@@ -2176,7 +2154,7 @@ def main():
                 f"{nominal.GetXaxis().GetBinCenter(i):.10f},"
                 f"{nominal.GetBinContent(i):.10e}\n"
             )
-    with open(os.path.join(outdir, "fit_mask.csv"), "w", encoding="utf-8") as f:
+    with open(os.path.join(outdir, "reported_bins.csv"), "w", encoding="utf-8") as f:
         f.write("bin,low,high,center,include\n")
         for i in range(1, nominal.GetNbinsX() + 1):
             f.write(
@@ -2184,7 +2162,7 @@ def main():
                 f"{nominal.GetXaxis().GetBinLowEdge(i):.10f},"
                 f"{nominal.GetXaxis().GetBinUpEdge(i):.10f},"
                 f"{nominal.GetXaxis().GetBinCenter(i):.10f},"
-                f"{1 if fit_mask[i - 1] else 0}\n"
+                f"{1 if reported_mask[i - 1] else 0}\n"
             )
 
     # --- Produce uncertainty component plots and final result comparison ---
@@ -2467,9 +2445,7 @@ def main():
             "cov_isr": os.path.join(outdir, "cov_isr.csv"),
             "cov_total": os.path.join(outdir, "cov_total.csv"),
             "corr_total": os.path.join(outdir, "corr_total.csv"),
-            "fit_mask": os.path.join(outdir, "fit_mask.csv"),
-            "cov_total_fitwindow": os.path.join(outdir, "cov_total_fitwindow.csv"),
-            "corr_total_fitwindow": os.path.join(outdir, "corr_total_fitwindow.csv"),
+            "reported_bins": os.path.join(outdir, "reported_bins.csv"),
             "binning": os.path.join(outdir, "binning.csv"),
             "component_plots": component_plots,
             "final_plot": os.path.join(outdir, "final_result_uncertainty_breakdown.pdf"),
@@ -2512,11 +2488,11 @@ def main():
                 "Envelope of up/down ISR correction ratio uncertainty (mc_isr0/mc_isr1 MC-stat) "
                 "propagated through normalized differential-thrust conversion."
             ),
-            "fit_mask_mode": args.fit_mask_mode,
-            "fit_window_selected_bins": int(fit_idx.size),
-            "fit_window_first_bin": int(fit_idx[0] + 1),
-            "fit_window_last_bin": int(fit_idx[-1] + 1),
-            "fit_window_zero_variance_bins": int(np.count_nonzero(np.diag(cov_total_fit) <= 0.0)),
+            "report_range_min": args.report_range_min,
+            "reported_bins": int(reported_mask.sum()),
+            "reported_selected_bins": int(reported_idx.size),
+            "reported_first_bin": int(reported_idx[0] + 1),
+            "reported_last_bin": int(reported_idx[-1] + 1),
             "theory_weight_diagnostics": theory_weight_diagnostics,
             "of_ibu_comparison_enabled": bool(args.include_of_ibu_comparison),
         },
