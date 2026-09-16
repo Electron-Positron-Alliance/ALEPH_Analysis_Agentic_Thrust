@@ -10,9 +10,14 @@ correction, and ISR correction --- and combines them in quadrature to form a ful
 covariance matrix suitable for precision phenomenology. The implementation of the
 ISR correction, following the prescription of both published ALEPH event-shape
 analyses~\cite{Barate:1996fi,Heister:2003aj}, brings the measured thrust distribution
-into good agreement with the published ALEPH 2004 result ($\chi^2/\mathrm{ndf}=0.36$
-over 42 bins), with the only notable discrepancy at the $T\to 1$ dijet endpoint where
-MC modeling uncertainties are largest and normalization conventions differ.
+into good agreement with the published ALEPH 2004 result, with the only notable
+discrepancy at the $T\to 1$ dijet endpoint where MC modeling uncertainties are
+largest and normalization conventions differ.
+% chi2/ndf = 0.36 over 42 bins was quoted here and removed. The code computes it as
+% sigma2 = yerr1^2 + yerr2^2, diagonal only, i.e. treating this measurement and ALEPH
+% 2004 as independent; they share the ALEPH detector, overlapping data and related
+% simulation, so that denominator is too large and the chi2 correspondingly too small.
+% A defensible value needs the correlation between the two, which is not available.
 
 The precision QCD motivation for this work is the persistent $e^{+}e^{-}$ $\alpha_s$
 tension: recent thrust-based extractions yield $\alpha_s(m_Z)\simeq0.1136$,
