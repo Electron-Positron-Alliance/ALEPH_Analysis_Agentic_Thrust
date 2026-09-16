@@ -30,12 +30,13 @@ RAW = [
     (paths.get("raw_mc_file"), "tgen", 771_597),
     (paths.get("raw_mc_file"), "tgenBefore", 973_769),
 ]
-# Derived ntuples: (tree, total, passEventSelection==1)
+# Derived ntuples: (tree, total, passEventSelection==1). The selected counts moved by
+# +64 (data) and +17 (MC) when the pwflag=5 band cut and conversion cleaning were removed.
 DERIVED = [
     (paths.temp("LEP1Data1994_recons_aftercut-MERGED_thrust_nominal_t.root"),
-     "t", 1_365_440, 1_326_312),
+     "t", 1_365_440, 1_326_376),
     (paths.temp("alephMCRecoAfterCutPaths_1994_thrust_nominal_t.root"),
-     "t", 771_597, 751_861),
+     "t", 771_597, 751_878),
 ]
 EXTERNAL = [
     (paths.get("aleph2004_csv"), "ALEPH 2004 reference"),
@@ -101,9 +102,15 @@ for path, what in EXTERNAL:
     bad += not present
     print(f"  {'ok  ' if present else 'MISSING'} {what:52s} {path}")
 
-print("\n=== not reproducible here (needs the workstation MC) ===")
-print("  theory uncertainty  PYTHIA 8.3 / Herwig 7.3 / Sherpa 2.2 tgenBefore samples")
-print("  ISR correction      same modern-generator samples")
+print("\n=== generator samples (present only on some machines) ===")
+for key, what in (("theory_weights_dir", "theory uncertainty  reweighting arrays"),
+                  ("isr0_file", "ISR correction      PYTHIA ISR-off sample"),
+                  ("isr1_file", "ISR correction      PYTHIA ISR-on sample")):
+    try:
+        path = paths.get(key)
+        print(f"  {'ok  ' if os.path.exists(path) else 'absent'} {what}  {path}")
+    except KeyError:
+        print(f"  absent {what}  (no '{key}' in inputs config)")
 
 if bad:
     print(f"\nFAILED -- {bad} problem(s)")
