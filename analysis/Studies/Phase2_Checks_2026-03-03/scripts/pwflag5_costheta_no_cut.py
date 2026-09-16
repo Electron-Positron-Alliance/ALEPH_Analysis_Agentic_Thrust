@@ -113,6 +113,12 @@ def draw_comparison(hists, labels, colors, linestyles, outpath, logy=False,
         leg.AddEntry(h, lab, "l")
     leg.Draw()
 
+    lbl = ROOT.TLatex()
+    lbl.SetNDC(True)
+    lbl.SetTextFont(42)
+    lbl.SetTextSize(0.037)
+    lbl.DrawLatex(0.12, 0.94, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
+
     c.SaveAs(outpath)
     c.Close()
 

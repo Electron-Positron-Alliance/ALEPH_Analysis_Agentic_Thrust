@@ -41,6 +41,13 @@ def save_matrix_plot(hist, outpath, zmin=None, zmax=None):
     if zmax is not None:
         hist.SetMaximum(zmax)
     hist.Draw("COLZ")
+    # Drawn in the top margin to clear the COLZ palette, as in
+    # Studies/Phase2_Checks_2026-03-03/scripts/thrust_resolution_study.py.
+    lbl = ROOT.TLatex()
+    lbl.SetNDC(True)
+    lbl.SetTextFont(42)
+    lbl.SetTextSize(0.037)
+    lbl.DrawLatex(0.12, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
     c.SaveAs(outpath)
     c.Close()
 
