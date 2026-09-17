@@ -29,7 +29,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import alephstyle as als
 
 T_MIN, T_MAX, N_BINS = 0.50, 1.00, 50
-D_LIM, D_BINS = 0.15, 200
+D_LIM, D_BINS = 0.17, 200
+# Columns thinner than this are noise once normalised: one entry would paint a
+# full-intensity stripe. The sparse T_gen < 0.58 columns are the reason.
+MIN_COL_ENTRIES = 20
 
 
 def parse_args():
@@ -69,19 +72,31 @@ def main():
     x = gen_t[keep]
     y = rt[pos[keep]] - x
     print(f"reco passing selection: {len(rid)}   gen matched and in range: {keep.sum()}")
+    print(f"columns kept (>= {MIN_COL_ENTRIES} entries): "
+          f"{int((np.histogram2d(x, y, bins=[N_BINS, D_BINS], range=[[T_MIN, T_MAX], [-D_LIM, D_LIM]])[0].sum(axis=1) >= MIN_COL_ENTRIES).sum())} of {N_BINS}")
 
     h, xe, ye = np.histogram2d(
         x, y, bins=[N_BINS, D_BINS],
         range=[[T_MIN, T_MAX], [-D_LIM, D_LIM]])
 
-    fig, ax = als.figure(aspect=0.62, scale=1.2)
-    mesh = ax.pcolormesh(xe, ye, np.ma.masked_equal(h.T, 0.0), cmap=als.CMAP_SEQ)
+    # Normalise each T_gen column to unit sum, so the figure shows the shape of
+    # the resolution at every thrust rather than the thrust spectrum itself.
+    # That is the statement the caption makes: the resolution narrows as T -> 1.
+    col = h.sum(axis=1)
+    dens = np.zeros_like(h)
+    good = col >= MIN_COL_ENTRIES
+    dens[good] = h[good] / col[good, None]
+    dens[~good] = 0.0
+
+    fig, ax = als.figure(aspect=0.78, scale=1.2)
+    ax.set_box_aspect(1.0)
+    mesh = ax.pcolormesh(xe, ye, np.ma.masked_equal(dens.T, 0.0), cmap=als.CMAP_SEQ)
     mesh.set_edgecolor("face")
-    ax.axhline(0.0, color=als.C["mc_reco"], lw=1.0)
+    ax.axhline(0.0, color="0.5", lw=1.0, ls="--")
     ax.set_xlabel(als.X["thrust_gen"])
     ax.set_ylabel(als.Y["resolution"])
     cb = fig.colorbar(mesh, ax=ax, fraction=0.046, pad=0.03)
-    cb.set_label(als.Y["counts"])
+    cb.set_label(r"Fraction per $T_\mathrm{gen}$ bin")
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "thrust_resolution_2d.pdf"))
 
