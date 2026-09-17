@@ -6,7 +6,13 @@ import csv
 import os
 import sys
 
-import ROOT
+import numpy as np
+import uproot
+from matplotlib.colors import SymLogNorm
+
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "plotting")))
+import alephstyle as als
 
 
 def parse_args():
@@ -20,103 +26,102 @@ def parse_args():
     return p.parse_args()
 
 
-def fetch_hist(tf, name):
-    obj = tf.Get(name)
-    if not obj:
+def fetch(tf, name):
+    """(values, x edges, y edges), or None if the histogram is absent."""
+    if name not in tf:
         return None
-    h = obj.Clone(f"{name}_plot")
-    h.SetDirectory(0)
-    h.SetStats(0)
-    return h
+    h = tf[name]
+    return np.asarray(h.values(), dtype=float), h.axes[0].edges(), h.axes[1].edges()
 
 
-def save_matrix_plot(hist, outpath, zmin=None, zmax=None):
-    c = ROOT.TCanvas(f"c_{hist.GetName()}", "", 760, 680)
-    c.SetLeftMargin(0.12)
-    c.SetRightMargin(0.16)
-    c.SetBottomMargin(0.12)
-    c.SetTopMargin(0.08)
-    if zmin is not None:
-        hist.SetMinimum(zmin)
-    if zmax is not None:
-        hist.SetMaximum(zmax)
-    hist.Draw("COLZ")
-    # Drawn in the top margin to clear the COLZ palette, as in
-    # Studies/Phase2_Checks_2026-03-03/scripts/thrust_resolution_study.py.
-    lbl = ROOT.TLatex()
-    lbl.SetNDC(True)
-    lbl.SetTextFont(42)
-    lbl.SetTextSize(0.037)
-    lbl.DrawLatex(0.12, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
-    c.SaveAs(outpath)
-    c.Close()
+def save_matrix_plot(values, xedges, yedges, xlabel, ylabel, zlabel, outpath,
+                     diverging=False, symlog=False):
+    fig, ax = als.figure(aspect=0.85)
+    if diverging:
+        # Signed quantity, so a diverging map centred on zero rather than the
+        # sequential kBird this replaces.
+        lim = float(np.abs(values).max()) or 1.0
+        kw = {"cmap": als.CMAP_DIV}
+        if symlog:
+            # The endpoint bin's variance exceeds the median off-diagonal entry
+            # by orders of magnitude, so a linear scale renders everything else
+            # at the zero colour.
+            kw["norm"] = SymLogNorm(linthresh=lim * 1e-4, vmin=-lim, vmax=lim, base=10)
+        else:
+            kw.update(vmin=-lim, vmax=lim)
+    else:
+        kw = {"cmap": als.CMAP_SEQ, "vmin": 0.0}
+    mesh = ax.pcolormesh(xedges, yedges, values.T, **kw)
+    # Without this the vector renderer leaves white seams between the quads.
+    mesh.set_edgecolor("face")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    cb = fig.colorbar(mesh, ax=ax, fraction=0.046, pad=0.03)
+    cb.set_label(zlabel)
+    als.header(ax)
+    als.save(fig, outpath)
 
 
-def write_matrix_csv(hist, outpath):
-    nb = hist.GetNbinsX()
+def write_matrix_csv(values, outpath):
+    nb = values.shape[0]
     with open(outpath, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        header = ["row_bin"] + [f"bin_{j}" for j in range(1, nb + 1)]
-        writer.writerow(header)
-        for i in range(1, nb + 1):
-            row = [f"bin_{i}"] + [f"{float(hist.GetBinContent(i, j)):.10e}" for j in range(1, nb + 1)]
-            writer.writerow(row)
+        writer.writerow(["row_bin"] + [f"bin_{j}" for j in range(1, nb + 1)])
+        for i in range(nb):
+            writer.writerow([f"bin_{i + 1}"] + [f"{values[i, j]:.10e}" for j in range(nb)])
 
 
-def write_bin_edges(hist, outpath):
-    axis = hist.GetXaxis()
+def write_bin_edges(xedges, outpath):
     with open(outpath, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["bin", "low_edge", "high_edge", "center"])
-        for i in range(1, hist.GetNbinsX() + 1):
-            writer.writerow(
-                [
-                    f"bin_{i}",
-                    f"{float(axis.GetBinLowEdge(i)):.10e}",
-                    f"{float(axis.GetBinUpEdge(i)):.10e}",
-                    f"{float(axis.GetBinCenter(i)):.10e}",
-                ]
-            )
+        for i in range(len(xedges) - 1):
+            lo, hi = float(xedges[i]), float(xedges[i + 1])
+            writer.writerow([f"bin_{i + 1}", f"{lo:.10e}", f"{hi:.10e}", f"{0.5 * (lo + hi):.10e}"])
 
 
 def main():
     args = parse_args()
     os.makedirs(args.outdir, exist_ok=True)
+    als.use()
 
-    tf = ROOT.TFile.Open(args.input_root, "READ")
-    if not tf or tf.IsZombie():
-        raise OSError(f"Failed to open ROOT file: {args.input_root}")
-
+    # The covariance and correlation axes are thrust, not bin index, despite the
+    # "Truth bin" titles the producer writes into the ROOT file.
     payload = [
-        (args.response_counts_hist, "matrix_response_counts", None, None, False),
-        (args.response_prob_hist, "matrix_response_probability", None, None, False),
-        (args.covariance_hist, "matrix_unfold_covariance", None, None, True),
-        (args.correlation_hist, "matrix_unfold_correlation", -1.0, 1.0, True),
+        (args.response_counts_hist, "matrix_response_counts",
+         als.X["thrust_reco"], als.X["thrust_gen"], als.Y["counts"], False, False, False),
+        (args.response_prob_hist, "matrix_response_probability",
+         als.X["thrust_reco"], als.X["thrust_gen"], r"$P(\mathrm{reco}\,|\,\mathrm{gen})$",
+         False, False, False),
+        (args.covariance_hist, "matrix_unfold_covariance",
+         als.X["thrust"], als.X["thrust"], als.Y["covariance"], True, True, True),
+        (args.correlation_hist, "matrix_unfold_correlation",
+         als.X["thrust"], als.X["thrust"], als.Y["correlation"], True, False, True),
     ]
 
-    wrote = 0
-    wrote_csv = 0
-    for hist_name, stem, zmin, zmax, export_csv in payload:
-        h = fetch_hist(tf, hist_name)
-        if h is None:
-            print(f"Skipping missing histogram: {hist_name}")
-            continue
-        save_matrix_plot(h, os.path.join(args.outdir, f"{stem}.pdf"), zmin=zmin, zmax=zmax)
-        if export_csv:
-            write_matrix_csv(h, os.path.join(args.outdir, f"{stem}.csv"))
-            write_bin_edges(h, os.path.join(args.outdir, f"{stem}_binning.csv"))
-            wrote_csv += 1
-        wrote += 1
+    with uproot.open(args.input_root) as tf:
+        wrote = wrote_csv = 0
+        for name, stem, xl, yl, zl, diverging, symlog, export_csv in payload:
+            got = fetch(tf, name)
+            if got is None:
+                print(f"Skipping missing histogram: {name}")
+                continue
+            values, xedges, yedges = got
+            save_matrix_plot(values, xedges, yedges, xl, yl, zl,
+                             os.path.join(args.outdir, f"{stem}.pdf"),
+                             diverging=diverging, symlog=symlog)
+            if export_csv:
+                write_matrix_csv(values, os.path.join(args.outdir, f"{stem}.csv"))
+                write_bin_edges(xedges, os.path.join(args.outdir, f"{stem}_binning.csv"))
+                wrote_csv += 1
+            wrote += 1
 
-    tf.Close()
     if wrote == 0:
         raise RuntimeError("No matrix histograms were found in the input ROOT file")
     print(f"Wrote {wrote} matrix plots and {wrote_csv} matrix CSV exports to: {args.outdir}")
 
 
 if __name__ == "__main__":
-    ROOT.gROOT.SetBatch(True)
-    ROOT.gStyle.SetOptStat(0)
     try:
         main()
     except Exception as exc:

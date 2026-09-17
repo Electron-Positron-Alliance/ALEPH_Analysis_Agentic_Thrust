@@ -31,13 +31,13 @@ Usage (from repo root):
 
 import argparse
 import os
+import sys
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import numpy as np
 
-ALEPH_LABEL = r"ALEPH archived data, $e^{+}e^{-}$ $\sqrt{s}=91.2$ GeV"
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "plotting")))
+import alephstyle as als
 
 # (csv stem, panel title) in the panel order of the committed figures.
 SOURCES = [
@@ -77,38 +77,33 @@ def symmetric_limit(matrices):
     return peak if peak > 0.0 else 1.0
 
 
-def draw_panel(ax, matrix, title, vlim):
+def panel_figure(matrix, vlim, title, cbar_label, out_path):
+    """One matrix, one file. Multipanel assembly happens in LaTeX."""
     nb = matrix.shape[0]
+    fig, ax = als.figure(aspect=0.85)
     # origin="lower" with extent y from 0 to nb puts bin 1 at the bottom, so the
     # y axis increases upwards and the diagonal runs bottom-left to top-right.
     im = ax.imshow(
         matrix,
         origin="lower",
-        cmap="RdBu_r",
+        cmap=als.CMAP_DIV,
         vmin=-vlim,
         vmax=vlim,
         extent=(0, nb, 0, nb),
         interpolation="nearest",
+        # "auto": an equal-aspect axes leaves slack that the layout engine
+        # spends on stray margins rather than on the matrix.
+        aspect="auto",
     )
-    ax.set_title(title, fontsize=10)
-    ax.set_xlabel("Thrust bin", fontsize=9)
-    ax.set_ylabel("Thrust bin", fontsize=9)
-    ax.tick_params(labelsize=8)
-    return im
-
-
-def panel_figure(matrix, vlim, title, cbar_label, out_path):
-    """One matrix, one file. Multipanel assembly happens in LaTeX."""
-    fig, ax = plt.subplots(figsize=(5.0, 3.9))
-    im = draw_panel(ax, matrix, title, vlim)
-    cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-    cb.set_label(cbar_label, fontsize=9)
-    cb.ax.tick_params(labelsize=8)
-    fig.text(0.5, 0.965, ALEPH_LABEL, ha="center", fontsize=8)
-    # bbox_inches="tight" so the colorbar tick labels are not clipped at the edge
-    fig.savefig(out_path, bbox_inches="tight")
-    plt.close(fig)
-    print(f"wrote {out_path}")
+    ax.set_xlabel(als.X["thrust_bin"])
+    ax.set_ylabel(als.X["thrust_bin"])
+    # imshow turns minor ticks off and draws them over the image; keep them off.
+    ax.tick_params(which="minor", bottom=False, top=False, left=False, right=False)
+    cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.03)
+    cb.set_label(cbar_label)
+    als.header(ax)
+    als.panel_label(ax, title)
+    als.save(fig, out_path)
 
 
 def parse_args():
@@ -124,9 +119,9 @@ def main():
     args = parse_args()
     outdir = args.outdir or args.summary_dir
     os.makedirs(outdir, exist_ok=True)
+    als.use()
 
     covs = [load_matrix(args.summary_dir, stem) for stem, _ in SOURCES]
-    titles = [title for _, title in SOURCES]
     nb = covs[0].shape[0]
     for stem_title, cov in zip(SOURCES, covs):
         if cov.shape[0] != nb:

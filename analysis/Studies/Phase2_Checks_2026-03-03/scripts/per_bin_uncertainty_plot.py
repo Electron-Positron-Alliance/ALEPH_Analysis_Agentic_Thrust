@@ -26,18 +26,17 @@ import argparse
 import os
 import sys
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 import pandas as pd
-
-import ROOT
+import uproot
 
 # Input locations come from analysis/inputs.json via paths.py, not from a fixed
 # run directory, so a rerun does not silently read another run's results.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "plotting")))
+import alephstyle as als
 
 
 def _run(*parts):
@@ -46,8 +45,7 @@ def _run(*parts):
         return os.path.join(paths.get("run_dir"), *parts)
     except Exception:
         return os.path.join("Studies", "PreliminaryResult", *parts)
-ROOT.gROOT.SetBatch(True)
-ROOT.TH1.AddDirectory(False)
+
 
 DEFAULT_RESULT_DIR = _run()
 DEFAULT_OUTDIR = "Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/"
@@ -56,24 +54,16 @@ T_MIN_DISPLAY = 0.55
 T_MAX_DISPLAY = 1.00
 Y_MAX = 50.0
 
-# Figure size for individual panels
-FIG_W, FIG_H = 7.0, 4.2
-
 
 # ---------------------------------------------------------------------------
 # Data helpers
 # ---------------------------------------------------------------------------
 
 def get_hist_array(root_path, hname="unfolded_corrected"):
-    f = ROOT.TFile.Open(root_path, "READ")
-    if not f or f.IsZombie():
-        raise OSError(f"Cannot open {root_path}")
-    h = f.Get(hname)
-    if not h:
-        raise KeyError(f"'{hname}' not found in {root_path}")
-    h = h.Clone()
-    f.Close()
-    return np.array([h.GetBinContent(i + 1) for i in range(h.GetNbinsX())])
+    with uproot.open(root_path) as f:
+        if hname not in f:
+            raise KeyError(f"'{hname}' not found in {root_path}")
+        return np.asarray(f[hname].values(), dtype=float)
 
 
 def to_diffxsec(arr, bin_width=0.01):
@@ -108,17 +98,6 @@ def envelope(fracs_list):
 # Plot helpers
 # ---------------------------------------------------------------------------
 
-def apply_common_style(ax):
-    ax.tick_params(axis="both", which="major", labelsize=10.5, direction="in",
-                   top=True, right=True, length=5)
-    ax.tick_params(axis="both", which="minor", direction="in",
-                   top=True, right=True, length=3)
-    ax.yaxis.set_minor_locator(ticker.AutoMinorLocator(2))
-    ax.xaxis.set_minor_locator(ticker.AutoMinorLocator(2))
-    ax.spines["top"].set_visible(True)
-    ax.spines["right"].set_visible(True)
-
-
 def step_plot(ax, edges, values_pct, color, lw, ls="-", label=None, alpha=1.0, zorder=2):
     x = np.repeat(edges, 2)[1:-1]
     y = np.repeat(values_pct, 2)
@@ -127,42 +106,25 @@ def step_plot(ax, edges, values_pct, color, lw, ls="-", label=None, alpha=1.0, z
 
 
 def save_fig(fig, outdir, stem):
-    for ext in ("pdf", "png"):
-        p = os.path.join(outdir, f"{stem}.{ext}")
-        fig.savefig(p, dpi=150 if ext == "png" else None, bbox_inches="tight")
-        print(f"Saved: {p}")
-
-
-ALEPH_LABEL = r"ALEPH archived data, $e^+e^-$ $\sqrt{s}=91.2$ GeV"
+    als.save(fig, os.path.join(outdir, f"{stem}.pdf"))
 
 
 def make_panel_fig():
-    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
-    # Extra top margin so the ALEPH label above the frame fits cleanly
-    fig.subplots_adjust(left=0.11, right=0.97, top=0.88, bottom=0.14)
-    return fig, ax
+    return als.figure(aspect=0.55)
 
 
 def finish_panel(ax, ylabel):
-    ax.set_xlabel("Thrust $T$", fontsize=12)
-    ax.set_ylabel(ylabel, fontsize=12)
+    ax.set_xlabel(als.X["thrust"])
+    ax.set_ylabel(ylabel)
     ax.set_xlim(T_MIN_DISPLAY, T_MAX_DISPLAY)
     ax.set_ylim(0, Y_MAX)
     ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=5, integer=True))
-    apply_common_style(ax)
-    # ALEPH label above the top-left of the axes frame (outside the plot area)
-    ax.text(0.0, 1.03, ALEPH_LABEL,
-            transform=ax.transAxes, fontsize=9.5,
-            ha="left", va="bottom", style="italic", fontweight="bold")
+    als.header(ax)
 
 
-def place_legend(ax, loc="best", ncol=1, fontsize=9.5):
+def place_legend(ax, loc="best", ncol=1, **kw):
     """Place legend; transparent background so it never obscures data."""
-    leg = ax.legend(fontsize=fontsize, loc=loc, framealpha=0.0,
-                    handlelength=2.2, ncol=ncol,
-                    borderpad=0.5, labelspacing=0.35,
-                    edgecolor="none")
-    return leg
+    return ax.legend(loc=loc, framealpha=0.0, ncol=ncol, edgecolor="none", **kw)
 
 
 # ---------------------------------------------------------------------------
@@ -182,6 +144,7 @@ def main():
     summary = rdir + "summary/"
     outdir = args.outdir.rstrip("/") + "/"
     os.makedirs(outdir, exist_ok=True)
+    als.use()
 
     # ------------------------------------------------------------------
     # Binning
@@ -241,7 +204,6 @@ def main():
     # Legend: top-right is free for stat panel (stat is small at high T)
     place_legend(ax, loc="upper right", ncol=2)
     save_fig(fig, outdir, "per_bin_uncertainty_stat")
-    plt.close(fig)
 
     # ------------------------------------------------------------------
     # Panel 2: Experimental
@@ -267,9 +229,8 @@ def main():
 
     finish_panel(ax, "Uncert. [%]  (Exp.)")
     # Exp components are large at low T; bulk at high T is small → legend at upper right
-    place_legend(ax, loc="upper right", ncol=2, fontsize=8.8)
+    place_legend(ax, loc="upper right", ncol=2)
     save_fig(fig, outdir, "per_bin_uncertainty_exp")
-    plt.close(fig)
 
     # ------------------------------------------------------------------
     # Panel 3: Theory
@@ -287,9 +248,8 @@ def main():
 
     finish_panel(ax, "Uncert. [%]  (Theory)")
     # Theory is large at high T (near peak); legend at lower right
-    place_legend(ax, loc="upper right", ncol=2, fontsize=9.5)
+    place_legend(ax, loc="upper right", ncol=2)
     save_fig(fig, outdir, "per_bin_uncertainty_theory")
-    plt.close(fig)
 
     # ------------------------------------------------------------------
     # Grouped summary (single panel)
@@ -297,24 +257,23 @@ def main():
     fig, ax = make_panel_fig()
 
     step_plot(ax, edges_disp, m(frac_stat)*100,
-              "#4e79a7", 1.7, label="Statistical")
+              als.C["stat"], 1.7, label="Statistical")
     step_plot(ax, edges_disp, m(frac_iter_env)*100,
-              "#f28e2b", 1.5, ls="--", label="Iteration")
+              als.C["iter"], 1.5, ls="--", label="Iteration")
     step_plot(ax, edges_disp, m(frac_exp_env)*100,
-              "#59a14f", 1.7, label="Experimental")
+              als.C["exp"], 1.7, label="Experimental")
     step_plot(ax, edges_disp, m(frac_theory_env)*100,
-              "#e15759", 1.7, label="Theory")
+              als.C["theory"], 1.7, label="Theory")
     step_plot(ax, edges_disp, m(frac_hadronic)*100,
-              "#9467bd", 1.5, ls=":", label="Hadronic")
+              als.C["hadronic"], 1.5, ls=":", label="Hadronic")
     step_plot(ax, edges_disp, m(frac_isr)*100,
-              "#e07b39", 1.5, ls=(0, (3, 1, 1, 1)), label="ISR corr.")
+              als.C["isr"], 1.5, ls=(0, (3, 1, 1, 1)), label="ISR corr.")
     step_plot(ax, edges_disp, m(frac_total)*100,
-              "black", 2.1, ls="--", label="Total", zorder=5)
+              als.C["total"], 2.1, ls="--", label="Total", zorder=5)
 
     finish_panel(ax, "Uncert. [%]")
-    place_legend(ax, loc="upper right", ncol=2, fontsize=9.5)
+    place_legend(ax, loc="upper right", ncol=2)
     save_fig(fig, outdir, "per_bin_uncertainty_grouped")
-    plt.close(fig)
 
 
 if __name__ == "__main__":

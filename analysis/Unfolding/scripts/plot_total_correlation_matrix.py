@@ -9,9 +9,12 @@ import os
 import sys
 from typing import List
 
-import ROOT
+import numpy as np
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "plotting")))
+import alephstyle as als
 
 
 def _summary(name: str) -> str:
@@ -31,7 +34,6 @@ def parse_args():
                    help="Path to binning.csv (default: run_dir/summary from inputs.json)")
     p.add_argument("--output-pdf", default=_summary("matrix_total_correlation_final.pdf"),
                    help="Output PDF path (default: run_dir/summary from inputs.json)")
-    p.add_argument("--title", default="Total correlation matrix (final result)")
     return p.parse_args()
 
 
@@ -65,85 +67,38 @@ def load_edges(path: str) -> List[float]:
             highs.append(float(row["high"]))
     if not lows:
         raise ValueError(f"Binning CSV is empty: {path}")
-    edges = [lows[0]] + highs
-    return edges
+    return [lows[0]] + highs
 
 
-def build_hist(corr: List[List[float]], edges: List[float], title: str):
+def draw_and_save(corr: List[List[float]], edges: List[float], out_pdf: str):
     n = len(corr)
     if len(edges) != n + 1:
         raise ValueError(f"Edge count mismatch: expected {n + 1}, got {len(edges)}")
-    h = ROOT.TH2D(
-        "h_total_corr_final",
-        title,
-        n,
-        array_d(edges),
-        n,
-        array_d(edges),
-    )
-    h.SetDirectory(0)
-    h.SetStats(0)
-    for ix in range(1, n + 1):
-        for iy in range(1, n + 1):
-            h.SetBinContent(ix, iy, float(corr[ix - 1][iy - 1]))
-    h.GetXaxis().SetTitle("Thrust T")
-    h.GetYaxis().SetTitle("Thrust T")
-    h.GetZaxis().SetTitle("Correlation")
-    h.GetXaxis().SetNdivisions(510)
-    h.GetYaxis().SetNdivisions(510)
-    h.GetZaxis().SetNdivisions(510)
-    h.GetXaxis().SetTitleOffset(1.1)
-    h.GetYaxis().SetTitleOffset(1.15)
-    h.GetZaxis().SetTitleOffset(1.15)
-    h.SetMinimum(-1.0)
-    h.SetMaximum(1.0)
-    return h
 
-
-def array_d(vals: List[float]):
-    from array import array
-
-    return array("d", [float(v) for v in vals])
-
-
-def draw_and_save(hist, out_pdf: str):
-    outdir = os.path.dirname(os.path.abspath(out_pdf))
-    if outdir:
-        os.makedirs(outdir, exist_ok=True)
-
-    c = ROOT.TCanvas("c_total_corr_final", "", 760, 680)
-    c.SetLeftMargin(0.12)
-    c.SetRightMargin(0.16)
-    c.SetBottomMargin(0.12)
-    c.SetTopMargin(0.08)
-
-    hist.Draw("COLZ")
-
-    label = ROOT.TLatex()
-    label.SetNDC(True)
-    label.SetTextSize(0.037)
-    label.SetTextFont(42)
-    # Two labels in top margin: ALEPH stamp (left) and plot title (right)
-    label.DrawLatex(0.12, 0.945, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV")
-
-    c.SaveAs(out_pdf)
-    c.Close()
+    fig, ax = als.figure(aspect=0.85)
+    # Correlation is signed, so a diverging map centred on zero; the previous
+    # kBird palette put zero mid-ramp and made sign hard to read.
+    mesh = ax.pcolormesh(edges, edges, np.asarray(corr, dtype=float).T,
+                         cmap=als.CMAP_DIV, vmin=-1.0, vmax=1.0)
+    # Without this the vector renderer leaves white seams between the quads.
+    mesh.set_edgecolor("face")
+    ax.set_xlabel(als.X["thrust"])
+    ax.set_ylabel(als.X["thrust"])
+    cb = fig.colorbar(mesh, ax=ax, fraction=0.046, pad=0.03)
+    cb.set_label(als.Y["correlation"])
+    als.header(ax)
+    als.save(fig, out_pdf)
 
 
 def main():
     args = parse_args()
+    als.use()
     corr = load_corr_csv(args.corr_csv)
     edges = load_edges(args.binning_csv)
-    hist = build_hist(corr, edges, args.title)
-    draw_and_save(hist, args.output_pdf)
-    print(f"Wrote total-correlation plot: {args.output_pdf}")
+    draw_and_save(corr, edges, args.output_pdf)
 
 
 if __name__ == "__main__":
-    ROOT.gROOT.SetBatch(True)
-    ROOT.gStyle.SetOptStat(0)
-    ROOT.gStyle.SetOptTitle(0)
-    ROOT.gStyle.SetPalette(ROOT.kBird)
     try:
         main()
     except Exception as exc:
