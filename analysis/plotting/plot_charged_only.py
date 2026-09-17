@@ -26,13 +26,18 @@ HIST = "unfolded_corrected"
 
 
 def diff_xsec(path):
+    """Values, statistical errors and edges, normalised to a differential rate."""
     with uproot.open(path) as f:
         h = f[HIST]
         v = np.asarray(h.values(), dtype=float)
+        err = np.asarray(h.errors(), dtype=float)
         e = np.asarray(h.axis().edges(), dtype=float)
     w = np.diff(e)
     total = v.sum()
-    return (v / (total * w) if total > 0 else v), e
+    if total <= 0:
+        return v, err, e
+    # The errors scale with the values, as TH1::Scale does.
+    return v / (total * w), err / (total * w), e
 
 
 def parse_args():
@@ -49,32 +54,37 @@ def main():
     os.makedirs(args.outdir, exist_ok=True)
     als.use()
 
-    ef, edges = diff_xsec(os.path.join(
+    ef, ef_err, edges = diff_xsec(os.path.join(
         rdir, "nominal", f"unfolded_nominal_iter{args.iterations}.root"))
-    cn, _ = diff_xsec(os.path.join(rdir, "experimental", "unfolded_no_neutrals.root"))
+    cn, cn_err, _ = diff_xsec(os.path.join(rdir, "experimental", "unfolded_no_neutrals.root"))
     centers = 0.5 * (edges[:-1] + edges[1:])
 
     fig, ax, rax = als.figure_ratio(aspect=0.95)
-    for vals, label, color, marker in (
-        (ef, "Energy-flow (nominal)", als.C["data"], "o"),
-        (cn, "Charged-only", als.C["mc_reco"], "s"),
+    # Matches Fig 16; printed at 0.70\textwidth.
+    als.enlarge_y_labels(ax, rax)
+    for vals, errs, label, color, marker in (
+        (ef, ef_err, "Energy-flow (nominal)", als.C["data"], "o"),
+        (cn, cn_err, "Charged-only", als.C["mc_reco"], "s"),
     ):
         m = vals > 0
-        ax.plot(centers[m], vals[m], ls="none", marker=marker, markersize=2.4,
-                markerfacecolor="none" if marker == "s" else color,
-                color=color, label=label)
+        ax.errorbar(centers[m], vals[m], yerr=errs[m], ls="none", marker=marker,
+                    markerfacecolor="none" if marker == "s" else color,
+                    color=color, label=label)
 
-    ratio = np.divide(cn, ef, out=np.zeros_like(ef), where=ef > 0)
+    # Ratio carries the charged-only statistical error only; the two samples
+    # share the same events, so the energy-flow error is not independent.
     m = ef > 0
-    rax.plot(centers[m], ratio[m], ls="none", marker="s", markersize=2.4,
-             markerfacecolor="none", color=als.C["mc_reco"])
+    ratio = np.divide(cn, ef, out=np.zeros_like(ef), where=m)
+    ratio_err = np.divide(cn_err, ef, out=np.zeros_like(ef), where=m)
+    rax.errorbar(centers[m], ratio[m], yerr=ratio_err[m], ls="none", marker="s",
+                 markerfacecolor="none", color=als.C["mc_reco"])
 
     ax.set_yscale("log")
     ax.set_ylabel(als.Y["normalized_thrust"])
     ax.set_xlim(edges[0], edges[-1])
     ax.legend(loc="upper left", framealpha=0.0)
     rax.set_xlabel(als.X["thrust"])
-    rax.set_ylabel(als.RATIO["charged_ef"])
+    rax.set_ylabel(als.RATIO["plain"])
     rax.set_ylim(0.7, 1.4)
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "charged_only_vs_energy_flow.pdf"))

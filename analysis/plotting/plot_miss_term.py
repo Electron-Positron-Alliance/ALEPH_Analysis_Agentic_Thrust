@@ -28,6 +28,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import alephstyle as als
 
 T_MIN, T_MAX, N_BINS = 0.50, 1.00, 50
+# Efficiency y range: the closest zoom that keeps all 44 populated bins. 29 of
+# them sit between 0.80 and 0.95, so a (0.95, 1.05) window would blank the
+# whole T = 0.63 to 0.87 plateau.
+EFF_YLIM = (0.78, 1.02)
 
 
 def parse_args():
@@ -96,11 +100,11 @@ def main():
     centers = 0.5 * (bins[:-1] + bins[1:])
     ok = h_all > 0
     ax.errorbar(centers[ok], eff[ok], yerr=err[ok], ls="none", marker="o",
-                markersize=2.4, color=als.C["mc_genbefore"])
+                color=als.C["mc_genbefore"])
     ax.set_xlabel(als.X["thrust_gen"])
     ax.set_ylabel(als.Y["efficiency"])
     ax.set_xlim(T_MIN, T_MAX)
-    ax.set_ylim(0.0, 1.05)
+    ax.set_ylim(*EFF_YLIM)
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "miss_term_efficiency.pdf"))
 

@@ -95,6 +95,17 @@ def header(ax, rlabel: str | None = None, **kw):
                                data=True, ax=ax, **kw)
 
 
+def enlarge_y_labels(*axes) -> None:
+    """One step up the size ladder on the y axes: ticks medium, titles large.
+
+    For figures included wide enough that LaTeX barely scales them down, where
+    CMS's default small/medium pair reads undersized against the body text.
+    """
+    for ax in axes:
+        ax.tick_params(axis="y", labelsize="medium")
+        ax.yaxis.label.set_size("large")
+
+
 def panel_label(ax, text: str, loc: str = "upper left") -> None:
     """Identify one panel of a figure LaTeX assembles from separate files."""
     x, ha = (0.04, "left") if "left" in loc else (0.96, "right")
@@ -145,6 +156,7 @@ Y = {
 }
 
 RATIO = {
+    "plain": r"Ratio",
     "mc_data": r"MC / Data",
     "aleph": r"Ours / ALEPH 2004",
     "charged_ef": r"Charged / EF",

@@ -97,6 +97,8 @@ def main():
         raw = raw / (raw.sum() * widths) if raw.sum() > 0 else raw
 
     fig, ax, rax = als.figure_ratio(aspect=0.95)
+    # Printed at 0.85\textwidth, so scaled down less than most figures.
+    als.enlarge_y_labels(ax, rax)
 
     shown = nom > 0
     ax.fill_between(edges[:-1], np.where(shown, nom - total_abs, np.nan),
@@ -104,13 +106,12 @@ def main():
                     color="0.6", alpha=0.45, linewidth=0, label="Total uncertainty")
     if raw is not None:
         m = raw > 0
-        ax.plot(centers[m], raw[m], ls="none", marker="s", markersize=2.2,
-                markerfacecolor="none", color="#e08214", label="Raw data (detector level)")
-    ax.plot(centers[shown], nom[shown], ls="none", marker="o", markersize=2.4,
-            color=als.C["unfolded"],
-            label=rf"Unfolded nominal ($N_\mathrm{{iter}}={args.iterations}$)")
+        ax.plot(centers[m], raw[m], ls="none", marker="s",
+                markerfacecolor="none", color="#e08214", label="Raw data")
+    ax.plot(centers[shown], nom[shown], ls="none", marker="o",
+            color=als.C["unfolded"], label="Fully corrected")
     ax.errorbar(aleph["centers"], aleph["values"], yerr=aleph["total"], ls="none",
-                marker="o", markersize=2.4, markerfacecolor="none",
+                marker="o", markerfacecolor="none",
                 color=als.C["aleph2004"], label="ALEPH 2004")
 
     ax.set_yscale("log")
@@ -131,11 +132,11 @@ def main():
                            where=ok)[ok],
                  yerr=np.divide(aleph["total"], nom_on_aleph,
                                 out=np.zeros_like(nom_on_aleph), where=ok)[ok],
-                 ls="none", marker="o", markersize=2.4, markerfacecolor="none",
+                 ls="none", marker="o", markerfacecolor="none",
                  color=als.C["aleph2004"])
     rax.set_xlabel(als.X["thrust"])
-    rax.set_ylabel("ALEPH 2004 / ours")
-    rax.set_ylim(0.7, 1.3)
+    rax.set_ylabel(als.RATIO["plain"])
+    rax.set_ylim(0.8, 1.2)
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "final_result_uncertainty_breakdown.pdf"))
 
