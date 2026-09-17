@@ -103,14 +103,12 @@ def main():
         if errs is None:
             continue
         r = np.divide(np.asarray(vals), cur, out=np.zeros_like(cur), where=ok)
-        # Full propagation, including the denominator: this is what the shipped
-        # figure's of_ibu_comparison_metrics.json records. Note it differs from
-        # make_final_plot, which after 23f10c9 shows the current uncertainty
-        # only once, as the band. Worth reconciling separately.
-        rv = np.divide(np.asarray(errs), np.asarray(vals),
-                       out=np.zeros_like(cur), where=np.asarray(vals) > 0)
-        rc = np.divide(cur_err, cur, out=np.zeros_like(cur), where=ok)
-        re = r * np.sqrt(rv**2 + rc**2)
+        # Each uncertainty once: the bars carry the curve's own error only,
+        # since the current's total is already the band around unity. Same
+        # convention as make_final_plot after 23f10c9, and the one the caption
+        # in Results.tex describes. The shipped ROOT figure instead propagated
+        # the denominator into the bars, showing it twice.
+        re = np.divide(np.asarray(errs), cur, out=np.zeros_like(cur), where=ok)
         rax.errorbar(c[m], r[m], yerr=re[m], ls="none", marker=marker,
                      markersize=2.4, markerfacecolor="none", color=color)
 

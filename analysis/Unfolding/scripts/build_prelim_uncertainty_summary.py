@@ -373,7 +373,7 @@ def resolve_legacy_input_paths(args, repo_root: str) -> dict[str, str]:
 
 # Derivation of the legacy OmniFold and IBU curves lives in legacy_curves.py so
 # the ROOT-free figure producer can reuse it unchanged.
-from legacy_curves import (  # noqa: E402
+from legacy_curves import (
     _calc_hist_with_weight_unc,
     _mc_bin_quality,
     build_legacy_omnifold_thrust_arrays,
@@ -1500,6 +1500,14 @@ def make_of_ibu_comparison_plot(
     h_ratio_band.SetMarkerSize(0.0)
     h_ratio_band.Draw("E2 SAME")
 
+    # Zero the denominator's error before dividing, as make_final_plot does:
+    # the current total is already drawn as h_ratio_band around unity, so
+    # letting ROOT propagate it into the bars shows it twice.
+    h_ratio_den = h_current.Clone("h_cmp_current_den_noerr")
+    h_ratio_den.SetDirectory(0)
+    for ibin in range(1, h_ratio_den.GetNbinsX() + 1):
+        h_ratio_den.SetBinError(ibin, 0.0)
+
     ratio_hists = {}
     for key, hist, color, marker in [
         ("aleph_over_current", h_aleph, ROOT.kBlue + 1, 26),
@@ -1508,7 +1516,7 @@ def make_of_ibu_comparison_plot(
     ]:
         h_ratio = hist.Clone(f"h_ratio_{key}")
         h_ratio.SetDirectory(0)
-        h_ratio.Divide(hist, h_current)
+        h_ratio.Divide(hist, h_ratio_den)
         apply_style(h_ratio, color=color, marker=marker, line_style=1, is_data=True)
         style_ratio(h_ratio, "Thrust")
         h_ratio.GetYaxis().SetTitle("Ratio")
