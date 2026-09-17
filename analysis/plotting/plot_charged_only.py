@@ -84,7 +84,7 @@ def main():
     ax.set_xlim(edges[0], edges[-1])
     ax.legend(loc="upper left", framealpha=0.0)
     rax.set_xlabel(als.X["thrust"])
-    rax.set_ylabel(als.RATIO["charged_ef"])
+    rax.set_ylabel(als.RATIO["plain"])
     rax.set_ylim(0.7, 1.4)
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "charged_only_vs_energy_flow.pdf"))
