@@ -1,3 +1,21 @@
+% ---- EPA logo block ------------------------------------------------
+% Usage: \eelogo  (place right after \begin{document}, before \maketitle)
+\newcommand{\eelogo}{%
+  \AddToShipoutPictureBG*{%
+    \put(\LenToUnit{\dimexpr 1in+\oddsidemargin\relax},\LenToUnit{18mm}){%
+      \begin{minipage}[c]{45mm}%
+        \includegraphics[width=\textwidth]{figures/ee-logo.pdf}%
+      \end{minipage}%
+      \hspace{5mm}%
+      \raisebox{-10mm}[0pt][0pt]{%
+        \begin{minipage}[c]{0.7\textwidth}%
+          \Large
+          Electron--Positron Alliance\\
+          \url{https://ee-alliance.org/home/}%
+        \end{minipage}}}}%
+}
+% --------------------------------------------------------------------
+
 % useful color schemes
 % names from https://www.overleaf.com/learn/latex/Using_colors_in_LaTeX
 \newcommand{\todo}[1]{\textcolor{red}{#1}}
