@@ -12,20 +12,9 @@ T = \max_{\hat{n}} \frac{\sum_i |\vec{p}_i \cdot \hat{n}|}{\sum_i |\vec{p}_i|},
 \end{equation}
 with all selected charged and neutral reconstructed objects from Sec.~\ref{sec:event_selection} entering the sum. The thrust is built using selected charged and neutral particles. Those objects are input to an optimization algorithm that iteratively determines the thrust axis. The algorithm we use is a clone of the \textsc{Herwig++} implementation~\cite{Brandt:1978zm, B_hr_2008, BUCKLEY20132803, rivet_thrust}, which is an exact calculation rather than one based on heuristics as is done by others~\cite{Belle2Thrust}. The resolution is characterized using matched reco--gen event pairs. Figure~\ref{fig:thrust_resolution_2d} shows $(T_{\mathrm{reco}} - T_{\mathrm{gen}})$ as a function of $T_{\mathrm{gen}}$. The resolution narrows toward $T\to1$. To enable direct comparison, our work adopts the identical binning as the previous ALEPH analyses~\cite{Barate:1996fi, Heister:2003aj} with 42 uniform bins over $0.58 \le T < 1.0$ (bin width $\Delta T = 0.01$),
 
-% The nominal run uses $N_{\mathrm{iter}}=5$, where $N_{\mathrm{iter}}$ denotes the number of IBU iterations, which serves as the regularization parameter, and applies the post-unfolding hadronic event correction from \texttt{tgenBefore/tgen}. The nominal branch is the only run with covariance enabled; variation branches are propagated through signed shifts relative to the nominal spectrum.
-
-% \subsection{Response matrix from matched MC}
-
-% Reconstructed MC entries with
-% \texttt{passEventSelection} equal to 1 define the selected detector-level phase space. Generator-level entries are then matched to this selected set and used to fill:
-% \begin{itemize}
-% \item the response counts matrix;
-% \item the miss term of the RooUnfold response.
-% \end{itemize}
-
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=0.60\textwidth]{figures/thrust_resolution_2d.pdf}
+\includegraphics[width=0.85\textwidth]{figures/thrust_resolution_2d.pdf}
 \caption{Thrust resolution $(T_{\mathrm{reco}}-T_{\mathrm{gen}})$ versus $T_{\mathrm{gen}}$ for matched MC event pairs.}
 \label{fig:thrust_resolution_2d}
 \end{figure}
@@ -40,9 +29,8 @@ where $M_i$ is the measured detector-level spectrum, $R_{ij}$ is the response, a
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=0.49\textwidth]{figures/matrix_response_counts.pdf}
-\includegraphics[width=0.49\textwidth]{figures/matrix_response_probability.pdf}
-\caption{Nominal response matrices for thrust: response counts (left) and response probability (right).}
+\includegraphics[width=0.85\textwidth]{figures/matrix_response_probability.pdf}
+\caption{Nominal response probability matrix for thrust.}
 \label{fig:response_matrices_nominal}
 \end{figure}
 
