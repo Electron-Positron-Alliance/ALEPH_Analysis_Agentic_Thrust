@@ -80,6 +80,8 @@ def draw_and_save(corr: List[List[float]], edges: List[float], out_pdf: str):
     # kBird palette put zero mid-ramp and made sign hard to read.
     mesh = ax.pcolormesh(edges, edges, np.asarray(corr, dtype=float).T,
                          cmap=als.CMAP_DIV, vmin=-1.0, vmax=1.0)
+    # Without this the vector renderer leaves white seams between the quads.
+    mesh.set_edgecolor("face")
     ax.set_xlabel(als.X["thrust"])
     ax.set_ylabel(als.X["thrust"])
     cb = fig.colorbar(mesh, ax=ax, fraction=0.046, pad=0.03)
