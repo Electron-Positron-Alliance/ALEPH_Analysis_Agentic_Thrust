@@ -222,7 +222,7 @@ def main():
     step_plot(ax, edges_disp, m(nes_down)*100,
               "#74add1", 1.1, ls=(0, (3, 1, 1, 1)), label=r"NES $-5\%$")
     step_plot(ax, edges_disp, m(ner)*100,
-              "#9970ab", 1.3, label="NER")
+              "#9970ab", 1.3, label=r"NER $2.5\%$")
     step_plot(ax, edges_disp, m(frac_exp_env)*100,
               "black", 1.9, ls="--", label="Exp. envelope", zorder=4)
 

@@ -40,9 +40,11 @@ LABELS = {
     "pt04": r"$p_T > 0.4$ GeV",
     "ech10": r"$E_\mathrm{ch} > 10$ GeV",
     "with_met": "Missing-energy cut",
-    "nes_up": "NES up",
-    "nes_down": "NES down",
-    "ner": "NER",
+    # Percentages from runAnalyze.py: NES_PHOTON/HADRON = 1.05 / 0.95, and
+    # NEE_PHOTON/HADRON = 0.025.
+    "nes_up": r"NES $+5\%$",
+    "nes_down": r"NES $-5\%$",
+    "ner": r"NER $2.5\%$",
     "no_neutrals": "No-neutrals xcheck",
     "pythia8": "Pythia 8",
     "herwig": "Herwig",
