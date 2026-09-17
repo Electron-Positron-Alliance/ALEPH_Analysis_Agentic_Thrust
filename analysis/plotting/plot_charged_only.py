@@ -60,6 +60,8 @@ def main():
     centers = 0.5 * (edges[:-1] + edges[1:])
 
     fig, ax, rax = als.figure_ratio(aspect=0.95)
+    # Matches Fig 16; printed at 0.70\textwidth.
+    als.enlarge_y_labels(ax, rax)
     for vals, errs, label, color, marker in (
         (ef, ef_err, "Energy-flow (nominal)", als.C["data"], "o"),
         (cn, cn_err, "Charged-only", als.C["mc_reco"], "s"),

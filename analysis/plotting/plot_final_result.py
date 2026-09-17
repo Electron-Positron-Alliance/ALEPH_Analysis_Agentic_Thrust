@@ -97,12 +97,8 @@ def main():
         raw = raw / (raw.sum() * widths) if raw.sum() > 0 else raw
 
     fig, ax, rax = als.figure_ratio(aspect=0.95)
-    # This figure prints at 0.85\textwidth, so it is scaled down less than most.
-    # One step up the matplotlib size ladder on both y axes: ticks small ->
-    # medium, titles medium -> large.
-    for a in (ax, rax):
-        a.tick_params(axis="y", labelsize="medium")
-        a.yaxis.label.set_size("large")
+    # Printed at 0.85\textwidth, so scaled down less than most figures.
+    als.enlarge_y_labels(ax, rax)
 
     shown = nom > 0
     ax.fill_between(edges[:-1], np.where(shown, nom - total_abs, np.nan),
