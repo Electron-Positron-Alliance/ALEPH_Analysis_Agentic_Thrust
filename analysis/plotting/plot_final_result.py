@@ -59,6 +59,16 @@ def load_aleph_2004(csv_path: str) -> dict:
     }
 
 
+def step_band(lows, highs, lo, hi):
+    """x/y for a step="post" band that includes the last bin.
+
+    fill_between with step="post" draws bin i from x[i] to x[i+1], so passing
+    only the low edges leaves the final bin unfilled.
+    """
+    x = np.append(np.asarray(lows, dtype=float), float(highs[-1]))
+    return x, np.append(lo, lo[-1]), np.append(hi, hi[-1])
+
+
 def rebin_to(centers_src, values_src, lows_dst, highs_dst):
     """Average the fine-binned curve into the ALEPH bins."""
     out = np.zeros(len(lows_dst))
@@ -91,7 +101,7 @@ def main():
     binning = pd.read_csv(os.path.join(summary, "binning.csv"))
     low, high = binning["low"].values, binning["high"].values
     centers, nom = binning["center"].values, binning["nominal_diffxsec"].values
-    widths, edges = high - low, np.append(low, high[-1])
+    widths = high - low
 
     total_abs = np.sqrt(sum(cov_abs(summary, s, len(nom)) ** 2 for s in TOTAL_COMPONENTS))
     aleph = load_aleph_2004(args.aleph_csv)
@@ -109,9 +119,11 @@ def main():
     als.enlarge_y_labels(ax, rax)
 
     shown = nom > 0
-    ax.fill_between(edges[:-1], np.where(shown, nom - total_abs, np.nan),
-                    np.where(shown, nom + total_abs, np.nan), step="post",
-                    color="0.6", alpha=0.45, linewidth=0, label="Total uncertainty")
+    bx, blo, bhi = step_band(low, high,
+                             np.where(shown, nom - total_abs, np.nan),
+                             np.where(shown, nom + total_abs, np.nan))
+    ax.fill_between(bx, blo, bhi, step="post", color="0.6", alpha=0.45,
+                    linewidth=0, label="Total uncertainty")
     if raw is not None:
         m = raw > 0
         ax.plot(centers[m], raw[m], ls="none", marker="s",
@@ -133,8 +145,10 @@ def main():
     tot_on_aleph = rebin_to(centers, total_abs, aleph["lows"], aleph["highs"])
     ok = nom_on_aleph > 0
     rel = np.divide(tot_on_aleph, nom_on_aleph, out=np.zeros_like(nom_on_aleph), where=ok)
-    rax.fill_between(aleph["lows"][ok], (1 - rel)[ok], (1 + rel)[ok], step="post",
-                     color="0.6", alpha=0.45, linewidth=0)
+    rx, rlo, rhi = step_band(aleph["lows"][ok], aleph["highs"][ok],
+                             (1 - rel)[ok], (1 + rel)[ok])
+    rax.fill_between(rx, rlo, rhi, step="post", color="0.6", alpha=0.45,
+                     linewidth=0)
     rax.errorbar(aleph["centers"][ok],
                  np.divide(aleph["values"], nom_on_aleph, out=np.zeros_like(nom_on_aleph),
                            where=ok)[ok],
