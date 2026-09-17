@@ -10,8 +10,8 @@ The agents used in this analysis are Anthropic Claude Code and OpenAI Codex, dep
 \begin{itemize}
 \item write, execute, and monitor analysis code,
 \item enforce consistent plotting and note formatting conventions for work communication,
-\item maintenance an understanding of which analysis code and configurations,
-\item iterate quickly on ideas other time consuming tasks.
+\item maintain an up-to-date understanding of the analysis code and configurations,
+\item iterate quickly on ideas and other time-consuming tasks.
 \end{itemize}
 
 \noindent Our operating model is intentionally conservative to see how the agent performs when used to accelerate the common physics engineering and documentation tasks, rather than the core scientific decision tasks.
@@ -19,7 +19,7 @@ The agents used in this analysis are Anthropic Claude Code and OpenAI Codex, dep
 \subsection{Inputs and context supplied to agents}
 \label{sec:agent_inputs}
 
-The context supplied to the agent at the start of the session are the following.
+The inputs supplied to the agents at the start of each session were the following.
 \begin{itemize}
 \item Context: the published ALEPH thrust measurement, prior ROOT-based analysis macros for event selection and thrust calculation, and internal analysis notes documenting the open data format, detector calibration, and object definitions~\cite{Heister:2003aj,ALEPH:docs}.
 \item Datasets: the ALEPH LEP1 data files for the 1994 running period at $\sqrt{s}=91.2$~GeV, together with the corresponding ALEPH MC samples. Additional modern MC were given for theoretical uncertainty estimation.
@@ -28,11 +28,11 @@ The context supplied to the agent at the start of the session are the following.
 
 \subsection{Boundaries, controls, and reproducibility}
 
-To keep scientific accountability explicit, each high-impact step has a control point where physicist sign-off is required before results are treated as baseline. The analysis stages where control points were used are: event and object selection definition, unfolding regularization choice, systematic-combination policy, final figure and uncertainty-presentation choices, interpretation description of the work. Beyond these sign-off gates, the physicist performed concrete validation checks at each major analysis stage by inspecting the artifacts of the agents work. These checks are enumerated here.
+To keep scientific accountability explicit, each high-impact step has a control point where physicist sign-off is required before results are treated as baseline. The analysis stages where control points were used are: event and object selection definition, unfolding regularization choice, systematic-combination policy, final figure and uncertainty-presentation choices, interpretation description of the work. Beyond these sign-off gates, the physicist performed concrete validation checks at each major analysis stage by inspecting the artifacts of the agents' work. These checks are enumerated here.
 
 \begin{itemize}
     \item Event selection: Cut-flow yields were compared to the published ALEPH numbers~\cite{Heister:2003aj} to verify selection efficiency. Distributions of $\cos\theta_{\mathrm{thrust}}$ and $\varphi$ were inspected for detector artifacts; this step uncovered a localized $\varphi$ excess in the data that was traced to a detector region and checked before proceeding.
-    \item Unfolding: Refolded spectra were required to reproduce the detector-level data within statistical precision. An iteration scan confirmed that the refolded-to-measured is stable as the regularization parameter is scanned.
+    \item Unfolding: Refolded spectra were required to reproduce the detector-level data within statistical precision. An iteration scan confirmed that the refolded-to-measured ratio is stable as the regularization parameter is scanned.
     \item Systematic uncertainties: Each variation's impact on the unfolded distribution was inspected for large bin-to-bin fluctuations. The covariance and correlation matrices for individual components as well as the total were computed.
     \item Results: The unfolded thrust distribution was compared to the ALEPH\,2004 published result~\cite{Heister:2003aj} over the 42~reported bins. Per-bin uncertainty breakdowns and correlation matrices are reported.
     \item All figure captions, table entries, and interpretive statements in this work were reviewed by the physicist for physics accuracy. Agent-generated text was treated as a draft requiring human approval before inclusion in the baseline.
