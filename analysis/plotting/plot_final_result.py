@@ -29,6 +29,11 @@ import alephstyle as als
 # The six that make_final_plot sums; cov_mcstat is deliberately not among them.
 TOTAL_COMPONENTS = ["stat", "exp", "iter", "theory", "hadronic", "isr"]
 
+# Ratio panel window. Off the 0.1 grid so the locator puts no tick label on the
+# bottom edge, where it would collide with the x-axis numbers, but wide enough
+# to keep the endpoint bin's 1.176 in frame -- the bin Results.tex singles out.
+RATIO_YLIM = (0.82, 1.18)
+
 
 def cov_abs(summary_dir: str, stem: str, n: int) -> np.ndarray:
     path = os.path.join(summary_dir, f"cov_{stem}.csv")
@@ -90,6 +95,9 @@ def main():
 
     total_abs = np.sqrt(sum(cov_abs(summary, s, len(nom)) ** 2 for s in TOTAL_COMPONENTS))
     aleph = load_aleph_2004(args.aleph_csv)
+    # Plot over the ALEPH range only. Our two populated bins below 0.58 carry
+    # total uncertainties of 158% and 365% and are outside the reported range.
+    xlim = (float(aleph["lows"][0]), float(aleph["highs"][-1]))
 
     with uproot.open(nominal_root) as f:
         raw = np.asarray(f["data_reco"].values(), dtype=float) if "data_reco" in f else None
@@ -116,7 +124,7 @@ def main():
 
     ax.set_yscale("log")
     ax.set_ylabel(als.Y["diffxsec"])
-    ax.set_xlim(edges[0], edges[-1])
+    ax.set_xlim(*xlim)
     ax.legend(loc="upper left", framealpha=0.0)
 
     # Ratio is ALEPH / unfolded, with our total shown as the band around unity
@@ -136,7 +144,7 @@ def main():
                  color=als.C["aleph2004"])
     rax.set_xlabel(als.X["thrust"])
     rax.set_ylabel(als.RATIO["plain"])
-    rax.set_ylim(0.8, 1.2)
+    rax.set_ylim(*RATIO_YLIM)
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "final_result_uncertainty_breakdown.pdf"))
 
