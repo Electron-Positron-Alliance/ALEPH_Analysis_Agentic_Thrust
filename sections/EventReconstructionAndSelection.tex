@@ -81,162 +81,133 @@ Total multiplicity & $N_{\mathrm{trk}}+N_{\mathrm{neu}}\ge 13$ \\
 
 \subsection{Data-MC kinematic checks}
 
-Before constructing thrust-family observables, we validate the reconstructed particle-level
-ingredients that enter the event-shape sums and axis determination. Any mismodeling in particle
-acceptance, momentum scale, or category composition can propagate into migration in the detector response matrix and into unfolded distributions. To assess detector modeling of these inputs, we compare data and MC reco distributions for each object category using Data/MC ratio panels, with generator-level references.
+The agreement between the data and MC samples is assessed below. The particle and track level distributions are shown after all selections. The energy-flow candidates are categorized as charged tracks (Fig.~\ref{fig:pwflag0_full}), charged lepton 1 (electron) candidates (Fig.~\ref{fig:pwflag1_full}), charged lepton 2 (muon) candidates (Fig.~\ref{fig:pwflag2_full}), neutral long-lived particles that decay to two charged tracks ($V^{0}$) (Fig.~\ref{fig:pwflag3_full}), photons (Fig.~\ref{fig:pwflag4_full}), and neutral hadrons (Fig.~\ref{fig:pwflag5_full}) based on the reconstructed properties utilizing different detector subsystems. Event-level variables used for hadronic selection are shown in Fig.~\ref{fig:event_selection_observables}. The selection on these observables define the phase space used to build detector response and unfolded event-shape spectra. The data-MC agreement is in general quite good with some mismodeling observed in particular for the neutral particles. 
 
-The charged-track category is shown in Fig.~\ref{fig:pwflag0_full}. Data/MC agreement is good in the bulk of all distributions. The $\cos\theta$ panel shows the geometric acceptance
-cutoff at $|\cos\theta|=0.94$, with consistent data/MC behavior across the accepted
-range. The impact-parameter panels ($d_0$, $z_0$) show the effect of the nominal
-selection quality cuts, with both data and MC reproducing the expected Gaussian core
-and non-Gaussian tails. The $N_{\mathrm{TPC}}$ distribution, a detector hit count rather than a generator observable, is well reproduced by the simulation. The measured momentum is translated to energy through the pion mass assumption.
+Several effects are visible in these distributions. An enhancement near $\cos\theta=0$
+appears in both data and simulation for the charged tracks which originates from the fixed floating-point precision with which the archived sample was reprocessed and is being fixed for a subsequent reprocessing. Narrow peaks at $E\simeq|\vec{p}|\simeq45$~GeV appear in the charged-track and $V^{0}$ spectra of the reconstructed simulation but not at generator level. This is a reconstruction level effect and their origin under study. The muon $\phi$ spectrum shows an enhancement present only at generator level, which is believed to arise from the processing of the archived simulation. The impact of these effects on the thrust spectrum is negligible.
 
-Figure~\ref{fig:pwflag1_full} shows the electron objects. Relative to
-charged tracks, this category has smaller yields and larger statistical fluctuations, but the
-detector-level and MC shapes remain consistent across the main selection observables. The
-comparison is important because isolated energetic leptons can rotate the thrust axis in otherwise two-jet-like events and can therefore influence migration in specific bins. Figure~\ref{fig:pwflag2_full} shows the muon object candidates, providing a direct
-cross-check of category-dependent acceptance and momentum-shape modeling. This category probes
-objects that utilize the muon subdetectors, so agreement here confirms that lepton-category partitioning does not induce a hidden detector asymmetry in the thrust inputs.
+%%%%%%%%%%%%%%%%%%%%%%%%
 
-Figure~\ref{fig:pwflag3_full} shows $V^0$ candidates from displaced-vertex reconstruction. These enter the thrust sum as single four-vectors. Data/MC agreement in the bulk $\cos\theta$ and energy distributions is adequate. Data/MC differences are more visible than for charged tracks. Figure~\ref{fig:pwflag4_full} shows the photon category reconstructed by the ECAL. Data/MC agreement is generally good in the central region. Some modulations of the generator-level $\phi$ spectrum are seen which have a negligible impact on the result and are believed to be an artifact of how photons were stored in the sample. Figure~\ref{fig:pwflag5_full} shows the neutral hadronic calorimeter objects. Data/MC differences are largest in this category, in the neutral hadronic energy range of a few GeV. These differences are propagated through the dedicated neutral-response systematic branches and do not affect the nominal response matrix.
-
-Event-level variables used for hadronic selection are also validated with data/MC comparisons, as shown in Fig.~\ref{fig:event_selection_observables}. These observables summarize the selected particle content and accepted topology that define the phase space used to build detector response and unfolded event-shape spectra.
-
-\begin{figure}[ht!]
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_cosTheta.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_phi.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_pt.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_pmag.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_d0.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_z0.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_ntpc.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag0_energy.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag0_mass.pdf}
-\caption{Complete \texttt{pwflag}=0 kinematic set.}
+\vspace*{\fill}
+\pwpanel{pwflag0}{cosTheta}\hfill
+\pwpanel{pwflag0}{phi}\hfill
+\pwpanel{pwflag0}{pt}
+\vfill
+\pwpanel{pwflag0}{pmag}\hfill
+\pwpanel{pwflag0}{d0}\hfill
+\pwpanel{pwflag0}{z0}
+\vfill
+\pwpanel{pwflag0}{ntpc}\hfill
+\pwpanel{pwflag0}{energy}\hfill
+\pwpanel{pwflag0}{mass}
+\vspace*{\fill}
+\caption{Selection variables for charged tracks: (a) $\cos\theta$, (b) $\phi$, (c) transverse momentum \pT, (d) momentum magnitude $|\vec{p}|$, (e) transverse impact parameter $d_{0}$, (f) longitudinal impact parameter $z_{0}$, (g) TPC hit multiplicity $N_{\mathrm{TPC}}$, (h) energy, and (i) mass.}
 \label{fig:pwflag0_full}
 \end{figure}
 
-\begin{figure}[t!]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_cosTheta.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_phi.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_pt.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_pmag.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_d0.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_z0.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_ntpc.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag1_energy.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag1_mass.pdf}
-\caption{Complete \texttt{pwflag}=1 kinematic set.}
+\vspace*{\fill}
+\pwpanel{pwflag1}{cosTheta}\hfill
+\pwpanel{pwflag1}{phi}\hfill
+\pwpanel{pwflag1}{pt}
+\vfill
+\pwpanel{pwflag1}{pmag}\hfill
+\pwpanel{pwflag1}{d0}\hfill
+\pwpanel{pwflag1}{z0}
+\vfill
+\pwpanel{pwflag1}{ntpc}\hfill
+\pwpanel{pwflag1}{energy}\hfill
+\pwpanel{pwflag1}{mass}
+\vspace*{\fill}
+\caption{Selection variables for electrons: (a) $\cos\theta$, (b) $\phi$, (c) transverse momentum \pT, (d) momentum magnitude $|\vec{p}|$, (e) transverse impact parameter $d_{0}$, (f) longitudinal impact parameter $z_{0}$, (g) TPC hit multiplicity $N_{\mathrm{TPC}}$, (h) energy, and (i) mass.}
 \label{fig:pwflag1_full}
 \end{figure}
 
-\begin{figure}[t!]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_cosTheta.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_phi.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_pt.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_pmag.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_d0.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_z0.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_ntpc.pdf}
-\includegraphics[width=0.242\textwidth]{figures/pwflag2_energy.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag2_mass.pdf}
-\caption{Complete \texttt{pwflag}=2 kinematic set.}
+\vspace*{\fill}
+\pwpanel{pwflag2}{cosTheta}\hfill
+\pwpanel{pwflag2}{phi}\hfill
+\pwpanel{pwflag2}{pt}
+\vfill
+\pwpanel{pwflag2}{pmag}\hfill
+\pwpanel{pwflag2}{d0}\hfill
+\pwpanel{pwflag2}{z0}
+\vfill
+\pwpanel{pwflag2}{ntpc}\hfill
+\pwpanel{pwflag2}{energy}\hfill
+\pwpanel{pwflag2}{mass}
+\vspace*{\fill}
+\caption{Kinematics for muons: (a) $\cos\theta$, (b) $\phi$, (c) transverse momentum \pT, (d) momentum magnitude $|\vec{p}|$, (e) transverse impact parameter $d_{0}$, (f) longitudinal impact parameter $z_{0}$, (g) TPC hit multiplicity $N_{\mathrm{TPC}}$, (h) energy, and (i) mass.}
 \label{fig:pwflag2_full}
 \end{figure}
 
-\begin{figure}[t!]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure}[p]
 \centering
-\includegraphics[width=0.495\textwidth]{figures/pwflag3_cosTheta.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag3_phi.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag3_pt.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag3_pmag.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag3_d0.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag3_z0.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag3_ntpc.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag3_energy.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag3_mass.pdf}
-\caption{Complete \texttt{pwflag}=3 kinematic set.}
+\vspace*{\fill}
+\pwpanel{pwflag3}{cosTheta}\hfill
+\pwpanel{pwflag3}{phi}\hfill
+\pwpanel{pwflag3}{pt}
+\vfill
+\pwpanel{pwflag3}{pmag}\hfill
+\pwpanel{pwflag3}{d0}\hfill
+\pwpanel{pwflag3}{z0}
+\vfill
+\pwpanel{pwflag3}{ntpc}\hfill
+\pwpanel{pwflag3}{energy}\hfill
+\pwpanel{pwflag3}{mass}
+\vspace*{\fill}
+\caption{Kinematics for V$^{0}$ candidates: (a) $\cos\theta$, (b) $\phi$, (c) $|\vec{p}|$, (d) $d_{0}$, (e) $z_{0}$, (f) $N_{\mathrm{TPC}}$, (g) energy, and (h) mass.}
 \label{fig:pwflag3_full}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{figure}[t!]
 \centering
-\includegraphics[width=0.495\textwidth]{figures/pwflag4_cosTheta.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag4_phi.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag4_pt.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag4_pmag.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag4_d0.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag4_z0.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag4_ntpc.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag4_energy.pdf}
-% \includegraphics[width=0.495\textwidth]{figures/pwflag4_mass.pdf}
-\caption{Complete \texttt{pwflag}=4 kinematic set.}
+\pwpanel[0.495]{pwflag4}{cosTheta}\hfill
+\pwpanel[0.495]{pwflag4}{phi}
+\vspace{0.5em}
+\pwpanel[0.495]{pwflag4}{pmag}\hfill
+\pwpanel[0.495]{pwflag4}{energy}
+\caption{Kinematics for photons: (a) $\cos\theta$, (b) $\phi$, (c) $|\vec{p}|$, and (d) energy.}
 \label{fig:pwflag4_full}
 \end{figure}
 
-\FloatBarrier
+%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{figure}[t!]
 \centering
-\includegraphics[width=0.495\textwidth]{figures/pwflag5_cosTheta.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag5_phi.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag5_pt.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag5_pmag.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag5_d0.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag5_z0.pdf}
-% \includegraphics[width=0.242\textwidth]{figures/pwflag5_ntpc.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag5_energy.pdf}
-\includegraphics[width=0.495\textwidth]{figures/pwflag5_mass.pdf}
-\caption{Complete \texttt{pwflag}=5 kinematic set.}
+\pwpanel[0.495]{pwflag5}{cosTheta}\hfill
+\pwpanel[0.495]{pwflag5}{phi}
+\vspace{0.5em}
+\pwpanel[0.495]{pwflag5}{energy}\hfill
+\pwpanel[0.495]{pwflag5}{mass}
+\caption{Kinematics neutral hadrons: (a) $\cos\theta$, (b) $\phi$, (c) energy, and (d) mass.}
 \label{fig:pwflag5_full}
 \end{figure}
 
-\FloatBarrier
+%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{figure}[t!]
 \centering
-\includegraphics[width=0.495\textwidth]{figures/ntrk.pdf}
-\includegraphics[width=0.495\textwidth]{figures/ntrkPlusNeu.pdf}
-\includegraphics[width=0.495\textwidth]{figures/eCh.pdf}
-\includegraphics[width=0.495\textwidth]{figures/cosThetaSph.pdf}
-\caption{Event-level observables used in the nominal hadronic selection; legends include detector-level data/MC and generator-level references. The MC\,Gen and MC\,GenBefore ratios display an even-odd staggering: generator-level charged multiplicity has an approximately 6:1 even-to-odd ratio (arising from the Z-decay net-charge constraint and the specific ALEPH Pythia~6 particle record), while reconstruction efficiency losses smear individual tracks one at a time and equalise the even/odd balance in data and MC\,Reco.
-MC\,Reco is the relevant comparison for the analysis.}
+\sfpanel[0.495]{ntrk}\hfill
+\sfpanel[0.495]{ntrkPlusNeu}
+\vspace{0.5em}
+\sfpanel[0.495]{eCh}\hfill
+\sfpanel[0.495]{cosThetaSph}
+\caption{Event-level observables used in the nominal hadronic selection; legends include detector-level data/MC and generator-level references. The MC\,Gen and MC\,GenBefore ratios display an even-odd staggering: generator-level charged multiplicity has an approximately 6:1 even-to-odd ratio (arising from the Z-decay net-charge constraint and the specific ALEPH Pythia~6 particle record), while reconstruction efficiency losses smear individual tracks one at a time and equalise the even/odd balance in data and MC\,Reco. MC\,Reco is the relevant comparison for the analysis.}
 \label{fig:event_selection_observables}
 \end{figure}
 
 \FloatBarrier
-
-% \subsection{Event-level selection observables}
-
-% The event-level panels close the logic between object-level selections and the final sample
-% entering event-shape reconstruction. $N_{\mathrm{trk}}$ and
-% $N_{\mathrm{trk}}+N_{\mathrm{neu}}$ test whether multiplicity thresholds sculpt data and MC in a
-% consistent way; this is critical because those same multiplicities enter hadronic-event
-% preselection and determine which events contribute to response filling. $E_{\mathrm{Ch}}$ checks
-% charged-energy modeling near the hadronic-selection boundary at 15 GeV, and
-% $\cos\theta_{\mathrm{Sph}}$ tests whether accepted event topology is similarly contained in
-% detector acceptance for data and MC.
-
-% The \texttt{tgen} and \texttt{tgenBefore} samples receive the same particle-level treatment and differ
-% only in which events are retained: \texttt{tgen} holds the generator record of the events
-% written to the reconstructed after-cut sample, \texttt{tgenBefore} that of all generated
-% events, so \texttt{tgen} is a subset. The kinematic selections of
-% Sec.~\ref{sec:object_selection} are applied at detector level only, and no additional
-% cleaning is applied at generator level. The events
-% missing from \texttt{tgen} are removed almost entirely by polar-angle acceptance rather than
-% by particle content, so the normalized multiplicity and charged-energy spectra coincide
-% through the bulk, separating only in the sparse low-$E_{\mathrm{Ch}}$ tail near the
-% charged-energy boundary, and $\cos\theta_{\mathrm{Sph}}$ is the one panel where the curves
-% clearly differ. Both generator-level curves also show an even--odd modulation in
-% $N_{\mathrm{trk}}$: the charged multiplicity shares the parity of the summed charge of the
-% counted particles, which charge conservation makes vanish for most generated events. The
-% modulation is absent at detector level, where charged-track inefficiency randomizes the
-% parity.
-
-% Overall agreement in the high-statistics regions supports the response-model baseline used for IBU. The visible differences are concentrated in lower-populated tails and near selection boundaries, where statistical fluctuations and detector-response limitations are expected to be larger. These regions are not ignored: their impact is propagated through the experimental systematic program and is reflected in the final uncertainty decomposition.
-
-% \FloatBarrier
-% \clearpage

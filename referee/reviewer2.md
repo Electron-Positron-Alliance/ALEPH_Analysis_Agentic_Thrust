@@ -118,7 +118,7 @@ Sec 6
 
 Sec 6.3
 - Fig 1 Can you comment on why we have enhancements at costheta=0 (also for gen) ?
-  - Thanks for pointing this out. The effect is consistent between data, reco MC, and gen MC so we conclude that it is a real effect and is taken into account for the analysis. We will look into it in more detail for further studies with the central production team of the archived samples.
+  - Thanks for pointing this out. This is actually an artifact of the fixed floating point precision in the reprocessing of the archived sample. It does not have a significant effect on the result and will be fixed in the future.
 
 - Fig 1 What are the peaks at p=E=45 GeV and why are they not there at gen level ?
   - This is a reco-level MC effect in the archived sample that is not fully understood and under active study. The impact of removing the peak was checked and is negligible.

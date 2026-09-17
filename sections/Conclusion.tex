@@ -1,35 +1,13 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-A complete thrust baseline measurement has been produced with Iterative Bayesian
-Unfolding on archived ALEPH 1994 data at $\sqrt{s}\simeq91.2$~GeV. The analysis
-propagates seven independent uncertainty components --- data statistical,
-response MC statistical, unfolding
-regularization, experimental detector, theory modeling, hadronic event-selection
-correction, and ISR correction --- and combines them in quadrature to form a full
-covariance matrix suitable for precision phenomenology. The implementation of the
-ISR correction, following the prescription of both published ALEPH event-shape
-analyses~\cite{Barate:1996fi,Heister:2003aj}, brings the measured thrust distribution
-into good agreement with the published ALEPH 2004 result, with the only notable
-discrepancy at the $T\to 1$ dijet endpoint where MC modeling uncertainties are
-largest and normalization conventions differ.
-% No chi2/ndf is quoted against ALEPH 2004. A goodness-of-fit statistic needs the
-% correlation between the two measurements, which share the ALEPH detector,
-% overlapping data and related simulation; that correlation is not available.
+AI agents have successfully carried out a complete thrust measurement archived ALEPH 1994 data at $\sqrt{s}=91.2$~GeV under physicist guidance and collaboration. The analysis propagates uncertainty components arising from statistical, experimental, and theoretical sources and combines them in quadrature. The corresponding correlation matrices are derived from the covariance structure. The implementation of the ISR correction, following the prescription of both published ALEPH event-shape analyses~\cite{Barate:1996fi,Heister:2003aj}, brings the measured thrust distribution into good agreement with the published ALEPH 2004 result, with the only notable
+discrepancy at the $T\to 1$ dijet endpoint. The AI-agent operating model demonstrated in this cycle, executable-workflow orchestration under physicist supervision with full
+provenance tracking, provides a scalable framework for precision QCD as a testing ground for closed theory--experiment loops in fundamental physics.
 
-The precision QCD motivation for this work is the persistent $e^{+}e^{-}$ $\alpha_s$
-tension: recent thrust-based extractions yield $\alpha_s(m_Z)\simeq0.1136$,
-approximately $3.5\sigma$ below the world average $0.1180$~\cite{Benitez:2024nav,ParticleDataGroup:2022pth}.
-The covariance and correlation products from this baseline are designed as direct
-inputs to precision $\alpha_s$ fits. The total and per-component covariance matrices,
-central values, component-level uncertainty plots, and individual signed-shift branches
-are bundled as version-controlled release products, with provenance metadata recording
-the git commit, software versions, and key analysis parameters. The covariance products
-cover the 42 reported bins, $0.58\le T<1.00$.
+\subsection*{Lessons from AI--Physicist Collaboration}
 
-This establishes a first end-to-end repository baseline for thrust with IBU and defines
-the template for extension to C-parameter and heavy-jet mass, including future
-multidimensional correlation studies. The AI-agent operating model demonstrated in this
-cycle --- executable-workflow orchestration under physicist supervision with full
-provenance tracking --- provides a scalable framework for precision QCD as a testing
-ground for closed theory--experiment loops in fundamental physics.
+Carrying out this analysis has also produced practical insights into how AI agents and physicists can work together effectively. Our workflow followed a constrained human-in-the-loop cycle in which the physicist defined physics objectives, acceptance criteria, and interpretation authority, while the AI agent owned implementation and execution. Crucially, experienced physicists contribute domain context that cannot yet be reduced to formal specifications alone, including judgments about physically meaningful binning, acceptable regularization behavior, uncertainty communication, and when apparent anomalies warranted deeper investigation. A major future goal identified in this work is to translate this expert knowledge into explicit, code-based verification layers. 
+%Requests were made concrete and executable, each iteration linked to specific scripts, outputs, and note sections, and corrections were applied incrementally rather than batched into large changes.
+
+From this experience, several recurring challenge classes emerged. Implicit physics priors, expert expectations about acceptable binning, regularization behavior, or uncertainty presentation, were often assumed rather than explicitly stated, requiring iterative clarification. Figure formatting and style choices (label offsets, legend placement, pad geometry) required many short feedback loops, with cosmetic shortcomings sometimes affecting interpretability and therefore physics conclusions. Synchronization across rapidly evolving scripts, outputs, and note text demanded continuous provenance refreshing. These lessons motivate creation of reusable tools, stronger configuration contracts, clearer channels for encoding expert heuristics into machine readable constraints in future iterations of this program, and new verification layers throughout the autonomous analysis flow.

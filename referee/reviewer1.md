@@ -42,7 +42,7 @@ Here are some comments about the text itself:
   - Hmm that is weird. When we rerun the latex compilation there does not seem to be an issue.
 
 - page 15 what is the MC excess in phi around -1.5 ?
-  - This is an artifact of the archived MC, which is believed to be how the QED ISR was saved. We checked the impact of removing this contribution and the impact is negligible. 
+  - This is believed to be artifact of how the archived MC was processed and is being investigated still. We checked the impact of removing this contribution and the impact is negligible.  
 
 - page 19 , neutral hadron, nothing is visible in figure 6 and the so-called cleaning cut of figure 7 is very badly explained, this part is not understandable it must be rewritten
   - Removed the sentences that are confusing. Removed figure 7 also since unnecessary.

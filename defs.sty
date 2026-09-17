@@ -20,3 +20,19 @@
 \newcommand*{\ifb}{\mbox{fb\(^{-1}\)}\xspace}
 \newcommand*{\ipb}{\mbox{pb\(^{-1}\)}\xspace}
 \newcommand*{\inb}{\mbox{nb\(^{-1}\)}\xspace}
+
+% pwflag style plots
+\newcommand{\pwpanel}[3][0.32]{%
+  \begin{subfigure}[b]{#1\textwidth}%
+    \includegraphics[width=\textwidth]{figures/#2_#3.pdf}%
+    \caption{}\label{fig:#2_#3}%
+  \end{subfigure}
+}
+
+% subfig env
+\newcommand{\sfpanel}[2][0.32]{%
+  \begin{subfigure}[b]{#1\textwidth}%
+    \includegraphics[width=\textwidth]{figures/#2.pdf}%
+    \caption{}\label{fig:#2}%
+  \end{subfigure}%
+}
