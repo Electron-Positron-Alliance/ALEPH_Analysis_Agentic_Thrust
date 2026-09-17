@@ -40,9 +40,11 @@ LABELS = {
     "pt04": r"$p_T > 0.4$ GeV",
     "ech10": r"$E_\mathrm{ch} > 10$ GeV",
     "with_met": "Missing-energy cut",
-    "nes_up": "NES up",
-    "nes_down": "NES down",
-    "ner": "NER",
+    # Percentages from runAnalyze.py: NES_PHOTON/HADRON = 1.05 / 0.95, and
+    # NEE_PHOTON/HADRON = 0.025.
+    "nes_up": r"NES $+5\%$",
+    "nes_down": r"NES $-5\%$",
+    "ner": r"NER $2.5\%$",
     "no_neutrals": "No-neutrals xcheck",
     "pythia8": "Pythia 8",
     "herwig": "Herwig",
@@ -91,9 +93,7 @@ def cov_diag_frac(csv_path: str, nom: np.ndarray) -> np.ndarray:
     return np.sqrt(np.clip(np.diag(cov), 0.0, None)) / denom
 
 
-# Shared with per_bin_uncertainty_plot.py so both uncertainty figure sets span
-# the same x range; below this there are no populated bins.
-T_MIN_DISPLAY = 0.55
+T_MIN_DISPLAY = als.THRUST_RANGE[0]
 
 
 def panel(out_path, edges, curves, ylim, signed, legend_loc="lower right"):
@@ -107,7 +107,7 @@ def panel(out_path, edges, curves, ylim, signed, legend_loc="lower right"):
                 color=color, linestyle=ls, label=label)
     if signed:
         ax.axhline(0.0, color="0.5", lw=plt_lw(), ls="--", zorder=0)
-    ax.set_xlim(T_MIN_DISPLAY, edges[-1])
+    ax.set_xlim(*als.THRUST_RANGE)
     ax.set_ylim(lo, hi)
     ax.set_xlabel(als.X["thrust"])
     ax.set_ylabel(als.Y["uncert"])

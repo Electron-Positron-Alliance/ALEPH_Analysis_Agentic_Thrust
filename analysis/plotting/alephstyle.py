@@ -43,6 +43,11 @@ ASPECT = 0.78
 ASPECT_RATIO_PANEL = 1.00
 RATIO_SPLIT = (3, 1)
 
+# The reported thrust range: 42 bins of width 0.01. Every figure with thrust on
+# an axis uses this, so the set is directly comparable. The resolution plot is
+# the exception -- it is binned in generator thrust over the full range.
+THRUST_RANGE = (0.58, 1.00)
+
 SQRTS_GEV = 91.2
 _EXP = "ALEPH"
 _EXP_TEXT = "archived data"

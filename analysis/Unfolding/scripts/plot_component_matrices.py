@@ -30,6 +30,7 @@ Usage (from repo root):
 """
 
 import argparse
+import csv
 import os
 import sys
 
@@ -77,28 +78,34 @@ def symmetric_limit(matrices):
     return peak if peak > 0.0 else 1.0
 
 
-def panel_figure(matrix, vlim, title, cbar_label, out_path):
+def load_edges(summary_dir):
+    """Thrust bin edges from binning.csv, so the axes carry thrust not indices."""
+    path = os.path.join(summary_dir, "binning.csv")
+    lows, highs = [], []
+    with open(path, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            lows.append(float(row["low"]))
+            highs.append(float(row["high"]))
+    return np.array([lows[0]] + highs)
+
+
+def panel_figure(matrix, edges, vlim, title, cbar_label, out_path):
     """One matrix, one file. Multipanel assembly happens in LaTeX."""
-    nb = matrix.shape[0]
-    fig, ax = als.figure(aspect=0.85)
+    # scale=1.25: a colourbar plus a y label leaves the axes narrower than
+    # the header needs at the default canvas width, and the two collide.
+    fig, ax = als.figure(aspect=0.85, scale=1.25)
     # origin="lower" with extent y from 0 to nb puts bin 1 at the bottom, so the
     # y axis increases upwards and the diagonal runs bottom-left to top-right.
-    im = ax.imshow(
-        matrix,
-        origin="lower",
-        cmap=als.CMAP_DIV,
-        vmin=-vlim,
-        vmax=vlim,
-        extent=(0, nb, 0, nb),
-        interpolation="nearest",
-        # "auto": an equal-aspect axes leaves slack that the layout engine
-        # spends on stray margins rather than on the matrix.
-        aspect="auto",
-    )
-    ax.set_xlabel(als.X["thrust_bin"])
-    ax.set_ylabel(als.X["thrust_bin"])
-    # imshow turns minor ticks off and draws them over the image; keep them off.
-    ax.tick_params(which="minor", bottom=False, top=False, left=False, right=False)
+    mesh = ax.pcolormesh(edges, edges, matrix.T, cmap=als.CMAP_DIV,
+                         vmin=-vlim, vmax=vlim)
+    # Without this the vector renderer leaves white seams between the quads.
+    mesh.set_edgecolor("face")
+    im = mesh
+    ax.set_xlim(*als.THRUST_RANGE)
+    ax.set_ylim(*als.THRUST_RANGE)
+    ax.set_xlabel(als.X["thrust"])
+    ax.set_ylabel(als.X["thrust"])
     cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.03)
     cb.set_label(cbar_label)
     als.header(ax)
@@ -130,10 +137,13 @@ def main():
                 f"but cov_stat.csv is {nb}x{nb}"
             )
 
+    edges = load_edges(args.summary_dir)
+    if len(edges) != nb + 1:
+        raise ValueError(f"binning.csv has {len(edges) - 1} bins, matrices have {nb}")
     for (stem, title), cov in zip(SOURCES, covs):
         key = stem.replace("cov_", "")
-        panel_figure(correlation_from_covariance(cov), 1.0, title, "Correlation",
-                     os.path.join(outdir, f"corr_source_{key}.pdf"))
+        panel_figure(correlation_from_covariance(cov), edges, 1.0, title,
+                     "Correlation", os.path.join(outdir, f"corr_source_{key}.pdf"))
 
     cov_total = load_matrix(args.summary_dir, "cov_total")
 
