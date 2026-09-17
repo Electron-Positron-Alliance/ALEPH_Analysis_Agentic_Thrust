@@ -145,6 +145,7 @@ Y = {
 }
 
 RATIO = {
+    "plain": r"Ratio",
     "mc_data": r"MC / Data",
     "aleph": r"Ours / ALEPH 2004",
     "charged_ef": r"Charged / EF",

@@ -133,7 +133,7 @@ def main():
                  ls="none", marker="o", markerfacecolor="none",
                  color=als.C["aleph2004"])
     rax.set_xlabel(als.X["thrust"])
-    rax.set_ylabel("ALEPH 2004 / ours")
+    rax.set_ylabel(als.RATIO["plain"])
     rax.set_ylim(0.7, 1.3)
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "final_result_uncertainty_breakdown.pdf"))
