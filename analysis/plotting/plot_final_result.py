@@ -97,6 +97,12 @@ def main():
         raw = raw / (raw.sum() * widths) if raw.sum() > 0 else raw
 
     fig, ax, rax = als.figure_ratio(aspect=0.95)
+    # This figure prints at 0.85\textwidth, so it is scaled down less than most.
+    # One step up the matplotlib size ladder on both y axes: ticks small ->
+    # medium, titles medium -> large.
+    for a in (ax, rax):
+        a.tick_params(axis="y", labelsize="medium")
+        a.yaxis.label.set_size("large")
 
     shown = nom > 0
     ax.fill_between(edges[:-1], np.where(shown, nom - total_abs, np.nan),
@@ -134,7 +140,7 @@ def main():
                  color=als.C["aleph2004"])
     rax.set_xlabel(als.X["thrust"])
     rax.set_ylabel(als.RATIO["plain"])
-    rax.set_ylim(0.7, 1.3)
+    rax.set_ylim(0.8, 1.2)
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "final_result_uncertainty_breakdown.pdf"))
 
