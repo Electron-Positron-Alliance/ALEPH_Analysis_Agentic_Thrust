@@ -1,22 +1,12 @@
-\section{AI-agent usage in this analysis program}
+\section{AI agent usage in this analysis}
 \label{sec:ai_agent}
 
-This work includes an explicit evaluation of AI-agent support for an
-experimental QCD analysis workflow. The central question is not only whether an
-agent can generate text or isolated scripts, but whether it can execute a full
-analysis loop under physicist supervision: data and Monte Carlo (MC) processing, unfolding
-orchestration, systematic propagation, figure production, and note maintenance
-with traceable links to code and outputs.
+This work includes an explicit evaluation of AI-agent support for an experimental QCD analysis workflow. The central question is not only whether an agent can generate text or isolated scripts, but whether it can execute a full
+analysis loop under physicist supervision: data and Monte Carlo (MC) processing, unfolding orchestration, systematic propagation, figure production, and note maintenance with traceable links to code and outputs.
 
 \subsection{Scope and operating model}
 
-The agents used in this analysis are Anthropic Claude Code and OpenAI Codex, depending on the preference of the physicist.
-The operating model is human-in-the-loop: the physicist formulates goals and
-provides expert direction through iterative prompts; the agent executes the
-corresponding implementation steps; the physicist reviews the outputs and
-provides feedback; the process is then repeated. Physics decisions remain
-analyst-owned, while the agent provides implementation speed, consistency
-checks, and documentation rigor. In practical terms, the agent is used to:
+The agents used in this analysis are Anthropic Claude Code and OpenAI Codex, depending on the preference of the physicist. The operating model is human-in-the-loop: the physicist formulates goals and provides expert direction through iterative prompts; the agent executes the corresponding implementation steps; the physicist reviews the outputs and provides feedback; the process is then repeated. Physics decisions remain analyst-owned, while the agent provides implementation speed, consistency checks, and documentation rigor. In practical terms, the agent is used to:
 \begin{itemize}
 \item write, execute, and monitor analysis code,
 \item enforce consistent plotting and note formatting conventions for work communication,
