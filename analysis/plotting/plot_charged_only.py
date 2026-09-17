@@ -80,8 +80,13 @@ def main():
                  markerfacecolor="none", color=als.C["mc_reco"])
 
     ax.set_yscale("log")
+    # Range from the bins inside the plotted window, not all 50, or the bins
+    # below 0.58 leave a decade of empty axis.
+    shown = (centers >= als.THRUST_RANGE[0]) & (centers <= als.THRUST_RANGE[1])
+    vis = np.concatenate([v[shown & (v > 0)] for v in (ef, cn)])
+    ax.set_ylim(vis.min() * 0.4, vis.max() * 30)
     ax.set_ylabel(als.Y["normalized_thrust"])
-    ax.set_xlim(edges[0], edges[-1])
+    ax.set_xlim(*als.THRUST_RANGE)
     ax.legend(loc="upper left", framealpha=0.0)
     rax.set_xlabel(als.X["thrust"])
     rax.set_ylabel(als.RATIO["plain"])

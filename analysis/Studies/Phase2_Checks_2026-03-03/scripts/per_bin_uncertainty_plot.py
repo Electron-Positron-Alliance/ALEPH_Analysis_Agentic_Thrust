@@ -50,8 +50,7 @@ def _run(*parts):
 DEFAULT_RESULT_DIR = _run()
 DEFAULT_OUTDIR = "Studies/Phase2_Checks_2026-03-03/plots/uncertainty_breakdown/"
 
-T_MIN_DISPLAY = 0.55
-T_MAX_DISPLAY = 1.00
+T_MIN_DISPLAY, T_MAX_DISPLAY = als.THRUST_RANGE
 Y_MAX = 50.0
 
 

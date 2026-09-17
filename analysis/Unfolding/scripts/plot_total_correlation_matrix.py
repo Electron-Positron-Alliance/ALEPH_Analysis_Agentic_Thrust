@@ -75,13 +75,17 @@ def draw_and_save(corr: List[List[float]], edges: List[float], out_pdf: str):
     if len(edges) != n + 1:
         raise ValueError(f"Edge count mismatch: expected {n + 1}, got {len(edges)}")
 
-    fig, ax = als.figure(aspect=0.85)
+    # scale=1.25: a colourbar plus a y label leaves the axes narrower than
+    # the header needs at the default canvas width, and the two collide.
+    fig, ax = als.figure(aspect=0.85, scale=1.25)
     # Correlation is signed, so a diverging map centred on zero; the previous
     # kBird palette put zero mid-ramp and made sign hard to read.
     mesh = ax.pcolormesh(edges, edges, np.asarray(corr, dtype=float).T,
                          cmap=als.CMAP_DIV, vmin=-1.0, vmax=1.0)
     # Without this the vector renderer leaves white seams between the quads.
     mesh.set_edgecolor("face")
+    ax.set_xlim(*als.THRUST_RANGE)
+    ax.set_ylim(*als.THRUST_RANGE)
     ax.set_xlabel(als.X["thrust"])
     ax.set_ylabel(als.X["thrust"])
     cb = fig.colorbar(mesh, ax=ax, fraction=0.046, pad=0.03)

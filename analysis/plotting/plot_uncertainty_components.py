@@ -91,9 +91,7 @@ def cov_diag_frac(csv_path: str, nom: np.ndarray) -> np.ndarray:
     return np.sqrt(np.clip(np.diag(cov), 0.0, None)) / denom
 
 
-# Shared with per_bin_uncertainty_plot.py so both uncertainty figure sets span
-# the same x range; below this there are no populated bins.
-T_MIN_DISPLAY = 0.55
+T_MIN_DISPLAY = als.THRUST_RANGE[0]
 
 
 def panel(out_path, edges, curves, ylim, signed, legend_loc="lower right"):
@@ -107,7 +105,7 @@ def panel(out_path, edges, curves, ylim, signed, legend_loc="lower right"):
                 color=color, linestyle=ls, label=label)
     if signed:
         ax.axhline(0.0, color="0.5", lw=plt_lw(), ls="--", zorder=0)
-    ax.set_xlim(T_MIN_DISPLAY, edges[-1])
+    ax.set_xlim(*als.THRUST_RANGE)
     ax.set_ylim(lo, hi)
     ax.set_xlabel(als.X["thrust"])
     ax.set_ylabel(als.Y["uncert"])

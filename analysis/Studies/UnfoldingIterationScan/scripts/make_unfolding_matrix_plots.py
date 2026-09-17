@@ -36,7 +36,9 @@ def fetch(tf, name):
 
 def save_matrix_plot(values, xedges, yedges, xlabel, ylabel, zlabel, outpath,
                      diverging=False, symlog=False):
-    fig, ax = als.figure(aspect=0.85)
+    # scale=1.25: a colourbar plus a y label leaves the axes narrower than
+    # the header needs at the default canvas width, and the two collide.
+    fig, ax = als.figure(aspect=0.85, scale=1.25)
     if diverging:
         # Signed quantity, so a diverging map centred on zero rather than the
         # sequential kBird this replaces.
@@ -54,6 +56,8 @@ def save_matrix_plot(values, xedges, yedges, xlabel, ylabel, zlabel, outpath,
     mesh = ax.pcolormesh(xedges, yedges, values.T, **kw)
     # Without this the vector renderer leaves white seams between the quads.
     mesh.set_edgecolor("face")
+    ax.set_xlim(*als.THRUST_RANGE)
+    ax.set_ylim(*als.THRUST_RANGE)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     cb = fig.colorbar(mesh, ax=ax, fraction=0.046, pad=0.03)
