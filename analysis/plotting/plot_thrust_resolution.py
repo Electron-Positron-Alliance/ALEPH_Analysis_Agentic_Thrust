@@ -96,7 +96,7 @@ def main():
     ax.set_xlabel(als.X["thrust_gen"])
     ax.set_ylabel(als.Y["resolution"])
     cb = fig.colorbar(mesh, ax=ax, fraction=0.046, pad=0.03)
-    cb.set_label(r"Fraction per $T_\mathrm{gen}$ bin")
+    cb.set_label("Fraction of Events")
     als.header(ax)
     als.save(fig, os.path.join(args.outdir, "thrust_resolution_2d.pdf"))
 
