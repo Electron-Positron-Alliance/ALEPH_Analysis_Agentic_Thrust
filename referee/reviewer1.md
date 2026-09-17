@@ -57,7 +57,7 @@ Here are some comments about the text itself:
   - Yes ISR correction is applied. Fixed.
 
 - page 39-40 Table 9, 10 there are considerable differences between the ALEPH original uncertainties and your number, in some cases there are even new rows at the start of the table, can you comment in the paper ?
-  - The ALEPH 2004 measurement went down to thrust=0.58 while we went down to thrust=0.56 in the binning. Those bins have very low statistics and are now commented out for clarity. The tables are generally less useful than the figures and so are commented out. The exact numbers can be released in a hepdata format if useful but given the main point of the paper is the agentic demonstration and not the precision thrust measurement we prefer to not include the table with the exact numbers.
+  - The ALEPH 2004 measurement went down to thrust=0.58 while we went down to thrust=0.56 in the binning. Those bins have very low statistics and are now commented out for clarity. The tables are generally less useful than the figures and so are removed. The exact numbers can be released in a hepdata format if useful but given the main point of the paper is the agentic demonstration and not the precision thrust measurement we prefer to not include the table with the exact numbers.
 
 - page 45 Section 11 and following pages do not seem for publication, in any case they are far below publication quality
   - Removed Section 11 onwards

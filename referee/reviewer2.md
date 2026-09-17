@@ -53,7 +53,7 @@ Section 3
   - Done added reference to https://aleph-new.docs.cern.ch and cleaned up use of miniDST.
 
 Sec 3.2
-- Would be nicer to have the four categorie in a enumerated list, or on a table.
+- Would be nicer to have the four categories in a enumerated list, or on a table.
   - Done; Sec. 3.2 now uses a list, matching Sec. 3.1 and Sec. 3.3.
 
 Sec 3.3
@@ -201,7 +201,7 @@ Sec 7.3
 ---------------------------------------------
 Sec 8.
 - I'm wondering how the MC stat fluctuations (that should be larger than the data ones) are being taken into account. Can you elaborate ?
-  - Thank you for pointing this point. The MC statistical uncertainty was only included from the uncertainty on the generator level archived MC used for the hadronic event selection correct. Now a toys based bootstrap is implemented to derive an uncertainty on the response matrix as well.
+  - Thank you for pointing this out. The MC statistical uncertainty was only included from the uncertainty on the generator level archived MC used for the hadronic event selection correct. Now a toys based bootstrap is implemented to derive an uncertainty on the response matrix as well.
 
 - Fig 14. Could be nice to show also a zoom of the y axis on both plots to show better the uncertainties in the higher T regions.
   - Figure updated.
@@ -248,7 +248,7 @@ Sec 9.1
   - The uncertainties shown in the ratio were the quadrature sum of the ALEPH and the agentic measurement since it was automatically propagated in the ratio. This is fixed now. In general the uncertainties are of comparable scale. We continue to investigate differences that can originate from the archived data processing or the handling of the theory uncertainties. 
 
 - Table 9 : Are the ALEPH uncertainties the same as plotted in Fig 19 ? Just looking at the endpoint bin the table quotes 15% but the plot seems to show 20-25%
-  - The table had the correct uncertainties. The ratio panel in Figure 19 was showing aleph/ours and the points had the quadrature sum of the two measurement errors. This is fixed.
+  - The table had the correct uncertainties. The ratio panel in Figure 19 was showing aleph/ours and the points had the quadrature sum of the two measurement errors. The tables are generally less useful than the figures and so are removed. The exact numbers can be released in a hepdata format if useful but given the main point of the paper is the agentic demonstration and not the precision thrust measurement we prefer to not include the table with the exact numbers.
 
 - Fig 21. Would it be better to have these plots with the y axis upwards as usual (like in Fig 20) ?
   - Updated. 
