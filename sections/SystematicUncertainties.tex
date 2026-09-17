@@ -42,7 +42,7 @@ relative to the nominal $N_{\mathrm{iter}}=5$.}
 \subsection{Experimental systematic uncertainties}
 \label{sec:exp_systematics}
 
-Experimental systematic uncertainties are handled following the standard ALEPH procedure~\cite{Heister:2003aj} to vary individual selections, rerunning the full analysis chain, and measuring the difference with respect to the nominal as the uncertainty. The systems are defined below. The experimental subtotal and the final total are formed by quadrature of their sub-components.
+Experimental systematic uncertainties are handled following the standard ALEPH procedure~\cite{Heister:2003aj} to vary individual selections, rerunning the full analysis chain, and measuring the difference with respect to the nominal as the uncertainty. The systems are defined below.
 
 \begin{itemize}
   \item \texttt{iter4}/\texttt{iter6}: unfolding passes at $N_{\mathrm{iter}}=4$ and $6$.
@@ -50,8 +50,8 @@ Experimental systematic uncertainties are handled following the standard ALEPH p
   \item \texttt{pt04}: raised charged-$p_T$ threshold ($>0.4$~GeV, nominal $>0.2$~GeV).
   \item \texttt{ech10}: loosened charged-energy cut ($>10$~GeV, nominal $>15$~GeV).
   \item \texttt{with\_met}: missing transverse energy added as a pseudo-particle.
-  \item \texttt{nes\_up}/\texttt{nes\_down}: neutral energies scaled up and down, probing ECAL energy-scale uncertainty.
-  \item \texttt{ner}: neutral objects randomly removed, probing reconstruction efficiency.
+  \item \texttt{nes\_up}/\texttt{nes\_down}: neutral energy scale varied up and down.
+  \item \texttt{ner}: neutral objects randomly removed with 2.5\%, probing acceptance efficiency.
 \end{itemize}
 
 Figure~\ref{fig:unc_comp_exp} shows the signed per-bin shifts for all variations. The largest contributions arise at low thrust ($T\lesssim 0.62$) where the steeply rising spectrum amplifies small absolute shifts; across the central range the experimental envelope is at the few-percent level.
@@ -71,7 +71,7 @@ The neutral-object response variations are chosen in preference to the standard 
 removing neutrals entirely redefines the observable: the resulting distribution is no longer the energy-flow thrust $T_{\mathrm{EF}}$ but a different quantity, charged-only thrust $T_{\mathrm{ch}}$, computed from a different particle-level definition. Treating the difference $T_{\mathrm{EF}} - T_{\mathrm{ch}}$ as a systematic uncertainty on the energy-flow measurement would conflate two distinct observables and produce an uncertainty that is unphysically large. Instead, \texttt{nes\_up}, \texttt{nes\_down}, and \texttt{ner} vary the detector response to neutral objects while holding the particle-level definition fixed, providing a physically meaningful probe of calorimeter modeling uncertainties without changing
 what is being measured.
 
-To quantify this distinction, the full unfolding chain was repeated with neutral particles ($\mathrm{pwflag}\in\{4,5\}$) removed, yielding a charged-only thrust distribution as shown in Figure~\ref{fig:charged_vs_ef}. Both the energy-flow and charged-only results are processed through the complete analysis chain. The reconstructed particle collection differs between the two, but both are unfolded to the same energy-flow particle-level definition. Both distributions are shown with statistical uncertainties only; the full systematic suite is not propagated for this diagnostic comparison, and the charged-only branch is excluded from the nominal total uncertainty combination. The charged-only spectrum is systematically broader than the energy-flow, as expected from the missing neutral-energy deposits. In the central range the mean shift is approximately $23\%$.
+To quantify this distinction, the full unfolding chain was repeated with neutral particles ($\mathrm{pwflag}\in\{4,5\}$) removed, yielding a charged-only thrust distribution as shown in Figure~\ref{fig:charged_vs_ef}. Both the energy-flow and charged-only results are processed through the complete analysis chain. The reconstructed particle collection differs between the two, but both are unfolded to the same energy-flow particle-level definition. Both distributions are shown with statistical uncertainties only; the full systematic suite is not propagated for this diagnostic comparison, and the charged-only branch is excluded from the nominal total uncertainty combination. The charged-only spectrum is systematically broader than the energy-flow, as expected from the missing neutral-energy deposits.
 
 \begin{figure}[t!]
 \centering

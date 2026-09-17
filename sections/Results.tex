@@ -18,17 +18,19 @@ Sec.~\ref{sec:stat_covariance}. For each component $c$, the correlation is
 \end{equation}
 Figure~\ref{fig:corr_matrices_per_source} shows all seven components simultaneously, enabling direct comparison of their correlation structures. The components differ mainly in correlation length, and the ordering follows directly from whether the underlying variation is bin-local or coherent across the spectrum. The data statistical component exhibits the narrow correlation band characteristic of IBU: neighboring bins are positively correlated through the unfolding propagation, but the correlation falls off quickly with bin separation. The response matrix MC statistical component behaves the same way, since both originate in bin-local Poisson fluctuations spread over neighboring bins by the unfolding. The ISR correction is nearly diagonal, consistent with its sub-percent size and with the bin-local character of the MC statistical uncertainty on the $C_{\mathrm{ISR}}(j)$ ratio, and the hadronic correction is modestly correlated, commensurate with its ${\sim}2\%$ magnitude in the central range. The iteration component is somewhat broader, as the regularization responds coherently to low-frequency features of the spectrum rather than to individual bins. Broader still is the experimental component, driven by the neutral-energy response shifts (\texttt{nes\_up}, \texttt{nes\_down}), which displace the spectrum in the
 same direction over a wide range of bins. The theory component has the strongest and most extended off-diagonal correlations: generator reweighting alters the parton-shower and hadronization description, and therefore the overall spectral shape, rather than any localized
-region. It is consequently the dominant source of off-diagonal structure in the total matrix.
+region. It is the dominant source of off-diagonal structure.
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=0.32\textwidth]{figures/corr_source_stat.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/corr_source_mcstat.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/corr_source_iter.pdf}\\
-\includegraphics[width=0.32\textwidth]{figures/corr_source_exp.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/corr_source_theory.pdf}%
-\includegraphics[width=0.32\textwidth]{figures/corr_source_hadronic.pdf}\\
-\includegraphics[width=0.32\textwidth]{figures/corr_source_isr.pdf}
-\caption{Correlation matrices for the data statistical, response matrix MC statistical, unfolding iteration, experimental variation, theory prior, hadronic event selection correction, and QED ISR correction components as indicated.}
+\sfpanel[0.32]{corr_source_stat}
+\sfpanel[0.32]{corr_source_mcstat}
+\sfpanel[0.32]{corr_source_iter} \hfill
+\vspace{0.5em}
+\sfpanel[0.32]{corr_source_exp}
+\sfpanel[0.32]{corr_source_theory}
+\sfpanel[0.32]{corr_source_hadronic} \hfill
+\vspace{0.5em}
+\sfpanel[0.32]{corr_source_isr}
+\caption{Correlation matrices for the (a) data statistical, (b) response matrix MC statistical, (c) unfolding iteration, (d) experimental variation, (e) theory prior, (f) hadronic event selection correction, and (g) QED ISR correction components as indicated.}
 \label{fig:corr_matrices_per_source}
 \end{figure}
