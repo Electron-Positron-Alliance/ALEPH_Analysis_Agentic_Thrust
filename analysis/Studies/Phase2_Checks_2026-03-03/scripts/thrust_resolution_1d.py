@@ -2,8 +2,8 @@
 """
 Generate a 1D histogram of (T_reco - T_gen) integrated over all T_gen.
 
-Reads the matched reco/gen ROOT files (same inputs as thrust_resolution_study.py)
-and outputs a single 1D histogram PDF.
+Reads the matched reco/gen ROOT files (same inputs as
+analysis/plotting/plot_thrust_resolution.py) and outputs a single 1D histogram PDF.
 
 Usage (from repo root, after sourcing thisroot.sh):
     python Studies/Phase2_Checks_2026-03-03/scripts/thrust_resolution_1d.py \

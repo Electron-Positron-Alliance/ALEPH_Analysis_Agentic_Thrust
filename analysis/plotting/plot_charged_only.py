@@ -3,8 +3,7 @@
 Charged-only versus energy-flow unfolded thrust, with a ratio panel.
 
 Both inputs are unfolded ROOT files the workflow already wrote, so this only
-normalises and draws. Replaces the ROOT version in
-Studies/Phase2_Checks_2026-03-03/scripts/charged_only_vs_energy_flow.py.
+normalises and draws.
 
 Usage (from repo root):
     python analysis/plotting/plot_charged_only.py --result-dir <run dir> --outdir figures

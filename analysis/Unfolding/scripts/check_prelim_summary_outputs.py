@@ -94,8 +94,6 @@ def main() -> int:
         "cov_total",
         "corr_total",
         "binning",
-        "component_plots",
-        "final_plot",
         "ratio_mode",
         "ratio_y_min",
         "ratio_y_max",
@@ -155,17 +153,8 @@ def main() -> int:
             print(f"WARNING: summary provenance missing keys: {missing_prov}", file=sys.stderr)
 
     require_file(outputs["binning"])
-    require_file(outputs["final_plot"])
     if "reported_bins" in outputs:
         require_file(outputs["reported_bins"])
-
-    component_plots = outputs["component_plots"]
-    if not isinstance(component_plots, dict):
-        fail("outputs.component_plots must be a dictionary")
-    for key in ["statistical", "unfolding", "experimental", "theory"]:
-        if key not in component_plots:
-            fail(f"component_plots missing key: {key}")
-        require_file(component_plots[key])
 
     cov_stat = load_csv_matrix(outputs["cov_stat"])
     cov_iter = load_csv_matrix(outputs["cov_iter"])

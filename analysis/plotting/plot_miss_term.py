@@ -5,9 +5,8 @@ Miss term: gen events with no selected reco partner.
   miss_term_thrust.pdf      all gen / matched / miss, each area-normalised
   miss_term_efficiency.pdf  matched / all gen, versus T_gen
 
-Same inputs, branches and binning as
-Studies/Phase2_Checks_2026-03-03/scripts/miss_term_plots.py; the reco/gen match
-is vectorised through uproot rather than a per-entry Python loop.
+The reco/gen match is vectorised through uproot; the efficiency errors are
+binomial, matching TH1::Divide(..., "B").
 
 Usage (from repo root):
     python analysis/plotting/plot_miss_term.py \
