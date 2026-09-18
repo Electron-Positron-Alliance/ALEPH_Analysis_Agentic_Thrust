@@ -2,13 +2,8 @@
 """
 Thrust resolution: (T_reco - T_gen) versus T_gen.
 
-Same inputs, branches and cuts as
-Studies/Phase2_Checks_2026-03-03/scripts/thrust_resolution_study.py, but the
-reco/gen match is done vectorised through uproot rather than a per-entry
-Python loop over both trees.
-
-The ROOT version's y-axis title used `#minus`, which does not render: the
-shipped figure shows two stray dots where "T_reco - T_gen" should be.
+The reco/gen match is done vectorised through uproot over the matched
+reco and gen trees.
 
 Usage (from repo root):
     python analysis/plotting/plot_thrust_resolution.py \

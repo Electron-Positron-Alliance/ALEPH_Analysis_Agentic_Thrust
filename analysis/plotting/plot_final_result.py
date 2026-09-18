@@ -5,8 +5,8 @@ Final unfolded thrust spectrum against ALEPH 2004, with a ratio panel.
 Reads only persisted artifacts: summary/{binning,cov_*}.csv, the nominal
 unfolded ROOT file (for the detector-level data), and the ALEPH 2004 HEPData
 CSV. The total band is the quadrature sum of the six components
-build_prelim_uncertainty_summary.py's make_final_plot uses, which excludes the
-response MC statistical term that cov_total carries.
+build_prelim_uncertainty_summary.py sums into its final_total_abs, which
+excludes the response MC statistical term that cov_total carries.
 
 Usage (from repo root):
     python analysis/plotting/plot_final_result.py \
@@ -26,7 +26,7 @@ import uproot
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import alephstyle as als
 
-# The six that make_final_plot sums; cov_mcstat is deliberately not among them.
+# The six in the builder's final_total_abs; cov_mcstat is deliberately not among them.
 TOTAL_COMPONENTS = ["stat", "exp", "iter", "theory", "hadronic", "isr"]
 
 # Ratio panel window. Off the 0.1 grid so the locator puts no tick label on the

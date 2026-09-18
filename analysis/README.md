@@ -9,12 +9,13 @@ live repo at `ALEPH/ALEPH_Analysis_Agentic_Thrust`.
 | stage | entry point | produces |
 |---|---|---|
 | 1. ntuples | `DataProcessing/runAnalyze.py` (+ `*.h`) | the 3 derived ROOT files |
-| 2. validation plots | `DataProcessing/plotting/plot.py` | 57 figures (`pwflagN_*`, `ntrk`, `ntrkPlusNeu`, `eCh`, `cosThetaSph`) |
-| 3. unfolding + result | `Unfolding/unfold_thrust.py`, `Unfolding/scripts/*.py` | 7 figures, all tables and metrics |
+| 2. validation hists | `DataProcessing/plotting/plot.py` | the `*_hists.root` dumps stage 5 reads, plus its own ROOT diagnostics |
+| 3. unfolding + result | `Unfolding/unfold_thrust.py`, `Unfolding/scripts/*.py` | the unfolded ROOT files, all tables and metrics |
 | 3b. component matrices | `Unfolding/scripts/plot_component_matrices.py` | `corr_matrices_per_source`, `cov_matrices_per_source`, `cov_matrix_total` |
-| 4. cross-checks | `Studies/*/scripts/*.py` | 17 figures |
+| 4. cross-checks | `Studies/*/scripts/*.py` | 5 shipped figures (`per_bin_uncertainty_*`, `matrix_response_probability`) |
+| 5. paper figures | `plotting/*.py` | 57 shipped figures: 48 detector-level (`pwflagN_*`, `ntrk`, `ntrkPlusNeu`, `eCh`, `cosThetaSph`) plus `charged_only_vs_energy_flow`, `miss_term_{thrust,efficiency}`, `thrust_resolution_2d`, `final_result_uncertainty_breakdown`, `uncertainty_components_*` |
 
-Figure names in stage 2 are built as `f"pwflag{pw}_{qty}"` (`plotting/plot.py:57`),
+Figure names in stage 5 are built as `f"pwflag{pw}_{qty}"` (`plotting/plot_detector_level.py:173`),
 and `phi_pw{pw}_all.pdf` at `Studies/.../phi_spectrum_investigation.py:186`, so
 grepping for those literal filenames finds nothing.
 
@@ -40,6 +41,11 @@ twice. Use `-n` only with the default `--ndivs 1`; for a partitioned run, drop
 `-n` and let each division take its own slice.
 
 ### Why each file is here
+
+Every figure the paper ships is drawn by `plotting/`, `Unfolding/scripts/plot_component_matrices.py`,
+`Studies/.../per_bin_uncertainty_plot.py` or `Studies/.../make_unfolding_matrix_plots.py`.
+`build_prelim_uncertainty_summary.py` produces numbers only -- covariance CSVs, the
+binning, and the JSON diagnostics that `plotting/` then reads.
 
 Every file is either an entry point that produces something the paper uses, or is
 imported by one. Two are kept prospectively rather than for the current paper:

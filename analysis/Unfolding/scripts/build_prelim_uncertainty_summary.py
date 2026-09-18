@@ -22,9 +22,11 @@ Outputs (written to --outdir, default <base_dir>/summary/):
   cov_{stat,iter,exp,theory,hadronic,total}.csv  -- covariance matrices (N_bins x N_bins)
   corr_total.csv                                 -- correlation matrix
   binning.csv, reported_bins.csv                 -- bin edges, centers, reported-range membership
-  uncertainty_components_*.pdf                   -- per-component fractional uncertainty plots
-  final_result_uncertainty_breakdown.pdf         -- final result vs. published ALEPH comparison
+  of_ibu_comparison_metrics.json                 -- OmniFold/IBU reanalysis comparison metrics
   workflow_summary.json                          -- full provenance and numeric diagnostics
+
+Figures are drawn separately by analysis/plotting/ from these artifacts; this
+script produces numbers only and needs no ROOT drawing.
 """
 
 from __future__ import annotations
@@ -38,8 +40,7 @@ import platform
 import subprocess
 import sys
 from datetime import datetime, timezone
-from typing import Dict, List
-from array import array
+from typing import List
 
 import numpy as np
 import ROOT
@@ -48,13 +49,6 @@ import ROOT
 TRACK_EVENT_VARS = ["ntpc7", "pt04", "ech10", "with_met"]
 NEUTRAL_VARS = ["nes_up", "nes_down", "ner"]
 THEORY_VARS = ["pythia8", "herwig", "sherpa"]
-
-
-def add_plotting_path():
-    here = os.path.abspath(os.path.dirname(__file__))
-    plotting_dir = os.path.abspath(os.path.join(here, "..", "..", "DataProcessing", "plotting"))
-    if plotting_dir not in sys.path:
-        sys.path.insert(0, plotting_dir)
 
 
 def parse_args():
@@ -123,8 +117,8 @@ def parse_args():
         "--include-of-ibu-comparison",
         action="store_true",
         help=(
-            "Generate optional comparison figure overlaying current result with "
-            "OmniFold and IBU results from unfold-ee-logtau/Results."
+            "Also write of_ibu_comparison_metrics.json, comparing this result with "
+            "the OmniFold and IBU results from unfold-ee-logtau/Results."
         ),
     )
     p.add_argument(
@@ -149,15 +143,10 @@ def parse_args():
         ),
     )
     p.add_argument(
-        "--comparison-output",
-        default="final_result_of_ibu_comparison.pdf",
-        help="Output filename/path for optional OF+IBU comparison figure.",
-    )
-    p.add_argument(
         "--comparison-ratio-ymax",
         type=float,
         default=1.55,
-        help="Upper y-limit for optional comparison ratio panel.",
+        help="Recorded as ratio_y_max in the OF+IBU comparison metrics.",
     )
     p.add_argument(
         "--isr-cache",
@@ -392,16 +381,6 @@ def _chi2_ndf(y1: np.ndarray, yerr1: np.ndarray, y2: np.ndarray, yerr2: np.ndarr
     return {"chi2": chi2, "ndf": ndf, "chi2_per_ndf": (chi2 / ndf)}
 
 
-def make_hist_from_binned_values(name: str, edges: np.ndarray, values: np.ndarray, errors: np.ndarray):
-    h = ROOT.TH1D(name, name, len(values), array("d", [float(x) for x in edges]))
-    h.Sumw2()
-    h.SetDirectory(0)
-    for i in range(1, len(values) + 1):
-        h.SetBinContent(i, float(values[i - 1]))
-        h.SetBinError(i, float(errors[i - 1]))
-    return h
-
-
 def load_raw_covariance(path: str) -> np.ndarray | None:
     tf = ROOT.TFile.Open(path, "READ")
     if not tf or tf.IsZombie():
@@ -466,18 +445,6 @@ def quad_sum(arrays: List[np.ndarray]) -> np.ndarray:
     for arr in arrays:
         out = out + np.square(arr)
     return np.sqrt(out)
-
-
-def arr_to_hist(template, name: str, title: str, arr: np.ndarray, y_title: str):
-    h = template.Clone(name)
-    h.SetDirectory(0)
-    h.Reset("ICESM")
-    h.SetTitle(title)
-    h.GetYaxis().SetTitle(y_title)
-    for i, v in enumerate(arr, start=1):
-        h.SetBinContent(i, float(v))
-        h.SetBinError(i, 0.0)
-    return h
 
 
 def fractional_uncertainty(abs_err: np.ndarray, counts: np.ndarray, eps: float = 1e-15) -> np.ndarray:
@@ -678,888 +645,104 @@ def response_diag_fraction(response_counts_hist2d) -> float:
     return (diag / total) if total > 0.0 else 0.0
 
 
-def make_component_group_plot(
-    out_path: str,
-    template_hist,
-    components: Dict[str, np.ndarray],
-    labels: Dict[str, str],
-    colors: Dict[str, int],
-    line_styles: Dict[str, int],
+def _rebin_to_edges(
+    src_edges: np.ndarray,
+    values: np.ndarray,
+    errors: np.ndarray,
+    dst_edges: np.ndarray,
+):
+    # Sums contents and adds errors in quadrature, as TH1::Rebin does; source
+    # bins whose centre falls outside dst_edges go to under/overflow and drop.
+    src_edges = np.asarray(src_edges, dtype=np.float64)
+    dst_edges = np.asarray(dst_edges, dtype=np.float64)
+    centers = 0.5 * (src_edges[:-1] + src_edges[1:])
+    n_dst = len(dst_edges) - 1
+    idx = np.searchsorted(dst_edges, centers, side="right") - 1
+    keep = (idx >= 0) & (idx < n_dst)
+    out_values = np.zeros(n_dst, dtype=np.float64)
+    out_err_sq = np.zeros(n_dst, dtype=np.float64)
+    np.add.at(out_values, idx[keep], np.asarray(values, dtype=np.float64)[keep])
+    np.add.at(out_err_sq, idx[keep], np.asarray(errors, dtype=np.float64)[keep] ** 2)
+    return out_values, np.sqrt(out_err_sq)
+
+
+def _ratio_over(num: np.ndarray, num_err: np.ndarray, den: np.ndarray):
+    # TH1::Divide against an error-free denominator: each uncertainty is counted
+    # once, so only the numerator's error scales into the ratio.
+    num = np.asarray(num, dtype=np.float64)
+    num_err = np.asarray(num_err, dtype=np.float64)
+    den = np.asarray(den, dtype=np.float64)
+    ok = den > 0.0
+    ratio = np.divide(num, den, out=np.zeros_like(den), where=ok)
+    ratio_err = np.divide(num_err, den, out=np.zeros_like(den), where=ok)
+    return ratio, ratio_err
+
+
+def compute_aleph_over_unfolded_ratio_stats(
     *,
-    y_min: float,
-    y_max: float,
-    legend_loc: List[float],
-    legend_textsize: float,
-    legend_ncols: int,
-    legend_entry_sep: float = 0.018,
-    legend_column_sep: float = 0.06,
-    legend_margin: float = 0.16,
-    signed: bool,
-):
-    from style import ALEPHLegend, apply_style, myText
-
-    c = ROOT.TCanvas(f"c_{os.path.basename(out_path)}", "", 50, 50, 700, 700)
-    pad = ROOT.TPad(f"pad_{os.path.basename(out_path)}", "", 0.0, 0.05, 1.0, 1.0)
-    pad.SetBottomMargin(0.16)
-    pad.SetTopMargin(0.08)
-    pad.SetLeftMargin(0.18)
-    pad.SetRightMargin(0.04)
-    pad.Draw()
-    pad.cd()
-
-    keys = list(components.keys())
-    frame = template_hist.Clone(f"frame_{os.path.basename(out_path)}")
-    frame.Reset("ICESM")
-    frame.GetXaxis().SetTitle("Thrust")
-    frame.GetYaxis().SetTitle("Uncert. [%]")
-    frame.SetMinimum(y_min)
-    frame.SetMaximum(y_max)
-    apply_style(frame, color=ROOT.kBlack, marker=20, line_style=1, is_data=True)
-    frame.GetYaxis().SetTitleOffset(1.30)
-    frame.GetXaxis().SetLabelSize(0.047)
-    frame.GetYaxis().SetLabelSize(0.047)
-    frame.GetXaxis().SetLabelOffset(0.015)
-    frame.GetYaxis().SetLabelOffset(0.010)
-    frame.GetYaxis().SetNoExponent(True)
-    frame.GetYaxis().SetMaxDigits(3)
-    frame.GetYaxis().SetNdivisions(505)
-    frame.GetXaxis().SetNdivisions(505)
-    frame.Draw("AXIS")
-
-    if signed:
-        zero = ROOT.TLine(frame.GetXaxis().GetXmin(), 0.0, frame.GetXaxis().GetXmax(), 0.0)
-        zero.SetLineStyle(2)
-        zero.SetLineColor(ROOT.kGray + 2)
-        zero.Draw("SAME")
-
-    leg = ALEPHLegend(loc=legend_loc, textsize=legend_textsize)
-    leg.SetNColumns(legend_ncols)
-    leg.SetEntrySeparation(legend_entry_sep)
-    leg.SetColumnSeparation(legend_column_sep)
-    leg.SetMargin(legend_margin)
-
-    drawn_hists = []
-    for k in keys:
-        # Clip only for display to keep the y-axis readable.
-        h = arr_to_hist(template_hist, f"h_{k}_{os.path.basename(out_path)}", "", components[k], "Uncert. [%]")
-        for ibin in range(1, h.GetNbinsX() + 1):
-            v = float(h.GetBinContent(ibin))
-            h.SetBinContent(ibin, max(y_min, min(v, y_max)))
-        apply_style(h, color=colors[k], marker=20, line_style=line_styles[k], is_data=True)
-        h.SetLineWidth(2)
-        h.SetMarkerSize(0.0)
-        h.Draw("HIST SAME")
-        leg.AddEntry(h, labels[k], "l")
-        drawn_hists.append(h)
-    leg.Draw()
-    # Place ALEPH label just above the plotting content, consistent with the component-panel style.
-    myText(0.18, 0.961, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", align=13, size=0.045)
-
-    outdir = os.path.dirname(out_path)
-    if outdir:
-        os.makedirs(outdir, exist_ok=True)
-    c.SaveAs(out_path)
-    c.Close()
-
-
-def make_final_plot(
-    out_path: str,
-    nominal,
+    nominal_edges: np.ndarray,
+    nominal_values: np.ndarray,
+    total_abs: np.ndarray,
     aleph_csv_path: str,
-    stat_abs: np.ndarray,
-    exp_abs: np.ndarray,
-    iter_abs: np.ndarray,
-    theory_abs: np.ndarray,
-    hadronic_abs: np.ndarray | None = None,
-    isr_abs: np.ndarray | None = None,
-    raw_data=None,
-):
-    from PlotConfig import plotConfig
-    from style import ALEPHLegend, apply_style, myText, style_ratio
-
-    cfg = plotConfig["thrust"]
-    cfg["legloc"] = [0.24, 0.58, 0.49, 0.88]
-
-    if hadronic_abs is None:
-        hadronic_abs = np.zeros_like(stat_abs)
-    if isr_abs is None:
-        isr_abs = np.zeros_like(stat_abs)
-    total_abs = np.sqrt(stat_abs**2 + exp_abs**2 + iter_abs**2 + theory_abs**2 + hadronic_abs**2 + isr_abs**2)
-
-    def band_hist(name: str, color: int, alpha: float, abs_err: np.ndarray):
-        h = nominal.Clone(name)
-        h.SetDirectory(0)
-        for i, e in enumerate(abs_err, start=1):
-            h.SetBinError(i, float(e))
-        h.SetFillColorAlpha(color, alpha)
-        h.SetLineColor(color)
-        h.SetMarkerSize(0.0)
-        return h
-
-    h_total = band_hist("h_total_band", ROOT.kGray + 1, 0.45, total_abs)
-
-    h_nom = nominal.Clone("h_nominal_points")
-    h_nom.SetDirectory(0)
-    h_nom.SetLineColor(ROOT.kBlack)
-    h_nom.SetMarkerColor(ROOT.kBlack)
-    h_nom.SetMarkerStyle(20)
-    h_nom.SetMarkerSize(0.8)
-
-    max_y = max(
-        float(h_nom.GetMaximum()),
-        float(np.max(nominal_to_array(nominal) + total_abs)),
-    )
-    if raw_data is not None:
-        max_y = max(max_y, float(raw_data.GetMaximum()))
-
-    c = ROOT.TCanvas("c_final_result", "", 50, 50, 700, 700)
-    pad1 = ROOT.TPad("pad1", "", 0.0, 0.30, 1.0, 1.0)
-    pad1.SetBottomMargin(0.0)
-    pad1.SetTopMargin(0.10)
-    pad1.SetLeftMargin(0.20)
-    pad1.SetRightMargin(0.05)
-    pad1.Draw()
-    pad1.cd()
-    pad1.SetLogy()
-
-    frame = h_nom.Clone("frame_final")
-    frame.Reset("ICESM")
-    frame.SetTitle("")  # suppress any inherited title to avoid duplicate ALEPH label
-    frame.GetXaxis().SetTitle("Thrust")
-    frame.GetYaxis().SetTitle(cfg.get("YTitleDifferential", "1/#sigma d#sigma/dT"))
-    nom_vals = nominal_to_array(nominal)
-    lower_vals = np.clip(nom_vals - total_abs, 0.0, None)
-    pos = lower_vals[lower_vals > 0.0]
-    if pos.size == 0:
-        pos = nom_vals[nom_vals > 0.0]
-    y_min = max(1e-6, float(np.min(pos)) * 0.8) if pos.size > 0 else 1e-6
-    frame.SetMinimum(y_min)
-    frame.SetMaximum(1.6 * max_y)
-    apply_style(frame, color=ROOT.kBlack, marker=20, line_style=1, is_data=True)
-    frame.GetYaxis().SetTitleOffset(1.6)
-    frame.GetXaxis().SetLabelSize(0.0)
-    frame.GetXaxis().SetNdivisions(505)
-    frame.Draw("AXIS")
-
-    h_total.Draw("E2 SAME")
-    h_nom.Draw("E1 SAME")
-
+) -> dict:
+    """ALEPH 2004 over the unfolded result, summarised in the ALEPH binning."""
     aleph = load_aleph_2004_result(aleph_csv_path)
-    h_aleph = make_hist_from_binned_values(
-        "h_aleph_2004",
-        aleph["edges"],
-        aleph["values"],
-        aleph["total"],
+    nom_on_aleph, _ = _rebin_to_edges(
+        nominal_edges, nominal_values, total_abs, aleph["edges"]
     )
-    apply_style(h_aleph, color=ROOT.kBlue + 1, marker=24, line_style=1, is_data=True)
-    h_aleph.SetLineWidth(2)
-    h_aleph.SetMarkerSize(0.9)
-    h_aleph.Draw("PE1 SAME")
-
-    if raw_data is not None:
-        h_raw = raw_data.Clone("h_raw_data_for_plot")
-        h_raw.SetDirectory(0)
-        apply_style(h_raw, color=ROOT.kOrange + 1, marker=25, line_style=1, is_data=True)
-        h_raw.SetLineWidth(2)
-        h_raw.SetMarkerSize(0.8)
-        h_raw.Draw("PE1 SAME")
-
-    leg = ALEPHLegend(loc=cfg.get("legloc", [0.53, 0.58, 0.94, 0.92]), textsize=0.032)
-    leg.AddEntry(h_nom, "Unfolded nominal (N_{iter}=5)", "pl")
-    leg.AddEntry(h_total, "Total uncertainty", "f")
-    leg.AddEntry(h_aleph, "ALEPH 2004", "pl")
-    if raw_data is not None:
-        leg.AddEntry(h_raw, "Raw data (detector level)", "pl")
-    leg.Draw()
-    myText(0.2, 0.925, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", size=0.045)
-
-    c.cd()
-    pad2 = ROOT.TPad("pad2", "", 0.0, 0.05, 1.0, 0.30)
-    pad2.SetTopMargin(0.00)
-    pad2.SetBottomMargin(0.42)
-    pad2.SetLeftMargin(0.20)
-    pad2.SetRightMargin(0.05)
-    pad2.Draw()
-    pad2.cd()
-
-    # Build the ratio in ALEPH binning. Our total uncertainty is already drawn as
-    # the grey band around unity, so it must NOT also enter the error bars: each
-    # uncertainty appears exactly once, and the bars carry ALEPH's alone. The two
-    # are correlated anyway (same detector, overlapping data, related simulation),
-    # so combining them in quadrature would not be meaningful.
-    h_nom_total = nominal.Clone("h_nom_total_for_ratio")
-    h_nom_total.SetDirectory(0)
-    for i, e in enumerate(total_abs, start=1):
-        h_nom_total.SetBinError(i, float(e))
-
-    h_nom_on_aleph = h_nom_total.Rebin(
-        len(aleph["values"]),
-        "h_nominal_on_aleph_bins",
-        array("d", [float(x) for x in aleph["edges"]]),
-    )
-    h_nom_on_aleph.SetDirectory(0)
-
-    # Requested ratio definition: ALEPH / Unfolded.
-    h_ratio_den = h_nom_on_aleph.Clone("h_nominal_on_aleph_bins_noerr")
-    h_ratio_den.SetDirectory(0)
-    for ibin in range(1, h_ratio_den.GetNbinsX() + 1):
-        h_ratio_den.SetBinError(ibin, 0.0)
-
-    h_ratio = h_aleph.Clone("h_ratio_aleph_over_unfolded")
-    h_ratio.SetDirectory(0)
-    h_ratio.Divide(h_aleph, h_ratio_den)
-
-    # Gray band around 1 using unfolded total relative uncertainty.
-    h_ratio_band = h_nom_on_aleph.Clone("h_ratio_unfold_unc_band")
-    h_ratio_band.SetDirectory(0)
-    for ibin in range(1, h_ratio_band.GetNbinsX() + 1):
-        nom_content = float(h_nom_on_aleph.GetBinContent(ibin))
-        nom_error = float(h_nom_on_aleph.GetBinError(ibin))
-        rel = (nom_error / nom_content) if nom_content > 0.0 else 0.0
-        h_ratio_band.SetBinContent(ibin, 1.0)
-        h_ratio_band.SetBinError(ibin, rel)
-    h_ratio_band.SetFillColorAlpha(ROOT.kGray + 1, 0.45)
-    h_ratio_band.SetLineColor(ROOT.kGray + 2)
-    h_ratio_band.SetMarkerSize(0.0)
-
-    frame2 = h_ratio.Clone("frame_ratio_final")
-    frame2.Reset("ICESM")
-    style_ratio(frame2, "Thrust")
-    frame2.GetYaxis().SetTitleOffset(1.6)
-    frame2.GetXaxis().SetTitleOffset(1.2)
-    frame2.GetYaxis().SetLabelSize(0.10)
-    frame2.GetXaxis().SetLabelSize(0.12)
-    frame2.GetYaxis().SetTitleSize(0.10)
-    frame2.GetXaxis().SetTitleSize(0.12)
-    frame2.GetYaxis().SetTitle("Ratio")
-    frame2.GetYaxis().SetRangeUser(0.75, 1.55)
-    frame2.SetMinimum(0.75)
-    frame2.SetMaximum(1.55)
-    frame2.GetXaxis().SetNdivisions(505)
-    frame2.Draw("AXIS")
-
-    unity = ROOT.TLine(frame2.GetXaxis().GetXmin(), 1.0, frame2.GetXaxis().GetXmax(), 1.0)
-    unity.SetLineStyle(2)
-    unity.SetLineColor(ROOT.kGray + 2)
-    unity.Draw("SAME")
-    h_ratio_band.Draw("E2 SAME")
-
-    apply_style(h_ratio, color=ROOT.kBlue + 1, marker=24, line_style=1, is_data=True)
-    style_ratio(h_ratio, "Thrust")
-    h_ratio.GetYaxis().SetTitle("Ratio")
-    h_ratio.GetYaxis().SetRangeUser(0.75, 1.55)
-    h_ratio.GetXaxis().SetNdivisions(505)
-    h_ratio.SetMarkerSize(0.85)
-    h_ratio.Draw("PE1 SAME")
-
-    ratio_vals = np.asarray(
-        [float(h_ratio.GetBinContent(i)) for i in range(1, h_ratio.GetNbinsX() + 1)],
-        dtype=np.float64,
-    )
-    ratio_errs = np.asarray(
-        [float(h_ratio.GetBinError(i)) for i in range(1, h_ratio.GetNbinsX() + 1)],
-        dtype=np.float64,
-    )
-    ratio_stats = {
+    ratio_vals, ratio_errs = _ratio_over(aleph["values"], aleph["total"], nom_on_aleph)
+    return {
         "max_central": float(np.max(ratio_vals)) if ratio_vals.size else 0.0,
         "max_plus_error": float(np.max(ratio_vals + ratio_errs)) if ratio_vals.size else 0.0,
-        "highest_bin_value": float(h_ratio.GetBinContent(h_ratio.GetNbinsX())),
-        "highest_bin_error": float(h_ratio.GetBinError(h_ratio.GetNbinsX())),
-        "highest_bin_low_edge": float(h_ratio.GetXaxis().GetBinLowEdge(h_ratio.GetNbinsX())),
-        "highest_bin_up_edge": float(h_ratio.GetXaxis().GetBinUpEdge(h_ratio.GetNbinsX())),
+        "highest_bin_value": float(ratio_vals[-1]) if ratio_vals.size else 0.0,
+        "highest_bin_error": float(ratio_errs[-1]) if ratio_errs.size else 0.0,
+        "highest_bin_low_edge": float(aleph["edges"][-2]),
+        "highest_bin_up_edge": float(aleph["edges"][-1]),
     }
 
-    outdir = os.path.dirname(out_path)
-    if outdir:
-        os.makedirs(outdir, exist_ok=True)
-    c.SaveAs(out_path)
-    c.Close()
-    return ratio_stats
 
-
-def make_correction_stages_plot(
-    out_path: str,
-    nominal_root: str,
-    nominal,
-    aleph_csv_path: str,
-    stat_abs: np.ndarray,
-    iter_abs: np.ndarray,
-    exp_abs: np.ndarray,
-    theory_abs: np.ndarray,
-    hadronic_abs: np.ndarray | None,
-    isr_abs: np.ndarray | None,
-    isr_cache_file: str | None = None,
-):
-    from PlotConfig import plotConfig
-    from style import ALEPHLegend, apply_style, myText, style_ratio
-
-    if hadronic_abs is None:
-        hadronic_abs = np.zeros_like(stat_abs)
-    if isr_abs is None:
-        isr_abs = np.zeros_like(stat_abs)
-
-    # --- Load intermediate histograms from nominal ROOT ---
-    h_unf_raw = None
-    h_had_corr = None
-    h_isr_corr = None
-    try:
-        h_unf_raw = load_hist(nominal_root, "unfolded")
-    except (KeyError, OSError):
-        pass
-    try:
-        h_had_corr = load_hist(nominal_root, "hadronic_event_sel_corr")
-    except (KeyError, OSError):
-        pass
-    # Try ISR correction from cache file first, then nominal root.
-    for src in ([isr_cache_file] if isr_cache_file else []) + [nominal_root]:
-        if src is None:
-            continue
-        try:
-            h_isr_corr = load_hist(src, "isr_corr")
-            break
-        except (KeyError, OSError):
-            pass
-
-    # Compute IBU + hadronic intermediate stage.
-    h_ibu_had = None
-    if h_unf_raw is not None and h_had_corr is not None:
-        h_ibu_had = h_unf_raw.Clone("h_ibu_had_intermediate")
-        h_ibu_had.SetDirectory(0)
-        h_ibu_had.Multiply(h_had_corr)
-
-    # Normalize intermediate stages to differential cross section.
-    ibu = to_diff_xsec(h_unf_raw) if h_unf_raw is not None else None
-    ibu_had = to_diff_xsec(h_ibu_had) if h_ibu_had is not None else None
-
-    # Load data_reco and mc_gen for display.
-    h_data_reco = None
-    h_mc_gen = None
-    try:
-        h_data_reco = load_hist(nominal_root, "data_reco")
-        h_data_reco = to_diff_xsec(h_data_reco)
-    except (KeyError, OSError):
-        pass
-    try:
-        h_mc_gen = load_hist(nominal_root, "mc_gen")
-        h_mc_gen = to_diff_xsec(h_mc_gen)
-    except (KeyError, OSError):
-        pass
-
-    # Derive x-axis title from the nominal histogram axis.
-    x_title = str(nominal.GetXaxis().GetTitle()) or "Thrust"
-
-    # Try to look up a plotConfig entry; default to thrust config.
-    cfg = plotConfig.get("c_parameter", plotConfig["thrust"])
-
-    # --- Uncertainty bands via fractional-scaling approximation ---
-    nom_arr = hist_to_array(nominal)
-    safe_nom = np.where(nom_arr > 0, nom_arr, 1.0)
-
-    frac_stat = stat_abs / safe_nom
-    frac_iter = iter_abs / safe_nom
-    frac_exp = exp_abs / safe_nom
-    frac_theory = theory_abs / safe_nom
-    frac_had = hadronic_abs / safe_nom
-    frac_isr = isr_abs / safe_nom
-
-    # Stage 2: IBU unfolded (stat+iter+exp+theory).
-    stage2_abs = np.zeros_like(nom_arr)
-    if ibu is not None:
-        ibu_arr = hist_to_array(ibu)
-        safe_ibu = np.where(ibu_arr > 0, ibu_arr, 1.0)
-        stage2_abs = safe_ibu * np.sqrt(frac_stat**2 + frac_iter**2 + frac_exp**2 + frac_theory**2)
-
-    # Stage 3: IBU + hadronic (adds hadronic component).
-    stage3_abs = np.zeros_like(nom_arr)
-    if ibu_had is not None:
-        ibu_had_arr = hist_to_array(ibu_had)
-        safe_ibu_had = np.where(ibu_had_arr > 0, ibu_had_arr, 1.0)
-        stage3_abs = safe_ibu_had * np.sqrt(
-            frac_stat**2 + frac_iter**2 + frac_exp**2 + frac_theory**2 + frac_had**2
-        )
-
-    # Stage 4: final result (all components).
-    stage4_abs = np.sqrt(
-        stat_abs**2 + iter_abs**2 + exp_abs**2 + theory_abs**2 + hadronic_abs**2 + isr_abs**2
-    )
-
-    # Helper: build an E2 uncertainty band clone of a histogram.
-    def make_band(src_hist, name, err_arr, color, alpha):
-        h = src_hist.Clone(name)
-        h.SetDirectory(0)
-        for i, e in enumerate(err_arr, start=1):
-            h.SetBinError(i, float(e))
-        h.SetFillColorAlpha(color, alpha)
-        h.SetLineColorAlpha(color, alpha)
-        h.SetMarkerSize(0.0)
-        return h
-
-    # Uncertainty bands (back-to-front draw order).
-    h_band4 = make_band(nominal, "h_cs_band_final", stage4_abs, ROOT.kGray + 1, 0.45)
-    h_band3 = None
-    if ibu_had is not None:
-        h_band3 = make_band(ibu_had, "h_cs_band_ibu_had", stage3_abs, ROOT.kOrange + 1, 0.35)
-    h_band2 = None
-    if ibu is not None:
-        h_band2 = make_band(ibu, "h_cs_band_ibu", stage2_abs, ROOT.kAzure + 2, 0.35)
-
-    # ALEPH 2004 reference.
-    aleph = load_aleph_2004_result(aleph_csv_path)
-    h_aleph = make_hist_from_binned_values(
-        "h_cs_aleph_2004",
-        aleph["edges"],
-        aleph["values"],
-        aleph["total"],
-    )
-    apply_style(h_aleph, color=ROOT.kBlue + 1, marker=27, line_style=1, is_data=True)
-    h_aleph.SetLineWidth(2)
-    h_aleph.SetMarkerSize(1.0)
-
-    # MC gen.
-    if h_mc_gen is not None:
-        apply_style(h_mc_gen, color=ROOT.kGreen + 2, marker=25, line_style=1, is_data=False)
-        h_mc_gen.SetLineWidth(2)
-        h_mc_gen.SetMarkerSize(0.8)
-
-    # Data reco.
-    if h_data_reco is not None:
-        apply_style(h_data_reco, color=ROOT.kGray + 1, marker=20, line_style=1, is_data=True)
-        h_data_reco.SetLineWidth(2)
-        h_data_reco.SetMarkerSize(0.8)
-
-    # IBU stage.
-    h_ibu_draw = None
-    if ibu is not None:
-        h_ibu_draw = ibu.Clone("h_cs_ibu_draw")
-        h_ibu_draw.SetDirectory(0)
-        apply_style(h_ibu_draw, color=ROOT.kAzure + 2, marker=24, line_style=1, is_data=True)
-        h_ibu_draw.SetLineWidth(2)
-        h_ibu_draw.SetMarkerSize(0.8)
-
-    # IBU + had stage.
-    h_ibu_had_draw = None
-    if ibu_had is not None:
-        h_ibu_had_draw = ibu_had.Clone("h_cs_ibu_had_draw")
-        h_ibu_had_draw.SetDirectory(0)
-        apply_style(h_ibu_had_draw, color=ROOT.kOrange + 1, marker=26, line_style=1, is_data=True)
-        h_ibu_had_draw.SetLineWidth(2)
-        h_ibu_had_draw.SetMarkerSize(0.8)
-
-    # Final nominal points.
-    h_nom_draw = nominal.Clone("h_cs_nom_draw")
-    h_nom_draw.SetDirectory(0)
-    apply_style(h_nom_draw, color=ROOT.kBlack, marker=21, line_style=1, is_data=True)
-    h_nom_draw.SetLineWidth(2)
-    h_nom_draw.SetMarkerSize(0.8)
-
-    # Determine y-axis range.
-    max_candidates = [float(h_nom_draw.GetMaximum())]
-    if h_data_reco is not None:
-        max_candidates.append(float(h_data_reco.GetMaximum()))
-    if h_mc_gen is not None:
-        max_candidates.append(float(h_mc_gen.GetMaximum()))
-    if h_ibu_draw is not None:
-        max_candidates.append(float(h_ibu_draw.GetMaximum()))
-    if h_ibu_had_draw is not None:
-        max_candidates.append(float(h_ibu_had_draw.GetMaximum()))
-    max_y = max(max_candidates)
-    # Lower y bound: lowest positive value in the nominal band.
-    lower_vals = np.clip(nom_arr - stage4_abs, 0.0, None)
-    pos = lower_vals[lower_vals > 0.0]
-    if pos.size == 0:
-        pos = nom_arr[nom_arr > 0.0]
-    y_min = max(1e-6, float(np.min(pos)) * 0.8) if pos.size > 0 else 1e-6
-
-    c = ROOT.TCanvas("c_correction_stages", "", 50, 50, 700, 700)
-    pad1 = ROOT.TPad("pad1_cs", "", 0.0, 0.30, 1.0, 1.0)
-    pad1.SetBottomMargin(0.0)
-    pad1.SetTopMargin(0.10)
-    pad1.SetLeftMargin(0.20)
-    pad1.SetRightMargin(0.05)
-    pad1.Draw()
-    pad1.cd()
-    pad1.SetLogy()
-
-    frame = h_nom_draw.Clone("frame_cs_top")
-    frame.Reset("ICESM")
-    frame.SetTitle("")
-    frame.GetXaxis().SetTitle(x_title)
-    frame.GetYaxis().SetTitle(cfg.get("YTitleDifferential", "1/#sigma d#sigma/dT"))
-    frame.SetMinimum(y_min)
-    frame.SetMaximum(1.6 * max_y)
-    apply_style(frame, color=ROOT.kBlack, marker=20, line_style=1, is_data=True)
-    frame.GetYaxis().SetTitleOffset(1.6)
-    frame.GetXaxis().SetLabelSize(0.0)
-    frame.GetXaxis().SetNdivisions(505)
-    frame.Draw("AXIS")
-
-    # Draw bands back-to-front.
-    h_band4.Draw("E2 SAME")
-    if h_band3 is not None:
-        h_band3.Draw("E2 SAME")
-    if h_band2 is not None:
-        h_band2.Draw("E2 SAME")
-
-    # Draw point series.
-    h_aleph.Draw("PE1 SAME")
-    if h_mc_gen is not None:
-        h_mc_gen.Draw("PE1 SAME")
-    if h_data_reco is not None:
-        h_data_reco.Draw("PE1 SAME")
-    if h_ibu_draw is not None:
-        h_ibu_draw.Draw("PE1 SAME")
-    if h_ibu_had_draw is not None:
-        h_ibu_had_draw.Draw("PE1 SAME")
-    h_nom_draw.Draw("PE1 SAME")
-
-    leg = ALEPHLegend(loc=[0.24, 0.48, 0.59, 0.88], textsize=0.030)
-    if h_data_reco is not None:
-        leg.AddEntry(h_data_reco, "Raw data (detector level)", "pl")
-    if h_mc_gen is not None:
-        leg.AddEntry(h_mc_gen, "MC gen (particle level)", "pl")
-    leg.AddEntry(h_aleph, "ALEPH 2004", "pl")
-    if h_ibu_draw is not None:
-        leg.AddEntry(h_ibu_draw, "IBU unfolded", "pl")
-        leg.AddEntry(h_band2, "IBU unc. band", "f")
-    if h_ibu_had_draw is not None:
-        leg.AddEntry(h_ibu_had_draw, "IBU + had. corr.", "pl")
-        leg.AddEntry(h_band3, "IBU + had. unc. band", "f")
-    leg.AddEntry(h_nom_draw, "IBU + had. + ISR (final)", "pl")
-    leg.AddEntry(h_band4, "Final unc. band", "f")
-    leg.Draw()
-    myText(0.2, 0.925, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", size=0.045)
-
-    # --- Ratio pad: all curves / ALEPH 2004 ---
-    c.cd()
-    pad2 = ROOT.TPad("pad2_cs", "", 0.0, 0.05, 1.0, 0.30)
-    pad2.SetTopMargin(0.00)
-    pad2.SetBottomMargin(0.42)
-    pad2.SetLeftMargin(0.20)
-    pad2.SetRightMargin(0.05)
-    pad2.Draw()
-    pad2.cd()
-
-    # Rebin everything to ALEPH bins for ratio.
-    n_aleph = len(aleph["values"])
-    aleph_edges_arr = array("d", [float(x) for x in aleph["edges"]])
-
-    def rebin_to_aleph(h, rname):
-        hr = h.Rebin(n_aleph, rname, aleph_edges_arr)
-        hr.SetDirectory(0)
-        return hr
-
-    h_nom_aleph = rebin_to_aleph(nominal, "h_cs_nom_aleph")
-    for ibin in range(1, h_nom_aleph.GetNbinsX() + 1):
-        h_nom_aleph.SetBinError(ibin, 0.0)
-
-    # Unity band based on final total uncertainty on the nominal rebinned.
-    h_nom_total_aleph = nominal.Clone("h_cs_nom_total_for_ratio")
-    h_nom_total_aleph.SetDirectory(0)
-    for i, e in enumerate(stage4_abs, start=1):
-        h_nom_total_aleph.SetBinError(i, float(e))
-    h_nom_total_aleph_rb = rebin_to_aleph(h_nom_total_aleph, "h_cs_nom_total_aleph_rb")
-
-    h_ratio_band = h_nom_total_aleph_rb.Clone("h_cs_ratio_unity_band")
-    h_ratio_band.SetDirectory(0)
-    for ibin in range(1, h_ratio_band.GetNbinsX() + 1):
-        c_nom = float(h_nom_total_aleph_rb.GetBinContent(ibin))
-        e_nom = float(h_nom_total_aleph_rb.GetBinError(ibin))
-        rel = (e_nom / c_nom) if c_nom > 0.0 else 0.0
-        h_ratio_band.SetBinContent(ibin, 1.0)
-        h_ratio_band.SetBinError(ibin, rel)
-    h_ratio_band.SetFillColorAlpha(ROOT.kGray + 1, 0.45)
-    h_ratio_band.SetLineColor(ROOT.kGray + 2)
-    h_ratio_band.SetMarkerSize(0.0)
-
-    frame2 = h_aleph.Clone("frame_cs_ratio")
-    frame2.Reset("ICESM")
-    style_ratio(frame2, x_title)
-    frame2.GetYaxis().SetTitleOffset(1.6)
-    frame2.GetXaxis().SetTitleOffset(1.2)
-    frame2.GetYaxis().SetLabelSize(0.10)
-    frame2.GetXaxis().SetLabelSize(0.12)
-    frame2.GetYaxis().SetTitleSize(0.10)
-    frame2.GetXaxis().SetTitleSize(0.12)
-    frame2.GetYaxis().SetTitle("Ratio to ALEPH")
-    frame2.GetYaxis().SetRangeUser(0.75, 1.55)
-    frame2.SetMinimum(0.75)
-    frame2.SetMaximum(1.55)
-    frame2.GetXaxis().SetNdivisions(505)
-    frame2.Draw("AXIS")
-
-    unity = ROOT.TLine(frame2.GetXaxis().GetXmin(), 1.0, frame2.GetXaxis().GetXmax(), 1.0)
-    unity.SetLineStyle(2)
-    unity.SetLineColor(ROOT.kGray + 2)
-    unity.Draw("SAME")
-    h_ratio_band.Draw("E2 SAME")
-
-    ratio_hists_cs = []
-
-    # Denominator with errors stripped: dividing by h_aleph directly would add
-    # ALEPH's uncertainty to every curve's error bars, so each stage would inherit
-    # it on top of its own. Each uncertainty is shown once instead.
-    h_aleph_den = h_aleph.Clone("h_cs_aleph_den_noerr")
-    h_aleph_den.SetDirectory(0)
-    for ibin in range(1, h_aleph_den.GetNbinsX() + 1):
-        h_aleph_den.SetBinError(ibin, 0.0)
-
-    def draw_ratio_over_aleph(h_num, rname, color, marker):
-        h_rb = rebin_to_aleph(h_num, rname + "_rb")
-        h_rb.SetDirectory(0)
-        h_r = h_aleph.Clone(rname + "_ratio")
-        h_r.SetDirectory(0)
-        h_r.Divide(h_rb, h_aleph_den)
-        apply_style(h_r, color=color, marker=marker, line_style=1, is_data=True)
-        style_ratio(h_r, x_title)
-        h_r.GetYaxis().SetTitle("Ratio to ALEPH")
-        h_r.GetYaxis().SetRangeUser(0.75, 1.55)
-        h_r.GetXaxis().SetNdivisions(505)
-        h_r.SetMarkerSize(0.85)
-        h_r.Draw("PE1 SAME")
-        ratio_hists_cs.append(h_r)
-
-    if h_data_reco is not None:
-        draw_ratio_over_aleph(h_data_reco, "h_cs_ratio_data", ROOT.kGray + 1, 20)
-    if h_mc_gen is not None:
-        draw_ratio_over_aleph(h_mc_gen, "h_cs_ratio_mcgen", ROOT.kGreen + 2, 25)
-    if h_ibu_draw is not None:
-        draw_ratio_over_aleph(h_ibu_draw, "h_cs_ratio_ibu", ROOT.kAzure + 2, 24)
-    if h_ibu_had_draw is not None:
-        draw_ratio_over_aleph(h_ibu_had_draw, "h_cs_ratio_ibu_had", ROOT.kOrange + 1, 26)
-    draw_ratio_over_aleph(h_nom_draw, "h_cs_ratio_final", ROOT.kBlack, 21)
-
-    outdir_cs = os.path.dirname(out_path)
-    if outdir_cs:
-        os.makedirs(outdir_cs, exist_ok=True)
-    c.SaveAs(out_path)
-    c.Close()
-
-
-def make_of_ibu_comparison_plot(
+def compute_of_ibu_comparison_metrics(
     *,
-    out_path: str,
     metrics_json_path: str,
-    nominal,
+    nominal_edges: np.ndarray,
+    nominal_values: np.ndarray,
     total_abs: np.ndarray,
     aleph_csv_path: str,
     legacy_ibu_npz_path: str,
     legacy_of_h5_path: str,
     ratio_ymax: float,
 ) -> dict:
-    from PlotConfig import plotConfig
-    from style import ALEPHLegend, apply_style, myText, style_ratio
-
-    cfg = plotConfig["thrust"]
+    """Ratio and chi2 metrics of the OmniFold/IBU reanalyses against this result."""
     aleph = load_aleph_2004_result(aleph_csv_path)
     n_aleph_bins = int(len(aleph["values"]))
-
-    h_aleph = make_hist_from_binned_values(
-        "h_cmp_aleph_2004",
-        aleph["edges"],
-        aleph["values"],
-        aleph["total"],
+    current_vals, current_errs = _rebin_to_edges(
+        nominal_edges, nominal_values, total_abs, aleph["edges"]
     )
-
-    h_nom_total = nominal.Clone("h_cmp_nominal_total_for_ratio")
-    h_nom_total.SetDirectory(0)
-    for i, e in enumerate(total_abs, start=1):
-        h_nom_total.SetBinError(i, float(e))
-    h_current = h_nom_total.Rebin(
-        n_aleph_bins,
-        "h_cmp_current_on_aleph",
-        array("d", [float(x) for x in aleph["edges"]]),
-    )
-    h_current.SetDirectory(0)
 
     ibu = load_legacy_ibu_thrust_arrays(legacy_ibu_npz_path, n_aleph_bins)
-    h_ibu = make_hist_from_binned_values(
-        "h_cmp_ibu",
-        aleph["edges"],
-        ibu["values_thrust"],
-        ibu["errors_thrust"],
-    )
-
     of = build_legacy_omnifold_thrust_arrays(legacy_of_h5_path, aleph["edges"])
-    h_of = make_hist_from_binned_values(
-        "h_cmp_of",
-        aleph["edges"],
-        of["values_thrust"],
-        of["errors_thrust"],
-    )
-
-    h_current_band = h_current.Clone("h_cmp_current_band")
-    h_current_band.SetDirectory(0)
-    h_current_band.SetFillColorAlpha(ROOT.kGray + 1, 0.45)
-    h_current_band.SetLineColor(ROOT.kGray + 2)
-    h_current_band.SetMarkerSize(0.0)
-
-    apply_style(h_current, color=ROOT.kBlack, marker=20, line_style=1, is_data=True)
-    h_current.SetLineWidth(2)
-    h_current.SetMarkerSize(0.85)
-    apply_style(h_of, color=ROOT.kAzure + 2, marker=24, line_style=1, is_data=True)
-    h_of.SetLineWidth(2)
-    h_of.SetMarkerSize(0.90)
-    apply_style(h_ibu, color=ROOT.kMagenta, marker=25, line_style=1, is_data=True)
-    h_ibu.SetLineWidth(2)
-    h_ibu.SetMarkerSize(0.90)
-    apply_style(h_aleph, color=ROOT.kBlue + 1, marker=26, line_style=1, is_data=True)
-    h_aleph.SetLineWidth(2)
-    h_aleph.SetMarkerSize(0.90)
-
-    max_y = max(
-        float(h_current.GetMaximum() + h_current.GetBinError(h_current.GetMaximumBin())),
-        float(h_of.GetMaximum() + h_of.GetBinError(h_of.GetMaximumBin())),
-        float(h_ibu.GetMaximum() + h_ibu.GetBinError(h_ibu.GetMaximumBin())),
-        float(h_aleph.GetMaximum() + h_aleph.GetBinError(h_aleph.GetMaximumBin())),
-    )
-    current_vals = np.asarray(
-        [float(h_current.GetBinContent(i)) for i in range(1, h_current.GetNbinsX() + 1)],
-        dtype=np.float64,
-    )
-    current_errs = np.asarray(
-        [float(h_current.GetBinError(i)) for i in range(1, h_current.GetNbinsX() + 1)],
-        dtype=np.float64,
-    )
-    pos = np.clip(current_vals - current_errs, 0.0, None)
-    pos = pos[pos > 0.0]
-    y_min = max(1e-6, float(np.min(pos)) * 0.8) if pos.size > 0 else 1e-6
-
-    c = ROOT.TCanvas("c_of_ibu_comparison", "", 50, 50, 700, 700)
-    pad1 = ROOT.TPad("pad1_cmp", "", 0.0, 0.30, 1.0, 1.0)
-    pad1.SetBottomMargin(0.0)
-    pad1.SetTopMargin(0.10)
-    pad1.SetLeftMargin(0.20)
-    pad1.SetRightMargin(0.05)
-    pad1.Draw()
-    pad1.cd()
-    pad1.SetLogy()
-
-    frame = h_current.Clone("frame_cmp_top")
-    frame.Reset("ICESM")
-    frame.GetXaxis().SetTitle("Thrust")
-    frame.GetYaxis().SetTitle(cfg.get("YTitleDifferential", "1/#sigma d#sigma/dT"))
-    frame.SetMinimum(y_min)
-    frame.SetMaximum(1.6 * max_y)
-    apply_style(frame, color=ROOT.kBlack, marker=20, line_style=1, is_data=True)
-    frame.GetYaxis().SetTitleOffset(1.35)
-    frame.GetXaxis().SetLabelSize(0.0)
-    frame.GetXaxis().SetNdivisions(505)
-    frame.Draw("AXIS")
-
-    h_current_band.Draw("E2 SAME")
-    h_current.Draw("PE1 SAME")
-    h_of.Draw("PE1 SAME")
-    h_ibu.Draw("PE1 SAME")
-    h_aleph.Draw("PE1 SAME")
-
-    leg = ALEPHLegend(loc=[0.24, 0.56, 0.57, 0.88], textsize=0.030)
-    leg.AddEntry(h_current, "Current unfolded nominal (IBU)", "pl")
-    leg.AddEntry(h_current_band, "Current total uncertainty", "f")
-    leg.AddEntry(h_of, "OmniFold reanalysis", "pl")
-    leg.AddEntry(h_ibu, "IBU reanalysis", "pl")
-    leg.AddEntry(h_aleph, "ALEPH 2004", "pl")
-    leg.Draw()
-    myText(0.2, 0.925, "ALEPH archived data, e^{+}e^{-} #sqrt{s}=91.2 GeV", size=0.045)
-
-    c.cd()
-    pad2 = ROOT.TPad("pad2_cmp", "", 0.0, 0.05, 1.0, 0.30)
-    pad2.SetTopMargin(0.00)
-    pad2.SetBottomMargin(0.40)
-    pad2.SetLeftMargin(0.20)
-    pad2.SetRightMargin(0.05)
-    pad2.Draw()
-    pad2.cd()
-
-    y_max_ratio = max(float(ratio_ymax), 1.05)
-    y_min_ratio = 0.75
-    frame2 = h_current.Clone("frame_cmp_ratio")
-    frame2.Reset("ICESM")
-    style_ratio(frame2, "Thrust")
-    frame2.GetYaxis().SetTitle("Ratio")
-    frame2.GetYaxis().SetRangeUser(y_min_ratio, y_max_ratio)
-    frame2.SetMinimum(y_min_ratio)
-    frame2.SetMaximum(y_max_ratio)
-    frame2.GetXaxis().SetNdivisions(505)
-    frame2.Draw("AXIS")
-
-    unity = ROOT.TLine(frame2.GetXaxis().GetXmin(), 1.0, frame2.GetXaxis().GetXmax(), 1.0)
-    unity.SetLineStyle(2)
-    unity.SetLineColor(ROOT.kGray + 2)
-    unity.Draw("SAME")
-
-    h_ratio_band = h_current.Clone("h_cmp_ratio_band")
-    h_ratio_band.SetDirectory(0)
-    for ibin in range(1, h_ratio_band.GetNbinsX() + 1):
-        c_nom = float(h_current.GetBinContent(ibin))
-        e_nom = float(h_current.GetBinError(ibin))
-        rel = (e_nom / c_nom) if c_nom > 0.0 else 0.0
-        h_ratio_band.SetBinContent(ibin, 1.0)
-        h_ratio_band.SetBinError(ibin, rel)
-    h_ratio_band.SetFillColorAlpha(ROOT.kGray + 1, 0.45)
-    h_ratio_band.SetLineColor(ROOT.kGray + 2)
-    h_ratio_band.SetMarkerSize(0.0)
-    h_ratio_band.Draw("E2 SAME")
-
-    # Zero the denominator's error before dividing, as make_final_plot does:
-    # the current total is already drawn as h_ratio_band around unity, so
-    # letting ROOT propagate it into the bars shows it twice.
-    h_ratio_den = h_current.Clone("h_cmp_current_den_noerr")
-    h_ratio_den.SetDirectory(0)
-    for ibin in range(1, h_ratio_den.GetNbinsX() + 1):
-        h_ratio_den.SetBinError(ibin, 0.0)
-
-    ratio_hists = {}
-    for key, hist, color, marker in [
-        ("aleph_over_current", h_aleph, ROOT.kBlue + 1, 26),
-        ("of_over_current", h_of, ROOT.kAzure + 2, 24),
-        ("ibu_over_current", h_ibu, ROOT.kMagenta, 25),
-    ]:
-        h_ratio = hist.Clone(f"h_ratio_{key}")
-        h_ratio.SetDirectory(0)
-        h_ratio.Divide(hist, h_ratio_den)
-        apply_style(h_ratio, color=color, marker=marker, line_style=1, is_data=True)
-        style_ratio(h_ratio, "Thrust")
-        h_ratio.GetYaxis().SetTitle("Ratio")
-        h_ratio.GetYaxis().SetRangeUser(y_min_ratio, y_max_ratio)
-        h_ratio.GetXaxis().SetNdivisions(505)
-        h_ratio.SetMarkerSize(0.85)
-        h_ratio.Draw("PE1 SAME")
-        ratio_hists[key] = h_ratio
-
-    outdir = os.path.dirname(out_path)
-    if outdir:
-        os.makedirs(outdir, exist_ok=True)
-    c.SaveAs(out_path)
-    c.Close()
-
-    curves = {
-        "current": h_current,
-        "aleph": h_aleph,
-        "of": h_of,
-        "ibu": h_ibu,
+    curve_arrays = {
+        "aleph": (
+            np.asarray(aleph["values"], dtype=np.float64),
+            np.asarray(aleph["total"], dtype=np.float64),
+        ),
+        "of": (
+            np.asarray(of["values_thrust"], dtype=np.float64),
+            np.asarray(of["errors_thrust"], dtype=np.float64),
+        ),
+        "ibu": (
+            np.asarray(ibu["values_thrust"], dtype=np.float64),
+            np.asarray(ibu["errors_thrust"], dtype=np.float64),
+        ),
     }
-    curve_arrays = {}
-    for key, hist in curves.items():
-        vals = np.asarray(
-            [float(hist.GetBinContent(i)) for i in range(1, hist.GetNbinsX() + 1)],
-            dtype=np.float64,
-        )
-        errs = np.asarray(
-            [float(hist.GetBinError(i)) for i in range(1, hist.GetNbinsX() + 1)],
-            dtype=np.float64,
-        )
-        curve_arrays[key] = (vals, errs)
 
     ratio_metrics = {}
-    for key, hist in ratio_hists.items():
-        vals = np.asarray(
-            [float(hist.GetBinContent(i)) for i in range(1, hist.GetNbinsX() + 1)],
-            dtype=np.float64,
-        )
-        errs = np.asarray(
-            [float(hist.GetBinError(i)) for i in range(1, hist.GetNbinsX() + 1)],
-            dtype=np.float64,
-        )
+    for key, curve in [
+        ("aleph_over_current", "aleph"),
+        ("of_over_current", "of"),
+        ("ibu_over_current", "ibu"),
+    ]:
+        vals, errs = _ratio_over(*curve_arrays[curve], current_vals)
         finite = np.isfinite(vals) & np.isfinite(errs)
         valid_vals = vals[finite]
         valid_errs = errs[finite]
@@ -1570,7 +753,6 @@ def make_of_ibu_comparison_plot(
             "highest_bin_error": float(errs[-1]) if errs.size else 0.0,
         }
 
-    current_vals, current_errs = curve_arrays["current"]
     chi2_metrics = {
         "aleph_vs_current": _chi2_ndf(*curve_arrays["aleph"], current_vals, current_errs),
         "of_vs_current": _chi2_ndf(*curve_arrays["of"], current_vals, current_errs),
@@ -1578,8 +760,8 @@ def make_of_ibu_comparison_plot(
     }
     metrics = {
         "ratio_mode": "curve_over_current",
-        "ratio_y_min": y_min_ratio,
-        "ratio_y_max": y_max_ratio,
+        "ratio_y_min": 0.75,
+        "ratio_y_max": max(float(ratio_ymax), 1.05),
         "n_bins": n_aleph_bins,
         "ratio_metrics": ratio_metrics,
         "chi2_metrics": chi2_metrics,
@@ -1588,7 +770,6 @@ def make_of_ibu_comparison_plot(
             "legacy_of_h5": legacy_of_h5_path,
             "aleph_csv": aleph_csv_path,
         },
-        "output_pdf": out_path,
     }
     with open(metrics_json_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
@@ -1688,15 +869,12 @@ def main():
         args.iter_up: os.path.join(base_dir, "iteration", f"unfolded_iter{args.iter_up}.root"),
     }
     iter_arrays = []
-    iter_shift_map = {}
     for it, path in iter_roots.items():
         ensure_exists(path, f"iteration ROOT ({it})")
         h_it = load_hist(path, args.hist_name)
         if h_isr_corr_to_apply is not None:
             h_it.Multiply(h_isr_corr_to_apply)
-        arr = hist_to_array(to_diff_xsec(h_it))
-        iter_arrays.append(arr)
-        iter_shift_map[it] = frac_shift(arr, nom)
+        iter_arrays.append(hist_to_array(to_diff_xsec(h_it)))
     iter_shifts = [frac_shift(arr, nom) for arr in iter_arrays]
     delta_iter = abs_env(iter_shifts)
 
@@ -1859,14 +1037,6 @@ def main():
     frac_hadronic = fractional_uncertainty(hadronic_abs, nom)
     frac_total = fractional_uncertainty(total_abs, nom)
     frac_no_neutrals = fractional_uncertainty(no_neutrals_abs, nom)
-    pct_isr = 100.0 * frac_isr
-    pct_stat = 100.0 * frac_stat
-    pct_iter = 100.0 * frac_iter
-    pct_exp_track_event = 100.0 * frac_exp_track_event
-    pct_exp_neutral = 100.0 * frac_exp_neutral
-    pct_exp = 100.0 * frac_exp
-    pct_theory = 100.0 * frac_theory
-
     # --- Build per-component covariance matrices ---
     # All non-statistical components use the statistical correlation matrix as a template:
     #   Cov^(c)_ij = Delta_c(i) * Delta_c(j) * rho^stat_ij
@@ -1967,213 +1137,35 @@ def main():
                 f"{1 if reported_mask[i - 1] else 0}\n"
             )
 
-    # --- Produce uncertainty component plots and final result comparison ---
-    component_plots = {
-        "statistical": os.path.join(outdir, "uncertainty_components_statistical.pdf"),
-        "unfolding": os.path.join(outdir, "uncertainty_components_unfolding.pdf"),
-        "experimental": os.path.join(outdir, "uncertainty_components_experimental.pdf"),
-        "theory": os.path.join(outdir, "uncertainty_components_theory.pdf"),
-        "isr": os.path.join(outdir, "uncertainty_components_isr.pdf"),
-    }
-    make_component_group_plot(
-        out_path=component_plots["statistical"],
-        template_hist=nominal,
-        components={"stat": pct_stat},
-        labels={"stat": "Statistical"},
-        colors={"stat": ROOT.kBlack},
-        line_styles={"stat": 1},
-        y_min=0.0,
-        y_max=20.0,
-        legend_loc=[0.62, 0.82, 0.92, 0.90],
-        legend_textsize=0.032,
-        legend_ncols=1,
-        legend_entry_sep=0.016,
-        legend_column_sep=0.05,
-        legend_margin=0.14,
-        signed=False,
+    # --- Derive the numeric diagnostics; figures are produced separately by
+    # analysis/plotting/ from these persisted artifacts. ---
+    nbins_x = nominal.GetNbinsX()
+    nominal_edges = np.asarray(
+        [nominal.GetXaxis().GetBinLowEdge(i) for i in range(1, nbins_x + 1)]
+        + [nominal.GetXaxis().GetBinUpEdge(nbins_x)],
+        dtype=np.float64,
     )
-    make_component_group_plot(
-        out_path=component_plots["unfolding"],
-        template_hist=nominal,
-        components={
-            f"iter_{args.iter_down}": 100.0 * iter_shift_map[args.iter_down],
-            f"iter_{args.iter_up}": 100.0 * iter_shift_map[args.iter_up],
-        },
-        labels={
-            f"iter_{args.iter_down}": f"Iteration {args.iter_down}",
-            f"iter_{args.iter_up}": f"Iteration {args.iter_up}",
-        },
-        colors={
-            f"iter_{args.iter_down}": ROOT.kAzure + 2,
-            f"iter_{args.iter_up}": ROOT.kBlue + 1,
-        },
-        line_styles={
-            f"iter_{args.iter_down}": 2,
-            f"iter_{args.iter_up}": 1,
-        },
-        y_min=-5.0,
-        y_max=5.0,
-        legend_loc=[0.62, 0.78, 0.92, 0.90],
-        legend_textsize=0.030,
-        legend_ncols=1,
-        legend_entry_sep=0.016,
-        legend_column_sep=0.05,
-        legend_margin=0.14,
-        signed=True,
+    # The six components make up the band on the final result; the response
+    # MC-stat term stays out of it and is carried by cov_total alone.
+    final_total_abs = np.sqrt(
+        stat_abs**2 + exp_abs**2 + iter_abs**2 + theory_abs**2 + hadronic_abs**2 + isr_abs**2
     )
-    make_component_group_plot(
-        out_path=component_plots["experimental"],
-        template_hist=nominal,
-        components={
-            "ntpc7": 100.0 * exp_shifts["ntpc7"],
-            "pt04": 100.0 * exp_shifts["pt04"],
-            "ech10": 100.0 * exp_shifts["ech10"],
-            "with_met": 100.0 * exp_shifts["with_met"],
-            "nes_up": 100.0 * exp_shifts["nes_up"],
-            "nes_down": 100.0 * exp_shifts["nes_down"],
-            "ner": 100.0 * exp_shifts["ner"],
-            "no_neutrals": 100.0 * exp_shifts["no_neutrals"],
-        },
-        labels={
-            "ntpc7": "N_{TPC} > 7",
-            "pt04": "p_{T} > 0.4 GeV",
-            "ech10": "E_{ch} > 10 GeV",
-            "with_met": "Missing-energy cut",
-            "nes_up": "NES up",
-            "nes_down": "NES down",
-            "ner": "NER",
-            "no_neutrals": "No-neutrals xcheck",
-        },
-        colors={
-            "ntpc7": ROOT.kBlue + 1,
-            "pt04": ROOT.kAzure + 3,
-            "ech10": ROOT.kCyan + 2,
-            "with_met": ROOT.kTeal + 2,
-            "nes_up": ROOT.kGreen + 2,
-            "nes_down": ROOT.kGreen + 3,
-            "ner": ROOT.kSpring + 5,
-            "no_neutrals": ROOT.kOrange + 7,
-        },
-        line_styles={
-            "ntpc7": 1,
-            "pt04": 1,
-            "ech10": 1,
-            "with_met": 1,
-            "nes_up": 1,
-            "nes_down": 1,
-            "ner": 1,
-            "no_neutrals": 1,
-        },
-        y_min=-50.0,
-        y_max=50.0,
-        legend_loc=[0.40, 0.20, 0.93, 0.44],
-        legend_textsize=0.026,
-        legend_ncols=2,
-        legend_entry_sep=0.001,
-        legend_column_sep=0.025,
-        legend_margin=0.12,
-        signed=True,
-    )
-    make_component_group_plot(
-        out_path=component_plots["theory"],
-        template_hist=nominal,
-        components={
-            **{
-                v: (100.0 * theory_shifts[v] if v in theory_shifts
-                    else np.zeros_like(np.asarray(nom, dtype=float)))
-                for v in THEORY_VARS
-            },
-        },
-        labels={
-            "pythia8": "PYTHIA8",
-            "herwig": "HERWIG",
-            "sherpa": "SHERPA",
-        },
-        colors={
-            "pythia8": ROOT.kMagenta + 1,
-            "herwig": ROOT.kViolet + 1,
-            "sherpa": ROOT.kPink + 7,
-        },
-        line_styles={
-            "pythia8": 1,
-            "herwig": 2,
-            "sherpa": 7,
-        },
-        y_min=-50.0,
-        y_max=50.0,
-        legend_loc=[0.68, 0.74, 0.92, 0.90],
-        legend_textsize=0.030,
-        legend_ncols=1,
-        legend_entry_sep=0.016,
-        legend_column_sep=0.05,
-        legend_margin=0.14,
-        signed=True,
-    )
-    make_component_group_plot(
-        out_path=component_plots["isr"],
-        template_hist=nominal,
-        components={"isr_correction": pct_isr},
-        labels={"isr_correction": "ISR correction (MC stat)"},
-        colors={"isr_correction": ROOT.kOrange + 1},
-        line_styles={"isr_correction": 1},
-        y_min=0.0,
-        y_max=50.0,
-        legend_loc=[0.62, 0.82, 0.92, 0.90],
-        legend_textsize=0.032,
-        legend_ncols=1,
-        legend_entry_sep=0.016,
-        legend_column_sep=0.05,
-        legend_margin=0.14,
-        signed=False,
-    )
-    raw_data_diffxsec = None
-    try:
-        h_data_reco = load_hist(nominal_root, "data_reco")
-        raw_data_diffxsec = to_diff_xsec(h_data_reco)
-    except KeyError:
-        print("Warning: 'data_reco' not found in nominal ROOT file; raw data will not be shown.")
-    ratio_stats = make_final_plot(
-        out_path=os.path.join(outdir, "final_result_uncertainty_breakdown.pdf"),
-        nominal=nominal,
+    ratio_stats = compute_aleph_over_unfolded_ratio_stats(
+        nominal_edges=nominal_edges,
+        nominal_values=nom,
+        total_abs=final_total_abs,
         aleph_csv_path=aleph_csv_path,
-        stat_abs=stat_abs,
-        exp_abs=exp_abs,
-        iter_abs=iter_abs,
-        theory_abs=theory_abs,
-        hadronic_abs=hadronic_abs,
-        isr_abs=isr_abs,
-        raw_data=raw_data_diffxsec,
     )
-    correction_stages_plot_path = os.path.join(outdir, "final_result_correction_stages.pdf")
-    make_correction_stages_plot(
-        out_path=correction_stages_plot_path,
-        nominal_root=nominal_root,
-        nominal=nominal,
-        aleph_csv_path=aleph_csv_path,
-        stat_abs=stat_abs,
-        iter_abs=iter_abs,
-        exp_abs=exp_abs,
-        theory_abs=theory_abs,
-        hadronic_abs=hadronic_abs,
-        isr_abs=isr_abs,
-        isr_cache_file=isr_cache_file,
-    )
-    comparison_plot_path = None
     comparison_metrics_path = None
     comparison_metrics = None
     legacy_inputs = None
     if args.include_of_ibu_comparison:
         legacy_inputs = resolve_legacy_input_paths(args, repo_root)
-        comparison_plot_path = (
-            args.comparison_output
-            if os.path.isabs(args.comparison_output)
-            else os.path.join(outdir, args.comparison_output)
-        )
         comparison_metrics_path = os.path.join(outdir, "of_ibu_comparison_metrics.json")
-        comparison_metrics = make_of_ibu_comparison_plot(
-            out_path=comparison_plot_path,
+        comparison_metrics = compute_of_ibu_comparison_metrics(
             metrics_json_path=comparison_metrics_path,
-            nominal=nominal,
+            nominal_edges=nominal_edges,
+            nominal_values=nom,
             total_abs=total_abs,
             aleph_csv_path=aleph_csv_path,
             legacy_ibu_npz_path=legacy_inputs["legacy_ibu_npz"],
@@ -2249,9 +1241,6 @@ def main():
             "corr_total": os.path.join(outdir, "corr_total.csv"),
             "reported_bins": os.path.join(outdir, "reported_bins.csv"),
             "binning": os.path.join(outdir, "binning.csv"),
-            "component_plots": component_plots,
-            "final_plot": os.path.join(outdir, "final_result_uncertainty_breakdown.pdf"),
-            "correction_stages_plot": correction_stages_plot_path,
             "aleph_csv": aleph_csv_path,
             "ratio_mode": "aleph_over_unfolded",
             "ratio_y_min": 0.75,
@@ -2300,8 +1289,7 @@ def main():
         },
         "provenance": collect_provenance(repo_root),
     }
-    if comparison_plot_path is not None:
-        summary["outputs"]["of_ibu_comparison_plot"] = comparison_plot_path
+    if comparison_metrics is not None:
         summary["outputs"]["of_ibu_comparison_metrics"] = comparison_metrics_path
         summary["diagnostics"]["of_ibu_input_paths"] = legacy_inputs
         summary["diagnostics"]["of_ibu_comparison_metrics"] = comparison_metrics
@@ -2312,12 +1300,7 @@ def main():
 
 
 if __name__ == "__main__":
-    add_plotting_path()
-    from style import SetALEPHStyle
-
     ROOT.gROOT.SetBatch(True)
-    ROOT.gStyle.SetOptStat(0)
-    SetALEPHStyle()
     try:
         main()
     except Exception as exc:
