@@ -22,7 +22,6 @@ Outputs (written to --outdir, default <base_dir>/summary/):
   cov_{stat,iter,exp,theory,hadronic,total}.csv  -- covariance matrices (N_bins x N_bins)
   corr_total.csv                                 -- correlation matrix
   binning.csv, reported_bins.csv                 -- bin edges, centers, reported-range membership
-  of_ibu_comparison_metrics.json                 -- OmniFold/IBU reanalysis comparison metrics
   workflow_summary.json                          -- full provenance and numeric diagnostics
 
 Figures are drawn separately by analysis/plotting/ from these artifacts; this
@@ -112,41 +111,6 @@ def parse_args():
             "Lower thrust edge of the reported range. Populated bins below it have "
             "total uncertainties exceeding their own content and are not reported."
         ),
-    )
-    p.add_argument(
-        "--include-of-ibu-comparison",
-        action="store_true",
-        help=(
-            "Also write of_ibu_comparison_metrics.json, comparing this result with "
-            "the OmniFold and IBU results from unfold-ee-logtau/Results."
-        ),
-    )
-    p.add_argument(
-        "--legacy-results-dir",
-        default=None,
-        help=(
-            "Path to unfold-ee-logtau/Results directory. "
-            "If omitted, auto-detect sibling ../unfold-ee-logtau/Results."
-        ),
-    )
-    p.add_argument(
-        "--legacy-ibu-npz",
-        default=None,
-        help="Override path to legacy IBU results NPZ (default: <legacy-results-dir>/ibu_results.npz).",
-    )
-    p.add_argument(
-        "--legacy-of-h5",
-        default=None,
-        help=(
-            "Override path to legacy OmniFold H5 file "
-            "(default: <legacy-results-dir>/unfold_thrust_ee_ZPole_ALEPH.h5)."
-        ),
-    )
-    p.add_argument(
-        "--comparison-ratio-ymax",
-        type=float,
-        default=1.55,
-        help="Recorded as ratio_y_max in the OF+IBU comparison metrics.",
     )
     p.add_argument(
         "--isr-cache",
@@ -315,59 +279,6 @@ def load_aleph_2004_result(hep_data_csv: str) -> dict:
         "sys2": sys2,
         "total": total,
     }
-
-
-def resolve_legacy_results_dir(path_hint: str | None, repo_root: str) -> str:
-    candidates = []
-    cwd = os.getcwd()
-    if path_hint:
-        if os.path.isabs(path_hint):
-            candidates.append(path_hint)
-        else:
-            candidates.append(os.path.abspath(os.path.join(cwd, path_hint)))
-            candidates.append(os.path.abspath(os.path.join(repo_root, path_hint)))
-    else:
-        candidates.append(os.path.abspath(os.path.join(repo_root, "..", "unfold-ee-logtau", "Results")))
-    for cand in candidates:
-        if os.path.isdir(cand):
-            return cand
-    raise FileNotFoundError(
-        "Legacy results directory not found. "
-        f"Tried: {', '.join(candidates)}. "
-        "Provide --legacy-results-dir <path/to/unfold-ee-logtau/Results>."
-    )
-
-
-def resolve_legacy_input_paths(args, repo_root: str) -> dict[str, str]:
-    legacy_dir = resolve_legacy_results_dir(args.legacy_results_dir, repo_root)
-    cwd = os.getcwd()
-
-    def resolve_optional(path_hint: str | None, default_name: str) -> str:
-        if path_hint:
-            if os.path.isabs(path_hint):
-                return path_hint
-            return os.path.abspath(os.path.join(cwd, path_hint))
-        return os.path.join(legacy_dir, default_name)
-
-    ibu_npz = resolve_optional(args.legacy_ibu_npz, "ibu_results.npz")
-    of_h5 = resolve_optional(args.legacy_of_h5, "unfold_thrust_ee_ZPole_ALEPH.h5")
-    ensure_exists(ibu_npz, "legacy IBU NPZ")
-    ensure_exists(of_h5, "legacy OmniFold H5")
-    return {
-        "legacy_results_dir": legacy_dir,
-        "legacy_ibu_npz": ibu_npz,
-        "legacy_of_h5": of_h5,
-    }
-
-
-# Derivation of the legacy OmniFold and IBU curves lives in legacy_curves.py so
-# the ROOT-free figure producer can reuse it unchanged.
-from legacy_curves import (
-    _calc_hist_with_weight_unc,
-    _mc_bin_quality,
-    build_legacy_omnifold_thrust_arrays,
-    load_legacy_ibu_thrust_arrays,
-)
 
 
 def _chi2_ndf(y1: np.ndarray, yerr1: np.ndarray, y2: np.ndarray, yerr2: np.ndarray) -> dict:
@@ -699,81 +610,6 @@ def compute_aleph_over_unfolded_ratio_stats(
         "highest_bin_low_edge": float(aleph["edges"][-2]),
         "highest_bin_up_edge": float(aleph["edges"][-1]),
     }
-
-
-def compute_of_ibu_comparison_metrics(
-    *,
-    metrics_json_path: str,
-    nominal_edges: np.ndarray,
-    nominal_values: np.ndarray,
-    total_abs: np.ndarray,
-    aleph_csv_path: str,
-    legacy_ibu_npz_path: str,
-    legacy_of_h5_path: str,
-    ratio_ymax: float,
-) -> dict:
-    """Ratio and chi2 metrics of the OmniFold/IBU reanalyses against this result."""
-    aleph = load_aleph_2004_result(aleph_csv_path)
-    n_aleph_bins = int(len(aleph["values"]))
-    current_vals, current_errs = _rebin_to_edges(
-        nominal_edges, nominal_values, total_abs, aleph["edges"]
-    )
-
-    ibu = load_legacy_ibu_thrust_arrays(legacy_ibu_npz_path, n_aleph_bins)
-    of = build_legacy_omnifold_thrust_arrays(legacy_of_h5_path, aleph["edges"])
-    curve_arrays = {
-        "aleph": (
-            np.asarray(aleph["values"], dtype=np.float64),
-            np.asarray(aleph["total"], dtype=np.float64),
-        ),
-        "of": (
-            np.asarray(of["values_thrust"], dtype=np.float64),
-            np.asarray(of["errors_thrust"], dtype=np.float64),
-        ),
-        "ibu": (
-            np.asarray(ibu["values_thrust"], dtype=np.float64),
-            np.asarray(ibu["errors_thrust"], dtype=np.float64),
-        ),
-    }
-
-    ratio_metrics = {}
-    for key, curve in [
-        ("aleph_over_current", "aleph"),
-        ("of_over_current", "of"),
-        ("ibu_over_current", "ibu"),
-    ]:
-        vals, errs = _ratio_over(*curve_arrays[curve], current_vals)
-        finite = np.isfinite(vals) & np.isfinite(errs)
-        valid_vals = vals[finite]
-        valid_errs = errs[finite]
-        ratio_metrics[key] = {
-            "max_abs_deviation_from_unity": float(np.max(np.abs(valid_vals - 1.0))) if valid_vals.size else 0.0,
-            "max_plus_error": float(np.max(valid_vals + valid_errs)) if valid_vals.size else 0.0,
-            "highest_bin_ratio": float(vals[-1]) if vals.size else 0.0,
-            "highest_bin_error": float(errs[-1]) if errs.size else 0.0,
-        }
-
-    chi2_metrics = {
-        "aleph_vs_current": _chi2_ndf(*curve_arrays["aleph"], current_vals, current_errs),
-        "of_vs_current": _chi2_ndf(*curve_arrays["of"], current_vals, current_errs),
-        "ibu_vs_current": _chi2_ndf(*curve_arrays["ibu"], current_vals, current_errs),
-    }
-    metrics = {
-        "ratio_mode": "curve_over_current",
-        "ratio_y_min": 0.75,
-        "ratio_y_max": max(float(ratio_ymax), 1.05),
-        "n_bins": n_aleph_bins,
-        "ratio_metrics": ratio_metrics,
-        "chi2_metrics": chi2_metrics,
-        "input_files": {
-            "legacy_ibu_npz": legacy_ibu_npz_path,
-            "legacy_of_h5": legacy_of_h5_path,
-            "aleph_csv": aleph_csv_path,
-        },
-    }
-    with open(metrics_json_path, "w", encoding="utf-8") as f:
-        json.dump(metrics, f, indent=2)
-    return metrics
 
 
 def nominal_to_array(hist) -> np.ndarray:
@@ -1156,23 +992,6 @@ def main():
         total_abs=final_total_abs,
         aleph_csv_path=aleph_csv_path,
     )
-    comparison_metrics_path = None
-    comparison_metrics = None
-    legacy_inputs = None
-    if args.include_of_ibu_comparison:
-        legacy_inputs = resolve_legacy_input_paths(args, repo_root)
-        comparison_metrics_path = os.path.join(outdir, "of_ibu_comparison_metrics.json")
-        comparison_metrics = compute_of_ibu_comparison_metrics(
-            metrics_json_path=comparison_metrics_path,
-            nominal_edges=nominal_edges,
-            nominal_values=nom,
-            total_abs=total_abs,
-            aleph_csv_path=aleph_csv_path,
-            legacy_ibu_npz_path=legacy_inputs["legacy_ibu_npz"],
-            legacy_of_h5_path=legacy_inputs["legacy_of_h5"],
-            ratio_ymax=args.comparison_ratio_ymax,
-        )
-
     response_counts = load_hist2d(nominal_root, "response_counts")
     resp_diag_frac = response_diag_fraction(response_counts)
     offdiag_corr = np.abs(corr_total - np.diag(np.diag(corr_total)))
@@ -1285,14 +1104,9 @@ def main():
             "reported_first_bin": int(reported_idx[0] + 1),
             "reported_last_bin": int(reported_idx[-1] + 1),
             "theory_weight_diagnostics": theory_weight_diagnostics,
-            "of_ibu_comparison_enabled": bool(args.include_of_ibu_comparison),
         },
         "provenance": collect_provenance(repo_root),
     }
-    if comparison_metrics is not None:
-        summary["outputs"]["of_ibu_comparison_metrics"] = comparison_metrics_path
-        summary["diagnostics"]["of_ibu_input_paths"] = legacy_inputs
-        summary["diagnostics"]["of_ibu_comparison_metrics"] = comparison_metrics
     summary_path = os.path.join(outdir, "uncertainty_breakdown.json")
     with open(summary_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
