@@ -45,6 +45,18 @@ PREAMBLE = r"""
 % bodies are coloured instead of underlined/struck.
 \providecommand{\DIFaddmath}[1]{{\protect\color{blue}#1}}
 \providecommand{\DIFdelmath}[1]{{\protect\color{red}#1}}
+% Float indicator. The body of a figure/table cannot carry \DIFadd: \uwave
+% boxes a subfigure parbox into an LR box, so side-by-side panels each take
+% their own line and overflow the margin. Layout changes inside a float are
+% therefore emitted verbatim and flagged here instead.
+\providecommand{\DIFfigchanged}{{\protect\color{blue}\bfseries [CHANGED]\space}}
+% A deleted heading. \section cannot carry markup -- \uwave around a
+% page-level command that also writes the .toc is fatal -- but dropping it
+% loses the document outline silently. Rendered as struck body text where the
+% heading used to sit: no \addcontentsline, so the table of contents and the
+% section numbering of the NEW version are untouched.
+\providecommand{\DIFdelhead}[1]{%
+  \par\medskip\noindent{\protect\color{red}\bfseries\sout{#1}}\par\medskip}
 %% ---- end diff markup ----
 """
 
@@ -56,7 +68,11 @@ SEPARATOR_RE = re.compile(
     # \begin and \end take their {env} argument with them: matching the bare
     # command would let the {env} group become a separate atom, and wrapping it
     # yields \begin\DIFadd{itemize}, which is a "Missing \endcsname" error.
-    r"(\\\\|&|\\begin\s*\{[^}]*\}|\\end\s*\{[^}]*\}"
+    # The float placement spec goes with it too: "[t!]" left as its own segment
+    # gets word-diffed against "[ht!]" and printed as struck-through literal
+    # text beside the float. Placement is layout, not content -- NEW's value is
+    # carried along with the separator and never marked.
+    r"(\\\\|&|\\begin\s*\{[^}]*\}(?:\[[^\]]*\])?|\\end\s*\{[^}]*\}"
     r"|\\begin\b|\\end\b|\\item\b|\\hline\b|\\cline\b|\n\s*\n)"
 )
 
@@ -66,6 +82,13 @@ FRAGILE_ENV = re.compile(r"\\begin\{(equation|align|eqnarray|tabular|tabularx|ve
 # Commands where a changed argument must be diffed INSIDE the braces. Replacing
 # the whole atom would emit the command twice -- two \caption's in one float, or
 # a \abstract inside \DIFdel in the preamble.
+# Sectioning commands. Deleted, these become \DIFdelhead rather than vanishing.
+HEAD_CMDS = {"section", "subsection", "subsubsection", "paragraph",
+             "subparagraph"}
+
+# Deleted headings rendered as struck body text, for the report.
+DELETED_HEADS = []
+
 RECURSE_CMDS = {
     "abstract", "caption", "title", "section", "subsection", "subsubsection",
     "paragraph", "textbf", "textit", "emph", "texttt", "footnote", "keywords",
@@ -83,6 +106,23 @@ NEVER_MARK_CMDS = {
     "multicolumn", "multirow", "multispan", "hline", "cline",
     # environment delimiters: wrapping one detaches it from its {env} argument
     "begin", "end", "item",
+    # page/display-level commands: these trigger TeX page machinery (\prevdepth,
+    # \par, float placement) that is illegal inside an LR box like \uwave.
+    # Wrap them in \DIFadd/\DIFdel would cause "Improper \prevdepth" or
+    # "Missing $ inserted" errors. Keep them bare for additions, drop for deletions.
+    "FloatBarrier", "clearpage", "cleardoublepage", "newpage", "pagebreak",
+    "noindent", "nobreak", "allowbreak",
+    "appendix", "par", "centering",
+    "hfill", "vfill", "hspace", "vspace",
+    # float-body commands: \caption invokes \caption@hrule -> \hrule which is a
+    # vertical-mode primitive and fails inside an LR box (\uwave). \section and
+    # friends invoke \addcontentsline / page-level hooks. Wrapping any of these
+    # in \DIFadd{...} is fatal. The 1:1 REPLACE case in diff_segment is handled
+    # via RECURSE_CMDS (checked first) so caption text diffs still work; only
+    # INSERT/DELETE runs hitting mark_run need the bare-or-drop behaviour here.
+    "caption", "abstract", "title",
+    "section", "subsection", "subsubsection",
+    "subcaption", "captionof",
 }
 
 # A line containing any of these is structural: it cannot be struck through as
@@ -120,9 +160,54 @@ MATH_ENVS = frozenset("""
 UNRENDERABLE_ENVS = frozenset("""
     figure table tabular tabularx wrapfigure wraptable subfigure minipage
     tikzpicture lstlisting verbatim
+    itemize enumerate description
 """.split())
 
 NOT_ENV, ENV_BODY, ENV_DELIM = 0, 1, 2
+
+# Floats whose body is layout: panels positioned relative to one another. Not
+# the same set as UNRENDERABLE_ENVS -- itemize content, for instance, is prose
+# and marks up fine. subfigure/minipage are here because they are what \uwave
+# actually breaks, and they nest inside the outer float.
+FLOAT_ENVS = frozenset("""
+    figure table wrapfigure wraptable subfigure minipage tikzpicture
+""".split())
+
+# A line inside a float that is nothing but macro calls, whitespace and ties:
+# "\pwpanel[0.495]{pwflag4}{cosTheta}\hfill". Nested braces defeat the simple
+# {[^{}]*} argument pattern, which is deliberate -- a \caption holding \vec{p}
+# is prose and must stay diffable.
+FLOAT_LAYOUT_ONLY_RE = re.compile(
+    r"^(?:\s|\\[a-zA-Z@]+\*?(?:\[[^\]]*\])*(?:\{[^{}]*\})*|[%~]|\\\\)+$")
+
+# Tokens that place or size material. Any of these on a line inside a float
+# means the line is layout even if prose sits beside it.
+FLOAT_LAYOUT_TOKEN_RE = re.compile(
+    r"\\(?:includegraphics|hfill|vfill|hspace|vspace|centering|resizebox"
+    r"|adjustbox|subfloat|rule|raisebox|parbox|begin|end)\b"
+    r"|\\\\|(?<!\\)&")
+
+# Floats whose body changed but carries no markup, reported because the change
+# is real and only the [CHANGED] tag hints at it in the PDF.
+FLOAT_CHANGED = []
+
+# Inert marker: a comment, so a float we fail to tag degrades to a no-op rather
+# than a stray token in the output.
+FLOAT_SENTINEL = "%__DIFFLOATCHANGED__"
+
+
+def is_float_layout(line):
+    r"""Is this line inside-a-float layout rather than caption prose?
+
+    A \caption line is always prose: its argument is the one part of a float
+    body that renders as text and so is the one part markup can survive in.
+    """
+    if "\\caption" in line:
+        return False
+    if not line.strip():
+        return False
+    return bool(FLOAT_LAYOUT_ONLY_RE.match(line)
+                or FLOAT_LAYOUT_TOKEN_RE.search(line))
 
 # Deletions dropped because their environment is gone from NEW: real changes
 # that cannot appear in diff.pdf, so they are reported rather than swallowed.
@@ -208,6 +293,13 @@ def wrap_math(macro, line, standalone):
     if not _brace_balanced(core):
         GUARDED.append(core[:60])
         return line if macro == "DIFaddmath" else ""
+    # & and \\ are alignment separators in LaTeX even inside {groups}: wrapping
+    # a line that contains them in \DIFaddmath{...} splits the cell (&) or
+    # generates a misplaced \cr (\\), both causing "Missing }" or
+    # "Misplaced \cr" errors at \end{align}.
+    if re.search(r"(?<!\\)&|\\\\", core):
+        GUARDED.append(core[:60])
+        return line if macro == "DIFaddmath" else ""
     # a % inside the run would comment out our own closing brace
     sep = "\n" if re.search(r"(?<!\\)%", core) else ""
     marked = "\\%s{%s%s}" % (macro, core, sep)
@@ -251,7 +343,7 @@ ATOM_RE = re.compile(
       (?P<comment>(?<!\\)%[^\n]*\n?)
     | (?P<dmath>\$\$.*?\$\$)
     | (?P<imath>(?<!\\)\$(?:\\.|[^$\\])*\$)
-    | (?P<cmd>\\[A-Za-z@]+\*?(?:\s*\[[^\]]*\])*(?:\s*\{(?:[^{}]|\{[^{}]*\})*\})*)
+    | (?P<cmd>\\[A-Za-z@]+\*?(?:\s*\[[^\]]*\])*(?:\s*\{(?:[^{}]|\{[^{}]*\})*\})*(?:\[[^\]]*\])*)
     | (?P<esc>\\[^A-Za-z])
     | (?P<group>\{(?:[^{}]|\{[^{}]*\})*\})
     | (?P<space>\s+)
@@ -284,6 +376,40 @@ def is_blank(s):
 # end of a run so an unmarked change cannot pass unnoticed.
 GUARDED = []
 
+# Preamble lines whose change is real but is emitted unmarked. Nothing before
+# \begin{document} can carry markup: \DIFadd expands to \uwave, which starts
+# typesetting, so one marked preamble line aborts the build with
+# "Missing \begin{document}". latexdiff has the same rule. The new preamble is
+# copied verbatim and only the body is diffed -- reported, not silent, because
+# an unmarked change is invisible in diff.pdf.
+PREAMBLE_CHANGED = []
+
+# Preamble commands that only STORE their argument for \maketitle to typeset
+# later, inside the document. jheppub does
+#     \renewcommand{\abstract}[1]{\gdef\@abstract{#1}}
+# and emits \@abstract in text mode well after \begin{document}, so markup
+# inside the braces is legal -- unlike markup anywhere else in the preamble,
+# which starts typesetting and gives "Missing \begin{document}". Without this
+# the abstract is the single biggest change a reader would look for and never
+# see marked in diff.pdf.
+PREAMBLE_DIFF_CMDS = ("title", "abstract", "keywords")
+
+# Names whose argument was diffed in place, for the report.
+PREAMBLE_DIFFED = []
+
+# \begin{document} on a line that is not commented out.
+DOC_BEGIN_RE = re.compile(r"^(?:[^%\n]|\\%)*\\begin\{document\}", re.M)
+
+
+def split_preamble(text):
+    r"""Split at the line holding \begin{document}. ("", text) if there is none."""
+    m = DOC_BEGIN_RE.search(text)
+    if not m:
+        return "", text
+    nl = text.find("\n", m.end())
+    i = len(text) if nl == -1 else nl + 1
+    return text[:i], text[i:]
+
 
 def _brace_balanced(s):
     """True if every { in s is closed within s. Escaped \\{ and \\} do not count."""
@@ -311,6 +437,14 @@ def wrap(macro, atoms):
     lead = s[: len(s) - len(s.lstrip())]
     trail = s[len(s.rstrip()):]
     core = s.strip()
+    if (len(core) - len(core.rstrip("\\"))) % 2:
+        # The run ended in a control space -- "Stat.\ " -- and .strip() just took
+        # the space that is part of that command. Emitting "{Stat.\}" turns our
+        # own closing brace into an escaped literal, so the macro runs on and
+        # swallows the rest of the paragraph. Put the space back: it is part of
+        # the control sequence, not layout. (\\ is two backslashes, so a line
+        # break is even and never reaches here.)
+        core += " "
     if not _brace_balanced(core):
         # The run straddles a brace boundary, so wrapping it would close our own
         # macro with someone else's brace. Happens when ATOM_RE cannot take a
@@ -356,8 +490,21 @@ def mark_run(macro, atoms):
             if buf:
                 out.append(wrap(macro, buf))
                 buf = []
-            if macro == "DIFadd":
-                out.append(t)  # keep new structural commands, unmarked
+            if macro == "DIFadd" or cmd_name(t) == "item":
+                # Keep new structural commands unmarked, and always keep \item
+                # bare even in deletions: dropping \item leaves its content
+                # inside \begin{itemize} without a list marker, which is a
+                # hard LaTeX error ("Something's wrong--perhaps a missing \item").
+                out.append(t)
+            elif cmd_name(t) in HEAD_CMDS:
+                # A deleted heading: show the title struck through instead of
+                # dropping it, so a restructured outline is visible rather than
+                # merely reported. The command itself is discarded, so nothing
+                # reaches the .toc or the section counters.
+                sp = split_cmd_arg(t)
+                if sp and sp[1].strip():
+                    out.append("\\DIFdelhead{%s}" % sp[1])
+                    DELETED_HEADS.append(sp[1].strip()[:60])
         else:
             buf.append(t)
     if buf:
@@ -394,14 +541,19 @@ def diff_segment(old, new):
                 oa, na = a[i1], b[j1]
                 name = cmd_name(na)
                 if name and name == cmd_name(oa):
-                    if name in NEVER_MARK_CMDS:
-                        out.append(na)
-                        continue
+                    # RECURSE before NEVER_MARK: commands like \caption are in
+                    # both sets. For a 1:1 replace we can recurse into the arg
+                    # and produce \caption{diff} safely; NEVER_MARK only applies
+                    # to the mark_run INSERT/DELETE path where the command cannot
+                    # be wrapped in an LR box at all.
                     if name in RECURSE_CMDS:
                         so, sn = split_cmd_arg(oa), split_cmd_arg(na)
                         if so and sn:
                             out.append(sn[0] + diff_segment(so[1], sn[1]) + sn[2])
                             continue
+                    if name in NEVER_MARK_CMDS:
+                        out.append(na)
+                        continue
             # mark_run, not wrap: a replaced run can contain a never-mark
             # command. Wrapping a deleted \\ref inside \\DIFdel leaves the diff
             # citing a label that the new version removed -- an undefined
@@ -422,8 +574,15 @@ def diff_line(old, new):
             out.append("".join(sn[j1:j2]))
         elif tag == "delete":
             for seg in so[i1:i2]:
-                out.append(seg if (is_separator(seg) or is_blank(seg))
-                           else mark_run("DIFdel", atomise(seg)))
+                # A deleted separator is DROPPED, never echoed. Every other
+                # branch below emits NEW's separators, so echoing OLD's too
+                # would put both sides' & in one row: when a table gains a
+                # column, the marked row ends up with more cells than the
+                # tabular has, and stripping the \DIFdel groups no longer
+                # reproduces the new source. Only the cell CONTENT is struck.
+                if is_separator(seg) or is_blank(seg):
+                    continue
+                out.append(mark_run("DIFdel", atomise(seg)))
         elif tag == "insert":
             for seg in sn[j1:j2]:
                 out.append(seg if (is_separator(seg) or is_blank(seg))
@@ -444,7 +603,7 @@ def diff_line(old, new):
     return "".join(out)
 
 
-def diff_file(old_text, new_text):
+def diff_body(old_text, new_text):
     r"""Line-level diff, with word-level markup inside changed lines.
 
     Line granularity at the top level is what keeps tabular material safe: a
@@ -510,9 +669,44 @@ def diff_file(old_text, new_text):
         else:
             out.append(line)
 
+    def in_float(at, stacks, lines):
+        return any(n in FLOAT_ENVS for n in stacks[min(at, len(lines))])
+
+    def float_layout_block(i1, i2, j1, j2):
+        r"""Is this changed block layout inside a float?
+
+        True when either side sits in a float and any line involved is layout
+        rather than caption prose. Markup there is not merely ugly: \DIFadd
+        around a subfigure makes an LR box of a parbox, which breaks the
+        side-by-side layout and runs the panels off the page. The panels also
+        get line-matched against unrelated old caption prose, so the markup
+        would be meaningless even if it typeset.
+        """
+        if not (in_float(i1, ostack, ol) or in_float(j1, nstack, nl)):
+            return False
+        return (any(is_float_layout(x) for x in ol[i1:i2])
+                or any(is_float_layout(x) for x in nl[j1:j2]))
+
+    def emit_float_verbatim(i1, i2, j1, j2):
+        """Emit NEW's lines untouched and flag the float for a caption tag."""
+        for line in ol[i1:i2]:
+            if (line.strip() and not FLOAT_PLUMBING_RE.match(line)
+                    and not is_float_layout(line)):
+                FLOAT_CHANGED.append(line.strip()[:60])
+        out.append(FLOAT_SENTINEL)
+        out.extend(nl[j1:j2])
+
     sm = SequenceMatcher(None, ol, nl, autojunk=False)
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
-        if tag == "equal":
+        # j2 > j1 only: the overflow this guards against comes from \DIFadd
+        # wrapping NEW panel lines, and from old float prose being line-matched
+        # against them. A pure deletion inside a float produces no \DIFadd, and
+        # del_line already strikes it where that renders or drops it into the
+        # DROPPED report where it does not -- which is better than dropping it
+        # here, because a deleted float in a still-\input file can be shown.
+        if tag != "equal" and j2 > j1 and float_layout_block(i1, i2, j1, j2):
+            emit_float_verbatim(i1, i2, j1, j2)
+        elif tag == "equal":
             out.extend(nl[j1:j2])
         elif tag == "delete":
             for k in range(i1, i2):
@@ -542,8 +736,13 @@ def diff_file(old_text, new_text):
                     add_line(j)
             else:
                 # unequal block: word-diff the joined text if neither side is
-                # tabular, else fall back to emitting the new lines
-                if not any(TABULAR_LINE_RE.search(x) for x in olds + news):
+                # tabular and neither side introduces structural separators
+                # (\begin{...}, \end{...}, \\). When the new content contains
+                # such separators, diff_line would wrap figure/table body lines
+                # in \DIFadd{\uwave{...}} which is invalid LaTeX. Fall back to
+                # per-line del + verbatim new in that case.
+                if (not any(TABULAR_LINE_RE.search(x) for x in olds + news)
+                        and not any(SEPARATOR_RE.search(x) for x in olds + news)):
                     out.append(diff_line("\n".join(olds), "\n".join(news)))
                 else:
                     for line in olds:
@@ -551,6 +750,71 @@ def diff_file(old_text, new_text):
                             out.append(mark_run("DIFdel", atomise(line)))
                     out.extend(news)
     return "\n".join(out)
+
+
+def find_cmd_arg(text, name):
+    r"""Span of the argument of \name{...}: (start, end) of the body, or None.
+
+    Skips an occurrence that is commented out, so the block of alternative
+    \title candidates parked behind % in main.tex cannot be picked up instead
+    of the live one.
+    """
+    for m in re.finditer(r"\\" + name + r"\s*\{", text):
+        bol = text.rfind("\n", 0, m.start()) + 1
+        if re.search(r"(?<!\\)%", text[bol:m.start()]):
+            continue
+        o = m.end() - 1
+        e = _match_brace(text, o)
+        if e != -1:
+            return o + 1, e - 1
+    return None
+
+
+def diff_preamble(opre, npre):
+    r"""Mark up the text-bearing preamble commands; leave the rest verbatim.
+
+    Returns the new preamble with those arguments diffed in place, plus the
+    masked (opre, npre) pair for the unmarked-change report, so a line that
+    IS now marked is not also reported as invisible.
+    """
+    omask, nmask = opre, npre
+    for name in PREAMBLE_DIFF_CMDS:
+        oa, na = find_cmd_arg(opre, name), find_cmd_arg(npre, name)
+        if not (oa and na):
+            continue
+        oarg, narg = opre[oa[0]:oa[1]], npre[na[0]:na[1]]
+        if oarg == narg:
+            continue
+        marked = diff_line(oarg, narg)
+        # Splice into npre last-first is unnecessary: one command is handled
+        # per iteration and the spans are recomputed from the ORIGINAL npre
+        # each time, so do the substitution on a fresh copy and rebuild.
+        npre = npre[:na[0]] + marked + npre[na[1]:]
+        omask = omask[:oa[0]] + "\x00" + omask[oa[1]:]
+        nmask = nmask[:na[0]] + "\x00" + nmask[na[1]:]
+        PREAMBLE_DIFFED.append(name)
+    return npre, omask, nmask
+
+
+def diff_file(old_text, new_text):
+    r"""Diff a file. Only \maketitle-deferred commands are marked in the preamble."""
+    npre, nbody = split_preamble(new_text)
+    if not npre:
+        return diff_body(old_text, new_text)
+    opre, obody = split_preamble(old_text)
+    omask, nmask = opre, npre
+    if opre.strip() and opre != npre:
+        npre, omask, nmask = diff_preamble(opre, npre)
+    if omask.strip() and omask != nmask:
+        sm = SequenceMatcher(None, omask.split("\n"), nmask.split("\n"),
+                             autojunk=False)
+        for tag, i1, i2, j1, j2 in sm.get_opcodes():
+            if tag == "equal":
+                continue
+            for line in nmask.split("\n")[j1:j2] or omask.split("\n")[i1:i2]:
+                if line.strip():
+                    PREAMBLE_CHANGED.append(line.strip()[:60])
+    return npre + diff_body(obody, nbody)
 
 
 def _match_brace(s, i):
@@ -583,67 +847,142 @@ def repair_singletons(text):
     """
     fixed = 0
     for name in REPAIR_CMDS:
-        pat = "\\DIFdel{\\" + name + "{"
-        while True:
-            k = text.find(pat)
-            if k == -1:
-                break
-            # outer \DIFdel{...}
-            dopen = k + len("\\DIFdel")
-            dend = _match_brace(text, dopen)
-            if dend == -1:
-                break
-            inner_del = text[dopen + 1 : dend - 1]           # \cmd{A}
-            rest = text[dend:]
-            m = re.match(r"(\s*)\\DIFadd\{", rest)
-            if not m:
-                # deletion with no paired insertion: keep the command, drop markup
-                text = text[:k] + inner_del + rest
+        for star in ("", "*"):
+            pat = "\\DIFdel{\\" + name + star + "{"
+            while True:
+                k = text.find(pat)
+                if k == -1:
+                    break
+                # outer \DIFdel{...}
+                dopen = k + len("\\DIFdel")
+                dend = _match_brace(text, dopen)
+                if dend == -1:
+                    break
+                inner_del = text[dopen + 1 : dend - 1]           # \cmd{A}
+                rest = text[dend:]
+                m = re.match(r"(\s*)\\DIFadd\{", rest)
+                if not m:
+                    # deletion with no paired insertion: keep the command, drop markup
+                    text = text[:k] + inner_del + rest
+                    fixed += 1
+                    continue
+                aopen = dend + m.end() - 1
+                aend = _match_brace(text, aopen)
+                if aend == -1:
+                    break
+                inner_add = text[aopen + 1 : aend - 1]           # \cmd{B}
+                sa, sb = split_cmd_arg(inner_del), split_cmd_arg(inner_add)
+                if sa and sb:
+                    repl = sb[0] + diff_segment(sa[1], sb[1]) + sb[2]
+                else:
+                    repl = inner_add
+                text = text[:k] + repl + text[aend:]
                 fixed += 1
-                continue
-            aopen = dend + m.end() - 1
-            aend = _match_brace(text, aopen)
-            if aend == -1:
-                break
-            inner_add = text[aopen + 1 : aend - 1]           # \cmd{B}
-            sa, sb = split_cmd_arg(inner_del), split_cmd_arg(inner_add)
-            if sa and sb:
-                repl = sb[0] + diff_segment(sa[1], sb[1]) + sb[2]
-            else:
-                repl = inner_add
-            text = text[:k] + repl + text[aend:]
-            fixed += 1
 
     # A lone \DIFadd{\caption{...}} -- an inserted caption, with no deletion
     # beside it for the loop above to pair it with. \uwave around a \caption
     # boxes the whole float caption and gives "Missing \endgroup inserted", so
     # the markup moves inside the braces. This runs after the pairing loop, so
-    # anything left here is genuinely unpaired.
+    # anything left here is genuinely unpaired. Both plain and starred command
+    # variants (e.g. \subsection*) are handled.
     for name in REPAIR_CMDS:
-        pat = "\\DIFadd{\\" + name + "{"
-        at = 0
-        while True:
-            k = text.find(pat, at)
-            if k == -1:
-                break
-            aopen = k + len("\\DIFadd")
-            aend = _match_brace(text, aopen)
-            if aend == -1:
-                break
-            inner = text[aopen + 1 : aend - 1]          # \cmd{B}
-            sb = split_cmd_arg(inner)
-            if sb:
-                repl = sb[0] + wrap("DIFadd", [sb[1]]) + sb[2]
-            else:
-                repl = inner                            # keep it, unmarked
-            text = text[:k] + repl + text[aend:]
-            at = k + len(repl)
-            fixed += 1
+        for star in ("", "*"):
+            pat = "\\DIFadd{\\" + name + star + "{"
+            at = 0
+            while True:
+                k = text.find(pat, at)
+                if k == -1:
+                    break
+                aopen = k + len("\\DIFadd")
+                aend = _match_brace(text, aopen)
+                if aend == -1:
+                    break
+                inner = text[aopen + 1 : aend - 1]          # \cmd{B}
+                sb = split_cmd_arg(inner)
+                if sb:
+                    repl = sb[0] + wrap("DIFadd", [sb[1]]) + sb[2]
+                else:
+                    repl = inner                            # keep it, unmarked
+                text = text[:k] + repl + text[aend:]
+                at = k + len(repl)
+                fixed += 1
 
     # Emitting a never-mark command bare can leave a stray space after a
     # non-breaking tilde ("Sec.~ \ref{...}"), which prints a double space.
     text = re.sub(r"~[ \t]+(\\(?:ref|eqref|cite|citep|citet)\b)", r"~\1", text)
+
+    # Dropping a never-mark command out of a DELETED run splits one deletion
+    # into two \DIFdel groups with OLD's surrounding space stranded between
+    # them, unmarked: "\DIFdel{...Sec.~} \DIFdel{informs...}". That space is
+    # deleted content, so it belongs inside the strikeout -- otherwise the rule
+    # visibly breaks mid-sentence, and stripping the groups to recover the new
+    # source leaves a space the new source does not have. Merge the pair.
+    # Horizontal whitespace only: joining across a newline would run two source
+    # lines together, and a blank line is a paragraph break, not a space.
+    merge_del = re.compile(r"\\DIFdel\{((?:[^{}\\]|\\.|\{[^{}]*\})*)\}[ \t]+\\DIFdel\{")
+    # Not counted in `fixed`: that number is reported as "singleton repairs"
+    # and merging is a normalisation, not a repair of a singleton command.
+    while True:
+        text, n = merge_del.subn(lambda m: "\\DIFdel{" + m.group(1) + " ", text)
+        if not n:
+            break
     return text, fixed
+
+
+CAPTION_RE = re.compile(r"\\caption\*?\s*(?:\[[^\]]*\])?\s*\{")
+INNER_FLOAT = frozenset(("subfigure", "minipage"))
+
+
+def tag_changed_floats(text):
+    r"""Turn each float sentinel into a [CHANGED] tag on that float's caption.
+
+    Returns (text, n_tagged, n_untagged). A sentinel with no reachable caption
+    is dropped and counted: the change is still named in the FLOAT_CHANGED
+    report, so it is not lost, just not tagged in the PDF.
+    """
+    if FLOAT_SENTINEL not in text:
+        return text, 0, 0
+    lines = text.split("\n")
+    _codes, stacks, _math = env_lines(text)
+
+    def floaty(i):
+        return any(n in FLOAT_ENVS for n in stacks[min(i, len(lines))])
+
+    targets, untagged = set(), 0
+    for i, line in enumerate(lines):
+        if FLOAT_SENTINEL not in line:
+            continue
+        # A deletion can land just before the \begin{figure} it belongs to, so
+        # look a little way forward before giving up.
+        at = next((k for k in range(i, min(i + 4, len(lines))) if floaty(k)), None)
+        if at is None:
+            untagged += 1
+            continue
+        a = at
+        while a > 0 and floaty(a - 1):
+            a -= 1
+        b = at
+        while b + 1 < len(lines) and floaty(b + 1):
+            b += 1
+        # The float's own caption, not a panel's: prefer a \caption outside any
+        # subfigure/minipage. \pwpanel hides its \caption{} inside the macro,
+        # but an explicit panel in the source would otherwise steal the tag.
+        outer = [k for k in range(a, b + 1)
+                 if CAPTION_RE.search(lines[k])
+                 and not any(n in INNER_FLOAT for n in stacks[k])]
+        inner = [k for k in range(a, b + 1) if CAPTION_RE.search(lines[k])]
+        cap = (outer or inner)
+        if not cap:
+            untagged += 1
+            continue
+        targets.add(cap[-1])
+
+    for k in sorted(targets):
+        m = CAPTION_RE.search(lines[k])
+        lines[k] = lines[k][:m.end()] + "\\DIFfigchanged " + lines[k][m.end():]
+
+    kept = [l for l in lines if FLOAT_SENTINEL not in l]
+    return "\n".join(kept), len(targets), untagged
 
 
 def inject_preamble(text):
@@ -676,6 +1015,7 @@ def main():
     old_rel = tex_files(old_dir)
 
     changed, added, removed = [], [], []
+    float_tags = float_untagged = 0
     for rel in new_rel:
         o, n = os.path.join(old_dir, rel), os.path.join(new_dir, rel)
         nt = open(n, encoding="utf-8").read()
@@ -692,6 +1032,9 @@ def main():
             continue
         marked = diff_file(ot, nt)
         marked, nrep = repair_singletons(marked)
+        marked, ntag, nuntag = tag_changed_floats(marked)
+        float_tags += ntag
+        float_untagged += nuntag
         open(os.path.join(out_dir, rel), "w", encoding="utf-8").write(marked)
         na = marked.count("\\DIFadd{")
         nd = marked.count("\\DIFdel{")
@@ -714,6 +1057,7 @@ def main():
         ot = open(os.path.join(old_dir, rel), encoding="utf-8").read()
         marked = diff_file(ot, "")
         marked, _ = repair_singletons(marked)
+        marked, _, _ = tag_changed_floats(marked)
         dest = os.path.join(out_dir, rel)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         open(dest, "w", encoding="utf-8").write(marked)
@@ -738,6 +1082,36 @@ def main():
         print(f"       simplify the surrounding command if the highlight matters:")
         for g in GUARDED:
             print(f"         {g!r}")
+    if DELETED_HEADS:
+        print(f"  NOTE {len(DELETED_HEADS)} deleted heading(s) shown as struck body")
+        print(f"       text: \\section cannot carry markup, so the title is struck in")
+        print(f"       place and kept out of the table of contents:")
+        for h in DELETED_HEADS:
+            print(f"         {h!r}")
+    if PREAMBLE_DIFFED:
+        names = ", ".join("\\" + n for n in sorted(set(PREAMBLE_DIFFED)))
+        print(f"  NOTE preamble {names} marked up in place: these store their")
+        print(f"       argument for \\maketitle to typeset inside the document, so")
+        print(f"       unlike the rest of the preamble they can carry markup.")
+    if PREAMBLE_CHANGED:
+        print(f"  NOTE {len(PREAMBLE_CHANGED)} preamble line(s) changed and are "
+              f"emitted UNMARKED: markup")
+        print(f"       before \\begin{{document}} does not compile, so the change is "
+              f"real but is")
+        print(f"       not highlighted in diff.pdf; see `git diff`:")
+        for g in PREAMBLE_CHANGED:
+            print(f"         {g!r}")
+    if float_tags or FLOAT_CHANGED:
+        print(f"  NOTE {float_tags} float(s) tagged [CHANGED] in diff.pdf: a figure or")
+        print(f"       table body cannot carry markup -- \\DIFadd around a subfigure")
+        print(f"       boxes it and runs the panels off the page -- so the body is")
+        print(f"       emitted verbatim and only its caption is tagged.")
+        if float_untagged:
+            print(f"       {float_untagged} more had no caption to tag; see `git diff`.")
+        if FLOAT_CHANGED:
+            print(f"       old content replaced inside those floats, not shown struck:")
+            for g in FLOAT_CHANGED:
+                print(f"         {g!r}")
     if DROPPED:
         print(f"  WARN {len(DROPPED)} deleted line(s) DROPPED: the figure, table or")
         print(f"       tabular that held them is gone from the new version, so they")

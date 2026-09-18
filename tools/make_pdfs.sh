@@ -118,7 +118,10 @@ def mb(s, i):
 def resolve(t):
     # math variants first: they are longer names, and \DIFaddmath{ does not
     # contain \DIFadd{ so the order only matters for readability
-    for macro in ("DIFaddmath", "DIFdelmath", "DIFadd", "DIFdel"):
+    # DIFdelhead before DIFdel is not strictly needed (the search patterns
+    # include the brace, so "\DIFdelhead{" never matches "\DIFdel{"), but it
+    # keeps the deletion-only macros together.
+    for macro in ("DIFaddmath", "DIFdelmath", "DIFdelhead", "DIFadd", "DIFdel"):
         pat = "\\" + macro + "{"
         while True:
             k = t.find(pat)
@@ -129,8 +132,25 @@ def resolve(t):
     # a standalone \DIFdelmath -- one whose environment is gone from the new
     # version -- carries its own \[...\]; removing the body leaves the shell
     t = re.sub(r"\\\[\s*\\\]", "", t)
+    # The [CHANGED] tag texdiff puts on a float caption where the float body
+    # was emitted verbatim because markup cannot survive inside it.
+    t = re.sub(r"\\DIFfigchanged\s*", "", t)
     return t
+def drop_empty_items(s):
+    r"""Remove \item tokens with no content.
+
+    texdiff keeps \item bare even inside a deletion -- dropping it would leave
+    the struck text in the list with no marker, which is a hard LaTeX error --
+    so a bullet whose text was entirely removed legitimately appears in the
+    diff as a lone \item. That is the correct rendering (a struck-through
+    bullet), but it has no counterpart in the new source. Applied to BOTH sides
+    so this can only ever ignore an empty item, never mask a content change.
+    """
+    return re.sub(r"\\item(?![a-zA-Z])(?=\s*(?:\\item(?![a-zA-Z])|\\end\{))", "", s)
+
+
 def norm(s):
+    s = drop_empty_items(s)
     s = re.sub(r"\s+", " ", s)
     # whitespace after a tie is not a content difference: emitting a never-mark
     # command bare can turn "Sec.~\ref{x}" into "Sec.~ \ref{x}", same rendering
