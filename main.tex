@@ -25,7 +25,7 @@
 \usepackage{eso-pic}
 
 \preprint{EPA-26-001}
-\makeatletter\renewcommand\afterProceedingsSpace{\vskip8pt}\makeatother % tighten gap between preprint number and title
+\makeatletter\renewcommand\afterProceedingsSpace{\kern-12pt}\makeatother % tighten gap between preprint number and title (kern, since the title's flushleft \addvspace would override a vskip)
 
 \title{Agentic AI – Physicist Collaboration in Experimental Particle Physics: A Proof-of-Concept Measurement with LEP Open Data}
 
