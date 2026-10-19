@@ -24,7 +24,7 @@
 
 \usepackage{eso-pic}
 
-\title{Agentic AI---Physicist Collaboration in Experimental Particle Physics: A Proof-of-Concept Measurement with LEP Open Data}
+\title{Agentic AI – Physicist Collaboration in Experimental Particle Physics: A Proof-of-Concept Measurement with LEP Open Data}
 
 \author[a]{Anthony Badea,}
 \author[c]{Marcello Maggi,}
@@ -37,7 +37,7 @@
 \author[b]{Yu-Chen Chen,}
 \author[b]{Tzu-An Sheng,}
 \author[b]{Yen-Jie Lee,}
-\author[]{The Electron-Positron Alliance\footnote{The authors dedicate this work to the memory of Prof.\ Mauro De Palma (University of Bari, Italy), who passed away recently. He coordinated the Bari group's activities in the ALEPH experiment and championed the use of ALEPH data to explore new research frontiers. This work continues the scientific vision he so enthusiastically supported.}}
+\author[]{The Electron-Positron Alliance}
 
 
 \affiliation[a]{Enrico Fermi Institute, University of Chicago, Chicago, IL 60637, USA}
@@ -58,6 +58,20 @@ Our work suggests that precision physics, leveraging the open LEP data and advan
 }
 
 \keywords{quantum chromodynamics, AI agents, electron-positron collisions, event shapes}
+
+% Dedication on its own page between the title page and the table of contents
+\renewcommand\beforetochook{%
+  \thispagestyle{empty}%
+  \vspace*{\fill}%
+  \begin{center}
+  \begin{minipage}{0.75\textwidth}
+  \centering\itshape
+  The authors dedicate this work to the memory of Prof.\ Mauro De Palma (University of Bari, Italy), who passed away recently. He coordinated the Bari group's activities in the ALEPH experiment and championed the use of ALEPH data to explore new research frontiers. This work continues the scientific vision he so enthusiastically supported.
+  \end{minipage}
+  \end{center}
+  \vspace*{\fill}%
+  \newpage
+  \pagestyle{myplain}\pagenumbering{roman}}
 
 \begin{document}
 
