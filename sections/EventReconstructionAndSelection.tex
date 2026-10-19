@@ -1,7 +1,7 @@
-\section{Event reconstruction and selection}
+\section{Event Reconstruction and Selection}
 \label{sec:event_selection}
 
-\subsection{Object definitions}
+\subsection{Object Definitions}
 \label{sec:particle_categories}
 
 The archived reconstruction builds energy-flow candidates from combined
@@ -28,7 +28,7 @@ measurements, while neutral particle candidates utilize the calorimeter. The obj
 
 \noindent $V^0$ candidates (\texttt{pwflag}=3) include $K_S$ and $\Lambda$ from displaced-vertex reconstruction. These objects enter the thrust sum with their measured momentum vector rather than individual decay products, which is consistent with treating them as single hadronic objects for event-shape purposes. Their contribution to the thrust numerator and denominator is captured by the neutral-response systematic variations.
 
-\subsection{Object and event selections}
+\subsection{Object and Event Selections}
 \label{sec:object_selection}
 
 Table~\ref{tab:particle_selection_summary} lists the object-level selection. These criteria define which reconstructed objects are propagated into thrust and therefore which detector effects enter the response model. They are imposed on the reconstructed collection only; the generator-level particles of the same events are retained without them. Here $d_0$ and $z_0$ are the transverse and longitudinal impact parameters of the track with respect to the per-event reconstructed primary vertex. Both are taken from the archived reconstruction. $N_{\mathrm{TPC}}$ is the number of TPC coordinates associated with the track.
@@ -37,7 +37,7 @@ Table~\ref{tab:particle_selection_summary} lists the object-level selection. The
 \centering
 \begin{tabular}{@{}p{0.37\textwidth}p{0.57\textwidth}@{}}
 \hline
-Object variable & Requirement \\
+Object Variable & Requirement \\
 \hline
 Charged category & \texttt{pwflag}\,$\in[0,2]$ \\
 Charged acceptance & $|\cos\theta|\le 0.94$ \\
@@ -62,7 +62,7 @@ The hadronic event selection is summarized in Table~\ref{tab:event_selection_sum
 \centering
 \begin{tabular}{@{}p{0.37\textwidth}p{0.57\textwidth}@{}}
 \hline
-Event variable & Requirement \\
+Event Variable & Requirement \\
 \hline
 % Ntuple preselection & \texttt{passesNTupleAfterCut} = 1 \\
 Total charged energy & $E_{\mathrm{trk}}^{\mathrm{tot}}\ge 15$ GeV \\
@@ -77,12 +77,12 @@ Total multiplicity & $N_{\mathrm{trk}}+N_{\mathrm{neu}}\ge 13$ \\
 
 % An earlier iteration of this analysis rejected \texttt{pwflag}=5 objects in $-0.19\le\cos\theta<-0.18$, a narrow window corresponding where a detector level enhancement in the particle yield is observed but not fully understood. This yield has negligible effect on the thrust measurement and is covered within a systematic variation affecting the neutral particle acceptance.
 
-\subsection{Data-MC kinematic checks}
+\subsection{Data-MC Kinematic Checks}
 
-The agreement between the data and MC samples is assessed below. The particle and track level distributions are shown after all selections. The energy-flow candidates are categorized as charged tracks (Fig.~\ref{fig:pwflag0_full}), charged lepton 1 (electron) candidates (Fig.~\ref{fig:pwflag1_full}), charged lepton 2 (muon) candidates (Fig.~\ref{fig:pwflag2_full}), neutral long-lived particles that decay to two charged tracks ($V^{0}$) (Fig.~\ref{fig:pwflag3_full}), photons (Fig.~\ref{fig:pwflag4_full}), and neutral hadrons (Fig.~\ref{fig:pwflag5_full}) based on the reconstructed properties utilizing different detector subsystems. Event-level variables used for hadronic selection are shown in Fig.~\ref{fig:event_selection_observables}. The selections on these observables define the phase space used to build detector response and unfolded event-shape spectra. The data-MC agreement is in general quite good with some mismodeling observed in particular for the neutral particles.
+The agreement between the data and MC samples is assessed below. The particle and track level distributions are shown after all selections. The energy-flow candidates are categorized as charged tracks (Figure~\ref{fig:pwflag0_full}), charged lepton 1 (electron) candidates (Figure~\ref{fig:pwflag1_full}), charged lepton 2 (muon) candidates (Figure~\ref{fig:pwflag2_full}), neutral long-lived particles that decay to two charged tracks ($V^{0}$) (Figure~\ref{fig:pwflag3_full}), photons (Figure~\ref{fig:pwflag4_full}), and neutral hadrons (Figure~\ref{fig:pwflag5_full}) based on the reconstructed properties utilizing different detector subsystems. Event-level variables used for hadronic selection are shown in Figure~\ref{fig:event_selection_observables}. The selections on these observables define the phase space used to build detector response and unfolded event-shape spectra. The data-MC agreement is in general quite good with some mismodeling observed in particular for the neutral particles.
 
 Several effects are visible in these distributions. An enhancement near $\cos\theta=0$
-appears in both data and simulation for charged tracks, as shown in Figure~\ref{fig:pwflag0_cosTheta}. It originates from the fixed floating-point precision used when the archived sample was reprocessed and will be addressed in a subsequent reprocessing. Narrow peaks at $E\simeq|\vec{p}|\simeq45$~GeV appear in the charged-track (Figures~\ref{fig:pwflag0_pmag},~\ref{fig:pwflag0_pt},~\ref{fig:pwflag0_energy}) and $V^{0}$ (Figures~\ref{fig:pwflag3_pmag},~\ref{fig:pwflag3_pt},~\ref{fig:pwflag3_energy}) spectra of the reconstructed simulation but not at generator level. These are reconstruction-level effects, and their origins remain under study. The muon $\phi$ spectrum in Figure~\ref{fig:pwflag2_phi} shows an enhancement present only at generator level, which is believed to arise from the processing of the archived simulation. The $\mathrm{N}_\mathrm{trk}$ oscillatory structure for the generator-level distributions in Figure~\ref{fig:ntrk} is an artifact of the following: charged particles are produced in pairs, so even bins are populated, while radiation effects populate odd bins. The impact of these effects on the thrust spectrum is negligible.
+appears in both data and simulation for charged tracks, as shown in Figure~\ref{fig:pwflag0_cosTheta}. It originates from the fixed floating-point precision used when the archived sample was reprocessed and will be addressed in a subsequent reprocessing. Narrow peaks at $E\simeq|\vec{p}|\simeq45$~GeV appear in the charged-track (Figures~\ref{fig:pwflag0_pt},~\ref{fig:pwflag0_pmag},~\ref{fig:pwflag0_energy}) and $V^{0}$ (Figures~\ref{fig:pwflag3_pt},~\ref{fig:pwflag3_pmag},~\ref{fig:pwflag3_energy}) spectra of the reconstructed simulation but not at generator level. These are reconstruction-level effects, and their origins remain under study. The muon $\phi$ spectrum in Figure~\ref{fig:pwflag2_phi} shows an enhancement present only at generator level, which is believed to arise from the processing of the archived simulation. The $\mathrm{N}_\mathrm{trk}$ oscillatory structure for the generator-level distributions in Figure~\ref{fig:ntrk} is an artifact of the following: charged particles are produced in pairs, so even bins are populated, while radiation effects populate odd bins. The impact of these effects on the thrust spectrum is negligible.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -165,7 +165,7 @@ appears in both data and simulation for charged tracks, as shown in Figure~\ref{
 \pwpanel{pwflag3}{energy}\hfill
 \pwpanel{pwflag3}{mass}
 \vspace*{\fill}
-\caption{Kinematics for V$^{0}$ candidates: (a) $\cos\theta$, (b) $\phi$, (c) $|\vec{p}|$, (d) $d_{0}$, (e) $z_{0}$, (f) $N_{\mathrm{TPC}}$, (g) energy, and (h) mass.}
+\caption{Kinematics for $V^{0}$ candidates: (a) $\cos\theta$, (b) $\phi$, (c) $p_{\mathrm{T}}$, (d) $|\vec{p}|$, (e) $d_{0}$, (f) $z_{0}$, (g) $N_{\mathrm{TPC}}$, (h) energy, and (i) mass.}
 \label{fig:pwflag3_full}
 \end{figure}
 
@@ -204,7 +204,7 @@ appears in both data and simulation for charged tracks, as shown in Figure~\ref{
 \vspace{0.5em}
 \sfpanel[0.495]{eCh}\hfill
 \sfpanel[0.495]{cosThetaSph}
-\caption{Event-level observables used in the nominal hadronic selection; legends include detector-level data/MC and generator-level references. The MC\,Gen and MC\,GenBefore ratios display an even-odd staggering: generator-level charged multiplicity has an approximately 6:1 even-to-odd ratio (arising from the Z-decay net-charge constraint and the specific ALEPH Pythia~6 particle record), while reconstruction efficiency losses smear individual tracks one at a time and equalise the even/odd balance in data and MC\,Reco. MC\,Reco is the relevant comparison for the analysis.}
+\caption{Event-level observables used in the nominal hadronic selection; legends include detector-level data/MC and generator-level references. The (a) number of charged tracks, (b) number of charged tracks plus neutral particles, (c) total charged energy, and (d) cosine of the sphericity axis polar angle are shown. The MC\,Gen and MC\,GenBefore ratios display an even-odd staggering: generator-level charged multiplicity has an approximately 6:1 even-to-odd ratio (arising from the Z-decay net-charge constraint and the specific ALEPH Pythia~6 particle record), while reconstruction efficiency losses smear individual tracks one at a time and equalise the even/odd balance in data and MC\,Reco. MC\,Reco is the relevant comparison for the analysis.}
 \label{fig:event_selection_observables}
 \end{figure}
 

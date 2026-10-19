@@ -1,16 +1,16 @@
-\section{Systematic uncertainties}
+\section{Systematic Uncertainties}
 \label{sec:systematics}
 
 Systematic uncertainties arise from several components: data statistical, MC statistical, unfolding-regularization, experimental variations, theory unfolding prior, hadronic event-selection correction, and ISR correction. The sections below describe each component.
 
-\subsection{Statistical uncertainty}
+\subsection{Statistical Uncertainty}
 \label{sec:stat_uncertainty}
 
 The data statistical uncertainty is propagated analytically by RooUnfold through the IBU iteration chain, without toy-MC sampling, yielding a full statistical covariance matrix $\mathrm{Cov}^{(\mathrm{stat})}_{ij}$. The per-bin fractional uncertainty $\Delta_{\mathrm{stat}}(j)=\sqrt{\mathrm{Cov}^{(\mathrm{stat})}_{jj}}/U_j^{\mathrm{corr}}$ is typically below $2\%$ in the central range and nearly uniform across the spectrum. The uncertainty is shown in Figure~\ref{fig:unc_comp_stat_iter}.
 
 MC statistical uncertainties enter the budget through the two corrections derived from finite simulated samples: the MC statistical uncertainty of the ISR-off and ISR-on samples is propagated onto $C_{\mathrm{ISR}}(j)$, and the archived-MC statistical uncertainty of $N_{\mathrm{genBefore}}$ and $N_{\mathrm{gen}}$ is propagated onto the hadronic event-selection correction $C_{\mathrm{had}}(j)$. The finite statistics of the response matrix itself are propagated separately, by giving every matched simulated event a Poisson weight and re-unfolding the data over 200 such replicas; the sample covariance of the resulting spectra is taken as $\mathrm{Cov}^{(\mathrm{MCstat})}_{ij}$. This is required because \texttt{RooUnfold::kCovariance} transports the measured data covariance only, and because the simulated sample is smaller than the data sample, so the response statistical term exceeds the data statistical term in every bin.
 
-\subsection{Unfolding regularization uncertainty}
+\subsection{Unfolding Regularization Uncertainty}
 \label{sec:regularization_uncertainty}
 
 The unfolding regularization uncertainty is closely related: two additional unfolding passes at $N_{\mathrm{iter}}=4$ and $N_{\mathrm{iter}}=6$ quantify the sensitivity of the result to the regularization choice. The iteration envelope $\Delta_{\mathrm{iter}}(j)=\max(|\delta_{\mathrm{iter4}}(j)|,|\delta_{\mathrm{iter6}}(j)|)$
@@ -31,7 +31,7 @@ relative to the nominal $N_{\mathrm{iter}}=5$.}
 
 \FloatBarrier
 
-\subsection{Experimental systematic uncertainties}
+\subsection{Experimental Systematic Uncertainties}
 \label{sec:exp_systematics}
 
 Experimental systematic uncertainties are handled following the standard ALEPH procedure~\cite{Heister:2003aj} to vary individual selections, rerunning the full analysis chain, and measuring the difference with respect to the nominal as the uncertainty. The explored systematics are defined below.
@@ -59,7 +59,7 @@ does not enter the uncertainty.}
 \label{fig:unc_comp_exp}
 \end{figure}
 
-The neutral-object response variations are chosen in preference to the standard ALEPH approach of removing all neutral particles within 1-2 GeV from the event~\cite{Heister:2003aj}. The reason is that
+The neutral-object response variations are chosen in preference to the standard ALEPH approach of removing all neutral particles within 1--2 GeV from the event~\cite{Heister:2003aj}. The reason is that
 removing neutrals entirely redefines the observable: the resulting distribution is no longer the energy-flow thrust $T_{\mathrm{EF}}$ but a different quantity, charged-only thrust $T_{\mathrm{ch}}$, computed from a different particle-level definition. Treating the difference $T_{\mathrm{EF}} - T_{\mathrm{ch}}$ as a systematic uncertainty on the energy-flow measurement would conflate two distinct observables and produce an uncertainty that is unphysically large. Instead, \texttt{nes\_up}, \texttt{nes\_down}, and \texttt{ner} vary the detector response to neutral objects while holding the particle-level definition fixed, providing a physically meaningful probe of calorimeter modeling uncertainties without changing what is being measured.
 
 To quantify this distinction, the full unfolding chain was repeated with neutral particles ($\mathrm{pwflag}\in\{4,5\}$) removed, yielding a charged-only thrust distribution as shown in Figure~\ref{fig:charged_vs_ef}. Both the energy-flow and charged-only results are processed through the complete analysis chain. The reconstructed particle collection differs between the two, but both are unfolded to the same energy-flow particle-level definition. Both distributions are shown with statistical uncertainties only; the full systematic suite is not propagated for this diagnostic comparison, and the charged-only branch is excluded from the nominal total uncertainty combination. The charged-only spectrum is systematically broader than the energy-flow, as expected from the missing neutral-energy deposits.
@@ -84,7 +84,7 @@ The track and neutral object variations are combined as described below. The ful
 
 \FloatBarrier
 
-\subsection{Theory systematic uncertainties}
+\subsection{Theory Systematic Uncertainties}
 \label{sec:theory_systematics}
 
 Theory systematic variations probe the residual model dependence introduced by the Monte Carlo generator used in the unfolding. The nominal response matrix is constructed from \textsc{Pythia}~6~\cite{Sjostrand:2000wi}, the ALEPH simulation. Three additional generators are used to reweight the generator-level thrust distribution event-by-event, producing alternative response matrices that span a
@@ -108,7 +108,7 @@ generator-level spectra move coherently and by similar amounts. The envelope als
 
 \FloatBarrier
 
-\subsection{Hadronic event-selection correction}
+\subsection{Hadronic Event-Selection Correction}
 \label{sec:had_uncertainty}
 
 After unfolding, a bin-wise hadronic event-selection correction is applied to account for the fraction of hadronic events lost to the generator-level selection:
@@ -126,7 +126,7 @@ $\Delta_{\mathrm{had}}$. The correction is computed from two generator-level his
 % \end{equation}
 % with $\Delta_{\mathrm{had}}(j) = \max(|\delta_{\mathrm{had}}^{+}(j)|, |\delta_{\mathrm{had}}^{-}(j)|)$.
 
-\subsection{QED ISR correction}
+\subsection{QED ISR Correction}
 \label{sec:isr_uncertainty}
 
 The QED ISR correction removes the contribution of events
@@ -138,12 +138,12 @@ C_{\mathrm{ISR}}(j) = \frac{N^{\mathrm{gen}}_{\mathrm{no\,ISR}}(j)}{N^{\mathrm{g
 Both published ALEPH event-shape analyses apply this
 correction~\cite{Barate:1996fi,Heister:2003aj}. The 1998 ALEPH analysis~\cite{Barate:1996fi} defines it as the ratio of generator-level thrust distributions produced with and without ISR, using \textsc{JETSET}~7.4. The 2004 analysis~\cite{Heister:2003aj} uses \textsc{KORALZ}, which provides a more accurate treatment of ISR, to generate the corrected distribution.
 
-The ISR correction is applied bin-by-bin after the hadronic correction using standalone \textsc{Pythia}~8.317 samples with ISR disabled (\texttt{isr0}) and enabled (\texttt{isr1}), as described in Sec.~\ref{sec:corrections_and_cov}. The uncertainty on
+The ISR correction is applied bin-by-bin after the hadronic correction using standalone \textsc{Pythia}~8.317 samples with ISR disabled (\texttt{isr0}) and enabled (\texttt{isr1}), as described in Section~\ref{sec:corrections_and_cov}. The uncertainty on
 this correction is derived from the finite Monte Carlo statistics. Up and down variations $C_{\mathrm{ISR}}^{\pm}(j) = C_{\mathrm{ISR}}(j)\cdot(1\pm\sigma_{\mathrm{rel}}(j))$ are applied to the unfolded spectrum and the envelope is taken as $\Delta_{\mathrm{ISR}}(j)$. The uncertainty is purely MC-statistical in nature for simplicity, but should be assessed in closer detail for future work. 
 
-% The \textsc{Pythia}~8.317 generator used here gives a less accurate ISR description than the \textsc{KORALZ} generator used in the ALEPH 2004 analysis~\cite{Heister:2003aj}; for a full measurement the modern equivalent, \textsc{KKMCee}~5.00.02, would be the natural choice, as noted in Sec.~\ref{sec:corrections_and_cov}.
+% The \textsc{Pythia}~8.317 generator used here gives a less accurate ISR description than the \textsc{KORALZ} generator used in the ALEPH 2004 analysis~\cite{Heister:2003aj}; for a full measurement the modern equivalent, \textsc{KKMCee}~5.00.02, would be the natural choice, as noted in Section~\ref{sec:corrections_and_cov}.
 
-\subsection{Covariance evaluation}
+\subsection{Covariance Evaluation}
 \label{sec:stat_covariance}
 
 For the nominal run, the statistical covariance is computed by RooUnfold using analytical error propagation (\texttt{RooUnfold::kCovariance}), which propagates
@@ -157,7 +157,7 @@ with $\rho^{\mathrm{stat}}_{ij}$ taken from the statistical unfolding covariance
 shifts while avoiding a purely diagonal systematic-covariance approximation. For cross-check studies, \texttt{diagonal} and \texttt{block} component models
 are also available~\cite{Adye:2011gm}.
 
-\subsection{Combination model}
+\subsection{Combination Model}
 \label{sec:combination_model}
 
 The total bin uncertainty combines all seven components in quadrature:
@@ -169,7 +169,7 @@ The total bin uncertainty combines all seven components in quadrature:
 \end{equation}
 The quadrature sum is used since the components originate from distinct sources and the covariance cross terms are expected to be small.
 
-\subsection{Uncertainty breakdown}
+\subsection{Uncertainty Breakdown}
 \label{sec:uncertainty_breakdown}
 
 Figure~\ref{fig:per_bin_uncertainty_grid} shows the absolute fractional uncertainties. Theory is the dominant source across the central range, where the experimental envelope is smaller by roughly a factor of two. The statistical and iteration components remain sub-percent in the bulk.

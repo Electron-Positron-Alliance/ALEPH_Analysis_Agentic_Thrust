@@ -166,6 +166,7 @@
 \thispagestyle{titlepage}
 \setcounter{page}{0}
 % \noindent{\small\scshape\@fpheader}\@preprint\par % commented out by Anthony
+\ifx\@preprint\@empty\else\noindent\@preprint\par\fi % preprint number only (no fpheader)
 \afterLogoSpace
 % Subheader
 \if!\@subheader!\else\noindent{\trfont{\@subheader}}\fi

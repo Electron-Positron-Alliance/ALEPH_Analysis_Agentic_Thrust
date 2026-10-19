@@ -1,10 +1,10 @@
-\section{AI agent usage in this analysis}
+\section{AI Agent Usage in This Analysis}
 \label{sec:ai_agent}
 
 This work includes an explicit evaluation of AI-agent support for an experimental QCD analysis workflow. The central question is not only whether an agent can generate text or isolated scripts, but whether it can execute a full
-analysis loop under physicist supervision: data and Monte Carlo (MC) processing, unfolding , systematic propagation, figure production, and note maintenance with traceable links to code and outputs.
+analysis loop under physicist supervision: data and Monte Carlo (MC) processing, unfolding, systematic propagation, figure production, and note maintenance with traceable links to code and outputs.
 
-\subsection{Scope and operating model}
+\subsection{Scope and Operating Model}
 
 The agents used in this analysis are Anthropic Claude Code and OpenAI Codex, depending on the preference of the physicist. The operating model is human-in-the-loop: the physicist formulates goals and provides expert direction through iterative prompts; the agent executes the corresponding implementation steps; the physicist reviews the outputs and provides feedback; the process is then repeated. Physics decisions remain analyst-owned, while the agent provides implementation speed, consistency checks, and documentation rigor. In practical terms, the agent is used to:
 \begin{itemize}
@@ -16,17 +16,17 @@ The agents used in this analysis are Anthropic Claude Code and OpenAI Codex, dep
 
 \noindent Our operating model is intentionally conservative to see how the agent performs when used to accelerate the common physics engineering and documentation tasks, rather than the core scientific decision tasks.
 
-\subsection{Inputs and context supplied to agents}
+\subsection{Inputs and Context Supplied to Agents}
 \label{sec:agent_inputs}
 
 The inputs supplied to the agents at the start of each session were the following.
 \begin{itemize}
 \item Context: the published ALEPH thrust measurement, prior ROOT-based analysis macros for event selection and thrust calculation, and internal analysis notes documenting the open data format, detector calibration, and object definitions~\cite{Heister:2003aj,ALEPH:docs}.
 \item Datasets: the ALEPH LEP1 data files for the 1994 running period at $\sqrt{s}=91.2$~GeV, together with the corresponding ALEPH MC samples. Additional modern MC were given for theoretical uncertainty estimation.
-\item Physicist-written prompts: prompts specifying the physics objective (e.g.\ ``propagate the hadronic-event correction as an independent systematic component with per-bin envelope uncertainties''), acceptance criteria (e.g.\ ``refolded spectra must reproduce detector-level data within statistical precision''), and output-format expectations (figure style, table layout, note section to update).
+\item Physicist-written prompts: prompts specifying the physics objective (e.g.,\ ``propagate the hadronic-event correction as an independent systematic component with per-bin envelope uncertainties''), acceptance criteria (e.g.,\ ``refolded spectra must reproduce detector-level data within statistical precision''), and output-format expectations (figure style, table layout, note section to update).
 \end{itemize}
 
-\subsection{Boundaries, controls, and reproducibility}
+\subsection{Boundaries, Controls, and Reproducibility}
 
 To keep scientific accountability explicit, each high-impact step has a control point where physicist sign-off is required before results are treated as baseline. The analysis stages where control points were used are: event and object selection definition, unfolding regularization choice, systematic-combination policy, final figure and uncertainty-presentation choices, interpretation description of the work. Beyond these sign-off gates, the physicist performed concrete validation checks at each major analysis stage by inspecting the artifacts of the agents' work. These checks are enumerated here.
 
