@@ -1,4 +1,4 @@
-\section{Data and simulated event samples}
+\section{Data and Simulated Event Samples}
 \label{sec:datasets}
 
 The measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$~GeV. This period is used because matched detector-level and generator-level archived MC inputs required for unfolding are available in this configuration. The 1994 sample corresponds to approximately 40~pb$^{-1}$ after quality requirements and provides the largest fully synchronized archived data/MC configuration for this workflow. Table~\ref{tab:sample_bookkeeping} summarizes the event counts in the nominal thrust workflow. The archived MC reco sample contains approximately 752k selected events compared to 1.33M in data. As a result of having fewer simulated events, MC statistical fluctuations are larger than those in data.
@@ -7,7 +7,7 @@ The measurement uses archived ALEPH LEP1 data from 1994 at $\sqrt{s}\simeq 91.2$
 \centering
 \begin{tabular}{l c c}
 \hline
-Sample & Total events & Selected events \\
+Sample & Total Events & Selected Events \\
 \hline
 1994 data reco & 1,365,440 & 1,326,376 \\
 1994 MC reco & 771,597 & 751,878 \\
@@ -22,6 +22,6 @@ Sample & Total events & Selected events \\
 Detector corrections are derived from archived ALEPH MC processed through the same analysis chain. The archived \textsc{Pythia}~6~\cite{Sjostrand:2000wi} MC was produced with the standard ALEPH detector simulation software chain (\textsc{JETSET}~7.4 parton shower and hadronization with the ALEPH tune, \textsc{GEANT}~3 detector simulation), consistent with the simulation used in the published ALEPH event-shape analyses of the same dataset~\cite{Heister:2003aj}. In the archived sample, the detector-level and generator-level event records are connected through a common event identifier, enabling event-matched response construction and post-unfolding hadronic-selection corrections. 
 
 The unfolding step consumes four synchronized inputs, each a ROOT \texttt{TTree} in the
-archived sample: measured data tree (\texttt{t}), detector-level MC tree (\texttt{t}), generator-level MC tree used for response matching (\texttt{tgen}), generator-level MC tree before hadronic event selection (\texttt{tgenBefore}). The ratio \texttt{tgenBefore/tgen} is used to derive a hadronic event-selection correction applied after unfolding. Event matching between reco and gen levels is performed with the unique event identifier. To populate the response matrix for unfolding, generator entries are matched to the reconstructed selected-event identifier set, consistent with the matched-response construction described in Sec.~\ref{sec:method}.
+archived sample: measured data tree (\texttt{t}), detector-level MC tree (\texttt{t}), generator-level MC tree used for response matching (\texttt{tgen}), generator-level MC tree before hadronic event selection (\texttt{tgenBefore}). The ratio \texttt{tgenBefore/tgen} is used to derive a hadronic event-selection correction applied after unfolding. Event matching between reco and gen levels is performed with the unique event identifier. To populate the response matrix for unfolding, generator entries are matched to the reconstructed selected-event identifier set, consistent with the matched-response construction described in Section~\ref{sec:method}.
 
 In addition to the archived baseline MC, alternative modern generator predictions from \textsc{Pythia}~8.317, \textsc{Herwig}~7.1.5, and \textsc{Sherpa}~2.2.6 are used in this work through event-level reweighting variations to estimate theory model dependence. These variations are propagated as dedicated systematic components in the final uncertainty model while preserving the same detector-response baseline.

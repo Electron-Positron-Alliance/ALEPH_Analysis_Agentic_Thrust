@@ -16,7 +16,7 @@ pursued here. We communicated via natural language prompts with the Anthropic Cl
 analysis goals, then iteratively prompted the AI agents to execute the full
 analysis workflow. No analysis code was written by hand. By analogy, the physicist's role is
 similar to advising a graduate student, providing expert direction, reviewing
-results, and iterating. The agent was supplied with context comprising the published ALEPH thrust paper~\cite{Heister:2003aj}, prior ROOT-based ALEPH analysis macros covering event selection and thrust calculation, internal analysis notes documenting the miniDST data format and detector calibration procedures, and the archived ALEPH data~\cite{ALEPH:docs}. This prompting strategy follows from our understanding in the AI literature that few-shot examples and supplied context improve AI-assisted outputs~\cite{Brown:2020fewshot,Wei:2022cot}. A detailed inventory of the inputs and prompting approach is given in Sec.~\ref{sec:ai_agent}.
+results, and iterating. The agent was supplied with context comprising the published ALEPH thrust paper~\cite{Heister:2003aj}, prior ROOT-based ALEPH analysis macros covering event selection and thrust calculation, internal analysis notes documenting the miniDST data format and detector calibration procedures, and the archived ALEPH data~\cite{ALEPH:docs}. This prompting strategy follows from our understanding in the AI literature that few-shot examples and supplied context improve AI-assisted outputs~\cite{Brown:2020fewshot,Wei:2022cot}. A detailed inventory of the inputs and prompting approach is given in Section~\ref{sec:ai_agent}.
 
 This vision parallels the evolution of AI in neighboring scientific domains. In
 materials science, chemistry, and biology, AI work has progressed from computational
@@ -48,10 +48,10 @@ will be extended to additional event-shape observables (C-parameter and heavy-je
 mass), and the approach of using AI-assisted scientific workflows for both theoretical
 and experimental analysis will be pursued in a loop between them. 
 
-The remainder of the document is structured as follows. Sec.~\ref{sec:ai_agent} defines the AI-agent operating model used in this work.
-Sec.~\ref{sec:aleph} summarizes the ALEPH detector. Sec.~\ref{sec:datasets} describes data and simulation samples.
-Sec.~\ref{sec:event_selection} details reconstruction and selections, including
-particle-category and event-level validation. Sec.~\ref{sec:method} presents
+The remainder of the document is structured as follows. Section~\ref{sec:ai_agent} defines the AI-agent operating model used in this work.
+Section~\ref{sec:aleph} summarizes the ALEPH detector. Section~\ref{sec:datasets} describes data and simulation samples.
+Section~\ref{sec:event_selection} details reconstruction and selections, including
+particle-category and event-level validation. Section~\ref{sec:method} presents
 thrust construction and the executable unfolding workflow.
-Sec.~\ref{sec:systematics} discusses uncertainty measurements. Sec.~\ref{sec:results} presents the results of the measurement. Sec.~\ref{sec:conclusion} reports the conclusions from the study. 
-%Sec.~\ref{sec:challenges} closes this work with persistent analysis challenges and mitigation tracking.
+Section~\ref{sec:systematics} discusses uncertainty measurements. Section~\ref{sec:results} presents the results of the measurement. Section~\ref{sec:conclusion} reports the conclusions from the study. 
+%Section~\ref{sec:challenges} closes this work with persistent analysis challenges and mitigation tracking.

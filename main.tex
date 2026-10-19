@@ -19,12 +19,12 @@
 \renewcommand{\bottomfraction}{0.45}
 \renewcommand{\textfraction}{0.08}
 \renewcommand{\floatpagefraction}{0.85}
-\usepackage{lineno}
-\linenumbers
+% \usepackage{lineno}
+% \linenumbers
 
 \usepackage{eso-pic}
 
-\title{Agentic AI – Physicist Collaboration in Experimental Particle Physics: A Proof-of-Concept Measurement with LEP Open Data}
+\title{Agentic AI---Physicist Collaboration in Experimental Particle Physics: A Proof-of-Concept Measurement with LEP Open Data}
 
 \author[a]{Anthony Badea,}
 \author[c]{Marcello Maggi,}
@@ -40,12 +40,12 @@
 \author[]{The Electron-Positron Alliance\footnote{The authors dedicate this work to the memory of Prof.\ Mauro De Palma (University of Bari, Italy), who passed away recently. He coordinated the Bari group's activities in the ALEPH experiment and championed the use of ALEPH data to explore new research frontiers. This work continues the scientific vision he so enthusiastically supported.}}
 
 
-\affiliation[a]{Enrico Fermi Institute, University of Chicago, Chicago, 60637 IL, USA}
+\affiliation[a]{Enrico Fermi Institute, University of Chicago, Chicago, IL 60637, USA}
 \emailAdd{badea@uchicago.edu}
 \affiliation[b]{Laboratory for Nuclear Science, Massachusetts Institute of Technology, Cambridge, MA 02139, USA}
-\affiliation[c]{Istituto Nazionale di Fisica Nucleare, Bari Division, BA 70126, Italy}
+\affiliation[c]{Istituto Nazionale di Fisica Nucleare, Bari Division, 70126 BA, Italy}
 \affiliation[d]{Department of Physics, University of Illinois Chicago, Chicago, IL 60607, USA}
-\affiliation[e]{Vanderbilt University, Nashville, Tennessee, USA}%
+\affiliation[e]{Department of Physics, Vanderbilt University, Nashville, TN 37235, USA}%
 
 \abstract{
 We present an agentic measurement of the thrust distribution in $e^{+}e^{-}$ collisions at $\sqrt{s}=91.2$~GeV using ALEPH archived data.
@@ -77,20 +77,33 @@ Our work suggests that precision physics, leveraging the open LEP data and advan
 % \input{sections/ChallengesAndLimitations}
 
 \FloatBarrier
-\section*{Acknowledgments}
+\section*{Author Contributions}
+A.~Badea: conceptualization, primary analyzer, data curation, methodology, implementation, draft preparation. M.M., Y.-J.L.: data curation, review, feedback. C.M., A.~Baty, Y.C., H.B., G.M.I., J.Z., Y.-C.C., T.-A.S.: data curation. E.P.A.: Experimental collaboration under which all authors contribute significantly to data curation, physics analysis, draft preparation, and review.
 
+\section*{Funding}
+% Vanderbilt
+Y.C. and J.Z. are supported in part by the U.S. National Science Foundation under ID 2514008.
+% UIC
+A.~Baty is supported by the U.S. Department of Energy, Grant No. DE-FG02-94ER40865.
+% MIT group grant
+H.B., Y.-C.C., G.M.I., C.M., Y.-J.L., and T.-A.S. are supported by the U.S. Department of Energy, Office of Science, Office of Nuclear Physics under grant Contract Number DE-SC0011088.
+%UChi
+A.~Badea is supported by the Schmidt Sciences Foundation and Enrico Fermi Institute.
+
+\section*{Data Availability Statement}
+The data that support the findings of this study are available from the corresponding author upon reasonable request. The analysis code is made available through the Electron-Positron Alliance git organization: \url{https://github.com/orgs/Electron-Positron-Alliance}.
+
+\section*{Acknowledgments}
 % ALEPH
 The authors would like to thank Roberto Tenchini and Guenther Dissertori from the ALEPH Collaboration for their useful comments and suggestions on the use of ALEPH data.
 %
 We thank all the members of the Electron-Positron Alliance for their tremendous efforts to resurrect the LEP dataset, ultimately enabling the studies presented in this paper.
-% Vanderbilt
-Y.C. and J.Z. are supported in part by the U.S. National Science Foundation under ID 2514008.
-% UIC
-A. Baty is supported by the U.S. Department of Energy, Grant No. DE-FG02-94ER40865.
-% MIT group grant
-H.B., Y.-C.C., G.M.I., C.M., Y.-J.L., and T.-A.S. are supported by the U.S. Department of Energy, Office of Science, Office of Nuclear Physics under grant Contract Number DE-SC0011088.
-%UChi
-A. Badea is supported by the Schmidt Sciences Foundation and Enrico Fermi Institute.
+
+\section*{Conflicts of Interest}
+The authors declare no conflict of interest.
+
+\section*{Use of AI and AI-Assisted Technologies}
+During the preparation of this work, the authors used Anthropic Claude and OpenAI GPT (ChatGPT and Codex) to carry out the experimental analysis and draft the paper. After using this tool/service, the authors reviewed and edited the content as needed and take full responsibility for the content of the published article.
 
 \bibliographystyle{JHEP}
 \bibliography{biblio}
